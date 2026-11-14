@@ -27,9 +27,38 @@ class MainActivity : ComponentActivity() {
             AuraTheme(
                 colorMode = if (isDarkTheme) AuraColorMode.Dark else AuraColorMode.Light,
             ) {
-                MaterialTheme(
-                    colorScheme = if (isDarkTheme) darkColorScheme() else lightColorScheme(),
-                ) {
+                val auraColors = AuraTheme.colors
+                // Temporary minimal MaterialTheme bridge until Steps 2-5 replace TopAppBar/FilterChip/Switch/Card.
+                val compatScheme = if (isDarkTheme) {
+                    darkColorScheme(
+                        primary = auraColors.brand.primary,
+                        onPrimary = auraColors.brand.onPrimary,
+                        background = auraColors.background.primary,
+                        onBackground = auraColors.content.primary,
+                        surface = auraColors.surface.default,
+                        onSurface = auraColors.content.primary,
+                        surfaceVariant = auraColors.surface.raised,
+                        onSurfaceVariant = auraColors.content.secondary,
+                        secondaryContainer = auraColors.interaction.selectedContainer,
+                        onSecondaryContainer = auraColors.interaction.onSelected,
+                        outline = auraColors.border.default,
+                    )
+                } else {
+                    lightColorScheme(
+                        primary = auraColors.brand.primary,
+                        onPrimary = auraColors.brand.onPrimary,
+                        background = auraColors.background.primary,
+                        onBackground = auraColors.content.primary,
+                        surface = auraColors.surface.default,
+                        onSurface = auraColors.content.primary,
+                        surfaceVariant = auraColors.surface.raised,
+                        onSurfaceVariant = auraColors.content.secondary,
+                        secondaryContainer = auraColors.interaction.selectedContainer,
+                        onSecondaryContainer = auraColors.interaction.onSelected,
+                        outline = auraColors.border.default,
+                    )
+                }
+                MaterialTheme(colorScheme = compatScheme) {
                     PreviewNavGraph(
                         isDarkTheme = isDarkTheme,
                         onToggleTheme = { isDarkTheme = !isDarkTheme },

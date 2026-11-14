@@ -1,7 +1,9 @@
 package com.example.ds.preview.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -10,23 +12,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +34,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.isSpecified
+import com.example.ds.component.AuraAdaptiveGrid
+import com.example.ds.component.AuraChipButton
+import com.example.ds.component.AuraChipVariant
+import com.example.ds.component.AuraIcon
+import com.example.ds.component.AuraIconButton
+import com.example.ds.component.AuraIconButtonVariant
+import com.example.ds.component.AuraScaffold
+import com.example.ds.component.AuraText
+import com.example.ds.foundation.theme.AuraTheme
 import com.example.ds.preview.catalog.CatalogCategory
 import com.example.ds.preview.catalog.CatalogItem
 import com.example.ds.preview.catalog.CatalogStatus
@@ -48,6 +57,10 @@ fun CatalogHomeScreen(
     onSelectItem: (CatalogItem) -> Unit,
 ) {
     var selectedCategory by remember { mutableStateOf<CatalogCategory?>(null) }
+    val c = AuraTheme.colors
+    val t = AuraTheme.typography
+    val layout = AuraTheme.layout
+    val window = AuraTheme.window
 
     val filteredItems = remember(selectedCategory) {
         if (selectedCategory == null) {
@@ -57,57 +70,103 @@ fun CatalogHomeScreen(
         }
     }
 
-    Scaffold(
+    AuraScaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Aura Preview") },
+                title = {
+                    AuraText(
+                        text = "Aura Preview",
+                        style = t.titleLarge,
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = c.background.primary,
+                    titleContentColor = c.content.primary,
+                    actionIconContentColor = c.content.primary,
+                ),
                 actions = {
-                    IconButton(onClick = onToggleTheme) {
-                        Icon(
+                    AuraIconButton(
+                        onClick = onToggleTheme,
+                        variant = AuraIconButtonVariant.Ghost,
+                        contentDescription = if (isDarkTheme) "Switch to light theme" else "Switch to dark theme",
+                    ) {
+                        AuraIcon(
                             imageVector = if (isDarkTheme) Icons.Filled.LightMode else Icons.Filled.DarkMode,
-                            contentDescription = if (isDarkTheme) "Switch to light theme" else "Switch to dark theme",
+                            contentDescription = null,
                         )
                     }
                 },
             )
         },
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
+            contentAlignment = Alignment.TopCenter,
         ) {
-            LazyRow(
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                item {
-                    FilterChip(
-                        selected = selectedCategory == null,
-                        onClick = { selectedCategory = null },
-                        label = { Text("All") },
-                    )
-                }
-                items(CatalogCategory.entries) { category ->
-                    FilterChip(
-                        selected = selectedCategory == category,
-                        onClick = {
-                            selectedCategory = if (selectedCategory == category) null else category
-                        },
-                        label = { Text(category.label) },
-                    )
-                }
+            val widthConstraint = if (layout.maxContentWidth.isSpecified) {
+                Modifier.widthIn(max = layout.maxContentWidth)
+            } else {
+                Modifier
             }
-
-            LazyColumn(
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(widthConstraint),
             ) {
-                items(filteredItems, key = { it.id }) { item ->
-                    CatalogItemCard(
-                        item = item,
-                        onClick = { onSelectItem(item) },
-                    )
+                LazyRow(
+                    contentPadding = PaddingValues(
+                        horizontal = layout.screenMarginHorizontal,
+                        vertical = 2.dp,
+                    ),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    item {
+                        AuraChipButton(
+                            label = "All",
+                            selected = selectedCategory == null,
+                            variant = AuraChipVariant.Filter,
+                            onClick = { selectedCategory = null },
+                        )
+                    }
+                    items(CatalogCategory.entries) { category ->
+                        AuraChipButton(
+                            label = category.label,
+                            selected = selectedCategory == category,
+                            variant = AuraChipVariant.Filter,
+                            onClick = {
+                                selectedCategory = if (selectedCategory == category) null else category
+                            },
+                        )
+                    }
+                }
+
+                AuraText(
+                    text = "${window.widthClass} · ${window.displayRatio} (${layout.gridColumns} col)",
+                    style = t.monoSmall,
+                    color = c.content.tertiary,
+                    modifier = Modifier.padding(
+                        horizontal = layout.screenMarginHorizontal,
+                        vertical = 2.dp,
+                    ),
+                )
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(
+                            horizontal = layout.screenMarginHorizontal,
+                            vertical = layout.screenMarginVertical,
+                        ),
+                ) {
+                    AuraAdaptiveGrid(items = filteredItems) { item ->
+                        CatalogItemCard(
+                            item = item,
+                            onClick = { onSelectItem(item) },
+                        )
+                    }
                 }
             }
         }
@@ -119,12 +178,15 @@ private fun CatalogItemCard(
     item: CatalogItem,
     onClick: () -> Unit,
 ) {
+    val c = AuraTheme.colors
+    val t = AuraTheme.typography
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            containerColor = c.surface.default,
         ),
     ) {
         Column(
@@ -135,23 +197,24 @@ private fun CatalogItemCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
+                AuraText(
                     text = item.name,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = t.titleMedium,
+                    modifier = Modifier.weight(1f),
                 )
                 StatusBadge(status = item.status)
             }
             Spacer(modifier = Modifier.height(4.dp))
-            Text(
+            AuraText(
                 text = item.category.label,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary,
+                style = t.labelMedium,
+                color = c.brand.primary,
             )
             Spacer(modifier = Modifier.height(6.dp))
-            Text(
+            AuraText(
                 text = item.description,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = t.bodyMedium,
+                color = c.content.secondary,
             )
         }
     }
@@ -159,24 +222,26 @@ private fun CatalogItemCard(
 
 @Composable
 private fun StatusBadge(status: CatalogStatus) {
+    val c = AuraTheme.colors
+    val t = AuraTheme.typography
     val containerColor = when (status) {
-        CatalogStatus.Ready -> MaterialTheme.colorScheme.primaryContainer
-        CatalogStatus.Planned -> MaterialTheme.colorScheme.surfaceContainerHighest
+        CatalogStatus.Ready -> c.brand.subtle
+        CatalogStatus.Planned -> c.surface.sunken
     }
     val contentColor = when (status) {
-        CatalogStatus.Ready -> MaterialTheme.colorScheme.onPrimaryContainer
-        CatalogStatus.Planned -> MaterialTheme.colorScheme.onSurfaceVariant
+        CatalogStatus.Ready -> c.brand.onSubtle
+        CatalogStatus.Planned -> c.content.secondary
     }
 
-    Surface(
-        color = containerColor,
-        shape = MaterialTheme.shapes.small,
+    Box(
+        modifier = Modifier
+            .background(containerColor, RoundedCornerShape(8.dp))
+            .padding(horizontal = 8.dp, vertical = 4.dp),
     ) {
-        Text(
+        AuraText(
             text = status.label,
-            style = MaterialTheme.typography.labelSmall,
+            style = t.labelSmall,
             color = contentColor,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         )
     }
 }

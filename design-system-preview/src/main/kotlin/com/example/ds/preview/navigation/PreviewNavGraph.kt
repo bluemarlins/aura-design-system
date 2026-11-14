@@ -9,14 +9,24 @@ import androidx.navigation.navArgument
 import com.example.ds.preview.catalog.ComponentCatalog
 import com.example.ds.preview.ui.ButtonPreviewScreen
 import com.example.ds.preview.ui.CatalogHomeScreen
+import com.example.ds.preview.ui.ChipButtonPreviewScreen
 import com.example.ds.preview.ui.ColorSchemePreviewScreen
+import com.example.ds.preview.ui.FabPreviewScreen
+import com.example.ds.preview.ui.IconButtonPreviewScreen
 import com.example.ds.preview.ui.PlannedComponentScreen
+import com.example.ds.preview.ui.SegmentedButtonPreviewScreen
 import com.example.ds.preview.ui.TextFieldPreviewScreen
+import com.example.ds.preview.ui.TypographyLayoutPreviewScreen
 
 private object PreviewRoutes {
     const val HOME = "home"
     const val COLOR_SCHEME = "foundation/${ComponentCatalog.COLOR_SCHEME_ID}"
+    const val TYPOGRAPHY_LAYOUT = "foundation/${ComponentCatalog.TYPOGRAPHY_LAYOUT_ID}"
     const val BUTTON = "component/${ComponentCatalog.BUTTON_ID}"
+    const val ICON_BUTTON = "component/${ComponentCatalog.ICON_BUTTON_ID}"
+    const val FAB = "component/${ComponentCatalog.FAB_ID}"
+    const val SEGMENTED_BUTTON = "component/${ComponentCatalog.SEGMENTED_BUTTON_ID}"
+    const val CHIP_BUTTON = "component/${ComponentCatalog.CHIP_BUTTON_ID}"
     const val TEXT_FIELD = "component/${ComponentCatalog.TEXT_FIELD_ID}"
     const val PLANNED = "planned/{itemId}"
 
@@ -41,7 +51,12 @@ fun PreviewNavGraph(
                 onSelectItem = { item ->
                     when (item.id) {
                         ComponentCatalog.COLOR_SCHEME_ID -> navController.navigate(PreviewRoutes.COLOR_SCHEME)
+                        ComponentCatalog.TYPOGRAPHY_LAYOUT_ID -> navController.navigate(PreviewRoutes.TYPOGRAPHY_LAYOUT)
                         ComponentCatalog.BUTTON_ID -> navController.navigate(PreviewRoutes.BUTTON)
+                        ComponentCatalog.ICON_BUTTON_ID -> navController.navigate(PreviewRoutes.ICON_BUTTON)
+                        ComponentCatalog.FAB_ID -> navController.navigate(PreviewRoutes.FAB)
+                        ComponentCatalog.SEGMENTED_BUTTON_ID -> navController.navigate(PreviewRoutes.SEGMENTED_BUTTON)
+                        ComponentCatalog.CHIP_BUTTON_ID -> navController.navigate(PreviewRoutes.CHIP_BUTTON)
                         ComponentCatalog.TEXT_FIELD_ID -> navController.navigate(PreviewRoutes.TEXT_FIELD)
                         else -> navController.navigate(PreviewRoutes.planned(item.id))
                     }
@@ -55,8 +70,33 @@ fun PreviewNavGraph(
                 onBack = { navController.popBackStack() },
             )
         }
+        composable(PreviewRoutes.TYPOGRAPHY_LAYOUT) {
+            TypographyLayoutPreviewScreen(
+                onBack = { navController.popBackStack() },
+            )
+        }
         composable(PreviewRoutes.BUTTON) {
             ButtonPreviewScreen(
+                onBack = { navController.popBackStack() },
+            )
+        }
+        composable(PreviewRoutes.ICON_BUTTON) {
+            IconButtonPreviewScreen(
+                onBack = { navController.popBackStack() },
+            )
+        }
+        composable(PreviewRoutes.FAB) {
+            FabPreviewScreen(
+                onBack = { navController.popBackStack() },
+            )
+        }
+        composable(PreviewRoutes.SEGMENTED_BUTTON) {
+            SegmentedButtonPreviewScreen(
+                onBack = { navController.popBackStack() },
+            )
+        }
+        composable(PreviewRoutes.CHIP_BUTTON) {
+            ChipButtonPreviewScreen(
                 onBack = { navController.popBackStack() },
             )
         }

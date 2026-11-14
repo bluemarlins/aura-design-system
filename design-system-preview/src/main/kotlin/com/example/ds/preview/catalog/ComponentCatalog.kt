@@ -24,7 +24,12 @@ data class CatalogItem(
 
 object ComponentCatalog {
     const val COLOR_SCHEME_ID = "color-scheme"
+    const val TYPOGRAPHY_LAYOUT_ID = "typography-layout"
     const val BUTTON_ID = "button"
+    const val ICON_BUTTON_ID = "icon-button"
+    const val FAB_ID = "fab"
+    const val SEGMENTED_BUTTON_ID = "segmented-button"
+    const val CHIP_BUTTON_ID = "chip-button"
     const val TEXT_FIELD_ID = "text-field"
 
     val items: List<CatalogItem> = listOf(
@@ -36,6 +41,13 @@ object ComponentCatalog {
             status = CatalogStatus.Ready,
         ),
         CatalogItem(
+            id = TYPOGRAPHY_LAYOUT_ID,
+            name = "AuraTypography & Layout",
+            category = CatalogCategory.Foundation,
+            description = "Responsive typography scale and 2-axis layout (Smallest Width × Display Ratio).",
+            status = CatalogStatus.Ready,
+        ),
+        CatalogItem(
             id = BUTTON_ID,
             name = "AuraButton",
             category = CatalogCategory.Actions,
@@ -43,32 +55,32 @@ object ComponentCatalog {
             status = CatalogStatus.Ready,
         ),
         CatalogItem(
-            id = "icon-button",
+            id = ICON_BUTTON_ID,
             name = "AuraIconButton",
             category = CatalogCategory.Actions,
             description = "Compact icon-only action control.",
-            status = CatalogStatus.Planned,
+            status = CatalogStatus.Ready,
         ),
         CatalogItem(
-            id = "fab",
+            id = FAB_ID,
             name = "AuraFab",
             category = CatalogCategory.Actions,
             description = "Persistent floating action button for primary screen creation.",
-            status = CatalogStatus.Planned,
+            status = CatalogStatus.Ready,
         ),
         CatalogItem(
-            id = "segmented-button",
+            id = SEGMENTED_BUTTON_ID,
             name = "AuraSegmentedButton",
             category = CatalogCategory.Actions,
             description = "Immediate mutually exclusive view mode and unit switcher.",
-            status = CatalogStatus.Planned,
+            status = CatalogStatus.Ready,
         ),
         CatalogItem(
-            id = "chip-button",
+            id = CHIP_BUTTON_ID,
             name = "AuraChipButton",
             category = CatalogCategory.Actions,
             description = "Compact capsule toggle for filters and attribute tags.",
-            status = CatalogStatus.Planned,
+            status = CatalogStatus.Ready,
         ),
         CatalogItem(
             id = TEXT_FIELD_ID,

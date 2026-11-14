@@ -12,18 +12,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -32,13 +29,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.isSpecified
+import com.example.ds.component.AuraAdaptiveGrid
 import com.example.ds.component.AuraButton
+import com.example.ds.component.AuraIcon
+import com.example.ds.component.AuraIconButton
+import com.example.ds.component.AuraIconButtonVariant
+import com.example.ds.component.AuraScaffold
+import com.example.ds.component.AuraText
 import com.example.ds.foundation.color.AuraColors
 import com.example.ds.foundation.theme.AuraColorMode
 import com.example.ds.foundation.theme.AuraTheme
@@ -51,39 +51,44 @@ fun ColorSchemePreviewScreen(
     onBack: () -> Unit,
 ) {
     val c = AuraTheme.colors
+    val t = AuraTheme.typography
 
-    Scaffold(
-        containerColor = c.background.primary,
+    AuraScaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    BasicText(
+                    AuraText(
                         text = "AuraColors (${if (c.isDark) "Dark" else "Light"})",
-                        style = TextStyle(
-                            color = c.content.primary,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
-                        ),
+                        style = t.titleLarge,
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = c.background.primary,
+                    titleContentColor = c.content.primary,
                     navigationIconContentColor = c.content.primary,
                     actionIconContentColor = c.content.primary,
                 ),
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
+                    AuraIconButton(
+                        onClick = onBack,
+                        variant = AuraIconButtonVariant.Ghost,
+                        contentDescription = "Back",
+                    ) {
+                        AuraIcon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = null,
                         )
                     }
                 },
                 actions = {
-                    IconButton(onClick = onToggleTheme) {
-                        Icon(
+                    AuraIconButton(
+                        onClick = onToggleTheme,
+                        variant = AuraIconButtonVariant.Ghost,
+                        contentDescription = if (isDarkTheme) "Switch to light theme" else "Switch to dark theme",
+                    ) {
+                        AuraIcon(
                             imageVector = if (isDarkTheme) Icons.Filled.LightMode else Icons.Filled.DarkMode,
-                            contentDescription = if (isDarkTheme) "Switch to light theme" else "Switch to dark theme",
+                            contentDescription = null,
                         )
                     }
                 },
@@ -101,17 +106,41 @@ fun ColorSchemePreviewScreen(
 @Composable
 private fun ColorSchemeShowcaseContent(modifier: Modifier = Modifier) {
     val c = AuraTheme.colors
-    Column(
-        modifier = modifier
-            .background(c.background.primary)
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp),
+    val layout = AuraTheme.layout
+    val widthConstraint = if (layout.maxContentWidth.isSpecified) {
+        Modifier.widthIn(max = layout.maxContentWidth)
+    } else {
+        Modifier
+    }
+
+    Box(
+        modifier = modifier.background(c.background.primary),
+        contentAlignment = Alignment.TopCenter,
     ) {
-        SurfaceDepthDemo()
-        ComponentSampleCard()
-        c.roleGroups().forEach { (group, roles) ->
-            RoleGroup(group = group, roles = roles)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .then(widthConstraint)
+                .verticalScroll(rememberScrollState())
+                .padding(
+                    horizontal = layout.screenMarginHorizontal,
+                    vertical = layout.screenMarginVertical,
+                ),
+            verticalArrangement = Arrangement.spacedBy(layout.sectionSpacing),
+        ) {
+            AuraAdaptiveGrid(
+                items = listOf(0, 1),
+                columns = minOf(layout.gridColumns, 2),
+            ) { index ->
+                if (index == 0) {
+                    SurfaceDepthDemo()
+                } else {
+                    ComponentSampleCard()
+                }
+            }
+            AuraAdaptiveGrid(items = c.roleGroups()) { (group, roles) ->
+                RoleGroup(group = group, roles = roles)
+            }
         }
     }
 }
@@ -119,6 +148,7 @@ private fun ColorSchemeShowcaseContent(modifier: Modifier = Modifier) {
 @Composable
 private fun SurfaceDepthDemo() {
     val c = AuraTheme.colors
+    val t = AuraTheme.typography
     val cardShape = RoundedCornerShape(20.dp)
     val innerShape = RoundedCornerShape(14.dp)
 
@@ -131,9 +161,9 @@ private fun SurfaceDepthDemo() {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            BasicText(
+            AuraText(
                 text = "surface.default over background.primary",
-                style = TextStyle(c.content.primary, 14.sp, FontWeight.SemiBold),
+                style = t.titleSmall,
             )
             Column(
                 modifier = Modifier
@@ -143,9 +173,9 @@ private fun SurfaceDepthDemo() {
                     .padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                BasicText(
+                AuraText(
                     text = "surface.raised (nested card / sheet)",
-                    style = TextStyle(c.content.primary, 13.sp, FontWeight.Medium),
+                    style = t.labelMedium,
                 )
                 Box(
                     modifier = Modifier
@@ -153,9 +183,10 @@ private fun SurfaceDepthDemo() {
                         .background(c.surface.sunken, RoundedCornerShape(10.dp))
                         .padding(10.dp),
                 ) {
-                    BasicText(
+                    AuraText(
                         text = "surface.sunken (input field / recessed well)",
-                        style = TextStyle(c.content.secondary, 12.sp),
+                        style = t.bodySmall,
+                        color = c.content.secondary,
                     )
                 }
             }
@@ -173,13 +204,14 @@ private fun SurfaceDepthDemo() {
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(2.dp),
                 ) {
-                    BasicText(
+                    AuraText(
                         text = "surface.floating",
-                        style = TextStyle(c.content.primary, 13.sp, FontWeight.SemiBold),
+                        style = t.titleSmall,
                     )
-                    BasicText(
+                    AuraText(
                         text = "Bottom bar / popover — future LiquidGlass target",
-                        style = TextStyle(c.content.tertiary, 11.sp),
+                        style = t.labelSmall,
+                        color = c.content.tertiary,
                     )
                 }
                 Pill("Glass next", c.brand.subtle, c.brand.onSubtle)
@@ -190,9 +222,10 @@ private fun SurfaceDepthDemo() {
                     .background(c.surface.inverse, RoundedCornerShape(10.dp))
                     .padding(horizontal = 14.dp, vertical = 10.dp),
             ) {
-                BasicText(
+                AuraText(
                     text = "surface.inverse / content.inverse (Toast / Snackbar)",
-                    style = TextStyle(c.content.inverse, 12.sp, FontWeight.Medium),
+                    style = t.bodySmall,
+                    color = c.content.inverse,
                 )
             }
         }
@@ -203,6 +236,7 @@ private fun SurfaceDepthDemo() {
 @Composable
 private fun ComponentSampleCard() {
     val c = AuraTheme.colors
+    val t = AuraTheme.typography
     val shape = RoundedCornerShape(20.dp)
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -214,14 +248,16 @@ private fun ComponentSampleCard() {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            BasicText("Aura Preview Card", style = TextStyle(c.content.primary, 17.sp, FontWeight.SemiBold))
-            BasicText(
-                "Secondary copy explains context against surface.default.",
-                style = TextStyle(c.content.secondary, 14.sp),
+            AuraText(text = "Aura Preview Card", style = t.titleMedium)
+            AuraText(
+                text = "Secondary copy explains context against surface.default.",
+                style = t.bodyMedium,
+                color = c.content.secondary,
             )
-            BasicText(
-                "Tertiary caption · disabled hint",
-                style = TextStyle(c.content.tertiary, 12.sp),
+            AuraText(
+                text = "Tertiary caption · disabled hint",
+                style = t.bodySmall,
+                color = c.content.tertiary,
             )
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -266,21 +302,21 @@ private fun ComponentSampleCard() {
 
 @Composable
 private fun SectionHeader(title: String) {
-    val c = AuraTheme.colors
-    BasicText(
+    AuraText(
         text = title,
-        style = TextStyle(c.content.primary, 16.sp, FontWeight.SemiBold),
+        style = AuraTheme.typography.titleMedium,
     )
 }
 
 @Composable
 private fun Pill(label: String, container: Color, content: Color) {
-    BasicText(
+    AuraText(
         text = label,
+        color = content,
+        style = AuraTheme.typography.labelSmall,
         modifier = Modifier
             .background(container, RoundedCornerShape(50))
             .padding(horizontal = 12.dp, vertical = 6.dp),
-        style = TextStyle(content, 12.sp, FontWeight.Medium),
     )
 }
 
@@ -307,6 +343,7 @@ private fun RoleGroup(group: String, roles: List<Pair<String, Color>>) {
 @Composable
 private fun SwatchRow(token: String, color: Color) {
     val c = AuraTheme.colors
+    val t = AuraTheme.typography
     val shape = RoundedCornerShape(8.dp)
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -319,10 +356,11 @@ private fun SwatchRow(token: String, color: Color) {
                 .border(1.dp, c.border.default, shape),
         )
         Column {
-            BasicText(token, style = TextStyle(c.content.primary, 13.sp, FontWeight.Medium))
-            BasicText(
+            AuraText(text = token, style = t.labelMedium)
+            AuraText(
                 text = color.toHexLabel(),
-                style = TextStyle(c.content.secondary, 11.sp, fontFamily = FontFamily.Monospace),
+                style = t.monoSmall,
+                color = c.content.secondary,
             )
         }
     }
