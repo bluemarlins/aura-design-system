@@ -84,6 +84,10 @@ Every Aura component must satisfy all six rules before reaching `status: "ready"
 | `AuraSegmentedButton` | [aura-segmented-button.md](actions/aura-segmented-button.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Ready |
 | `AuraChipButton` | [aura-chip-button.md](actions/aura-chip-button.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Ready |
 | `AuraTextField` | [aura-text-field.md](inputs/aura-text-field.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Ready |
+| `AuraSwitch` | [aura-switch.md](inputs/aura-switch.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Ready |
+| `AuraCheckbox` | [aura-checkbox.md](inputs/aura-checkbox.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Ready |
+| `AuraRadio` | [aura-radio.md](inputs/aura-radio.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Ready |
+| `AuraCard` | [aura-card.md](containment/aura-card.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Ready |
 | `AuraScaffold` | [aura-scaffold.md](layout/aura-scaffold.md) | Pass | Pass | Pass | Pass (Passive container) | Pass | Pass | Ready |
 | `AuraAdaptiveTwoPane` | [aura-adaptive-two-pane.md](layout/aura-adaptive-two-pane.md) | Pass | Pass | Pass (`AuraTheme.layout`) | Pass (Passive container) | Pass | Pass | Ready |
 | `AuraTopAppBar` | [aura-top-app-bar.md](navigation/aura-top-app-bar.md) | Pass | Pass | Pass | Pass (Floating Scroll Spec) | Pass | Spec Only | Planned |
