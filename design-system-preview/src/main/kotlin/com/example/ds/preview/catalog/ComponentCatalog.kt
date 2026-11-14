@@ -1,6 +1,7 @@
 package com.example.ds.preview.catalog
 
 enum class CatalogCategory(val label: String) {
+    Foundation("Foundation & Tokens"),
     Actions("Actions & Controls"),
     Inputs("Data Input & Selection"),
     Navigation("Navigation & Hierarchy"),
@@ -22,9 +23,17 @@ data class CatalogItem(
 )
 
 object ComponentCatalog {
+    const val COLOR_SCHEME_ID = "color-scheme"
     const val BUTTON_ID = "button"
 
     val items: List<CatalogItem> = listOf(
+        CatalogItem(
+            id = COLOR_SCHEME_ID,
+            name = "AuraColors",
+            category = CatalogCategory.Foundation,
+            description = "One UI-inspired Light & Dark color scheme with floating surface layer.",
+            status = CatalogStatus.Ready,
+        ),
         CatalogItem(
             id = BUTTON_ID,
             name = "DsButton",

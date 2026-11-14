@@ -15,7 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
@@ -25,11 +24,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.ds.foundation.theme.AuraColorMode
+import com.example.ds.foundation.theme.AuraTheme
 
-private val ContainedContainerColor = Color(0xFF0061A4)
-private val ContainedContentColor = Color(0xFFFFFFFF)
-private val DisabledContainerColor = Color(0xFFE0E2E5)
-private val DisabledContentColor = Color(0xFF8E9196)
 private val ButtonCornerRadius = 8.dp
 private val ButtonMinHeight = 48.dp
 private val ButtonHorizontalPadding = 16.dp
@@ -38,7 +35,8 @@ private val ButtonVerticalPadding = 12.dp
 /**
  * Simple contained button for triggering primary actions.
  *
- * Uses hardcoded visual values until `DsTheme` and token bindings are implemented.
+ * Colors bind to [AuraTheme.colors]; dimension and typography tokens will be
+ * migrated once those foundation specs are implemented.
  *
  * @param text Label text displayed inside the button.
  * @param onClick Callback invoked when the button is clicked.
@@ -52,8 +50,9 @@ fun DsButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
-    val containerColor = if (enabled) ContainedContainerColor else DisabledContainerColor
-    val contentColor = if (enabled) ContainedContentColor else DisabledContentColor
+    val colors = AuraTheme.colors
+    val containerColor = if (enabled) colors.brand.primary else colors.interaction.disabledContainer
+    val contentColor = if (enabled) colors.brand.onPrimary else colors.content.disabled
     val shape = RoundedCornerShape(ButtonCornerRadius)
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -92,11 +91,24 @@ fun DsButton(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Light", showBackground = true)
 @Composable
-private fun DsButtonPreview() {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        DsButton(text = "Primary Action", onClick = {})
-        DsButton(text = "Disabled", onClick = {}, enabled = false)
+private fun DsButtonLightPreview() {
+    AuraTheme(colorMode = AuraColorMode.Light) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            DsButton(text = "Primary Action", onClick = {})
+            DsButton(text = "Disabled", onClick = {}, enabled = false)
+        }
+    }
+}
+
+@Preview(name = "Dark", showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+private fun DsButtonDarkPreview() {
+    AuraTheme(colorMode = AuraColorMode.Dark) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            DsButton(text = "Primary Action", onClick = {})
+            DsButton(text = "Disabled", onClick = {}, enabled = false)
+        }
     }
 }

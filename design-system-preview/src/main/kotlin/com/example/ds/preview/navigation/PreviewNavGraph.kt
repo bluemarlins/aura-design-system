@@ -9,10 +9,12 @@ import androidx.navigation.navArgument
 import com.example.ds.preview.catalog.ComponentCatalog
 import com.example.ds.preview.ui.ButtonPreviewScreen
 import com.example.ds.preview.ui.CatalogHomeScreen
+import com.example.ds.preview.ui.ColorSchemePreviewScreen
 import com.example.ds.preview.ui.PlannedComponentScreen
 
 private object PreviewRoutes {
     const val HOME = "home"
+    const val COLOR_SCHEME = "foundation/${ComponentCatalog.COLOR_SCHEME_ID}"
     const val BUTTON = "component/${ComponentCatalog.BUTTON_ID}"
     const val PLANNED = "planned/{itemId}"
 
@@ -35,12 +37,19 @@ fun PreviewNavGraph(
                 isDarkTheme = isDarkTheme,
                 onToggleTheme = onToggleTheme,
                 onSelectItem = { item ->
-                    if (item.id == ComponentCatalog.BUTTON_ID) {
-                        navController.navigate(PreviewRoutes.BUTTON)
-                    } else {
-                        navController.navigate(PreviewRoutes.planned(item.id))
+                    when (item.id) {
+                        ComponentCatalog.COLOR_SCHEME_ID -> navController.navigate(PreviewRoutes.COLOR_SCHEME)
+                        ComponentCatalog.BUTTON_ID -> navController.navigate(PreviewRoutes.BUTTON)
+                        else -> navController.navigate(PreviewRoutes.planned(item.id))
                     }
                 },
+            )
+        }
+        composable(PreviewRoutes.COLOR_SCHEME) {
+            ColorSchemePreviewScreen(
+                isDarkTheme = isDarkTheme,
+                onToggleTheme = onToggleTheme,
+                onBack = { navController.popBackStack() },
             )
         }
         composable(PreviewRoutes.BUTTON) {

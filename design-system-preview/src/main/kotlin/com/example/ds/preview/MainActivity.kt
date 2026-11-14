@@ -12,6 +12,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import com.example.ds.foundation.theme.AuraColorMode
+import com.example.ds.foundation.theme.AuraTheme
 import com.example.ds.preview.navigation.PreviewNavGraph
 
 class MainActivity : ComponentActivity() {
@@ -22,13 +24,17 @@ class MainActivity : ComponentActivity() {
             val systemDark = isSystemInDarkTheme()
             var isDarkTheme by rememberSaveable { mutableStateOf(systemDark) }
 
-            MaterialTheme(
-                colorScheme = if (isDarkTheme) darkColorScheme() else lightColorScheme(),
+            AuraTheme(
+                colorMode = if (isDarkTheme) AuraColorMode.Dark else AuraColorMode.Light,
             ) {
-                PreviewNavGraph(
-                    isDarkTheme = isDarkTheme,
-                    onToggleTheme = { isDarkTheme = !isDarkTheme },
-                )
+                MaterialTheme(
+                    colorScheme = if (isDarkTheme) darkColorScheme() else lightColorScheme(),
+                ) {
+                    PreviewNavGraph(
+                        isDarkTheme = isDarkTheme,
+                        onToggleTheme = { isDarkTheme = !isDarkTheme },
+                    )
+                }
             }
         }
     }

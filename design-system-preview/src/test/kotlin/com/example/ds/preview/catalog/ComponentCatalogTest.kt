@@ -13,7 +13,11 @@ class ComponentCatalogTest {
     }
 
     @Test
-    fun `button component is registered as ready`() {
+    fun `color scheme and button items are registered as ready`() {
+        val colorScheme = ComponentCatalog.findById(ComponentCatalog.COLOR_SCHEME_ID)
+        assertNotNull(colorScheme)
+        assertEquals(CatalogStatus.Ready, colorScheme?.status)
+
         val button = ComponentCatalog.findById(ComponentCatalog.BUTTON_ID)
         assertNotNull(button)
         assertEquals(CatalogStatus.Ready, button?.status)
