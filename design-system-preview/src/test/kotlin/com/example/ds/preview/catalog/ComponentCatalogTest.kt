@@ -45,6 +45,22 @@ class ComponentCatalogTest {
         val textField = ComponentCatalog.findById(ComponentCatalog.TEXT_FIELD_ID)
         assertNotNull(textField)
         assertEquals(CatalogStatus.Ready, textField?.status)
+
+        val checkbox = ComponentCatalog.findById(ComponentCatalog.CHECKBOX_ID)
+        assertNotNull(checkbox)
+        assertEquals(CatalogStatus.Ready, checkbox?.status)
+
+        val switchItem = ComponentCatalog.findById(ComponentCatalog.SWITCH_ID)
+        assertNotNull(switchItem)
+        assertEquals(CatalogStatus.Ready, switchItem?.status)
+
+        val radio = ComponentCatalog.findById(ComponentCatalog.RADIO_ID)
+        assertNotNull(radio)
+        assertEquals(CatalogStatus.Ready, radio?.status)
+
+        val card = ComponentCatalog.findById(ComponentCatalog.CARD_ID)
+        assertNotNull(card)
+        assertEquals(CatalogStatus.Ready, card?.status)
     }
 
     @Test

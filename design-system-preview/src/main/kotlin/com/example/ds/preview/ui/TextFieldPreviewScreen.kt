@@ -14,10 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Switch
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -31,6 +28,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.ds.component.AuraAdaptiveTwoPane
+import com.example.ds.component.AuraCard
+import com.example.ds.component.AuraCardPadding
+import com.example.ds.component.AuraCardVariant
 import com.example.ds.component.AuraChipButton
 import com.example.ds.component.AuraChipSize
 import com.example.ds.component.AuraChipVariant
@@ -38,6 +38,8 @@ import com.example.ds.component.AuraIcon
 import com.example.ds.component.AuraIconButton
 import com.example.ds.component.AuraIconButtonVariant
 import com.example.ds.component.AuraScaffold
+import com.example.ds.component.AuraSwitch
+import com.example.ds.component.AuraSwitchSize
 import com.example.ds.component.AuraText
 import com.example.ds.component.AuraTextField
 import com.example.ds.component.AuraTextFieldVariant
@@ -214,14 +216,12 @@ fun TextFieldPreviewScreen(
                         style = t.titleMedium,
                     )
 
-                    Card(
+                    AuraCard(
                         modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = c.surface.default,
-                        ),
+                        variant = AuraCardVariant.Outlined,
+                        padding = AuraCardPadding.Medium,
                     ) {
                         Column(
-                            modifier = Modifier.padding(16.dp),
                             verticalArrangement = Arrangement.spacedBy(18.dp),
                         ) {
                             AuraTextField(
@@ -274,18 +274,10 @@ private fun FieldToggleRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        AuraText(
-            text = title,
-            style = AuraTheme.typography.bodyLarge,
-        )
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-        )
-    }
+    AuraSwitch(
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+        label = title,
+        size = AuraSwitchSize.Small,
+    )
 }

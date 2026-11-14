@@ -23,7 +23,6 @@ import androidx.compose.material.icons.filled.CalendarViewWeek
 import androidx.compose.material.icons.filled.ViewInAr
 import androidx.compose.material.icons.filled.Widgets
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Switch
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -47,6 +46,8 @@ import com.example.ds.component.AuraScaffold
 import com.example.ds.component.AuraSegmentedButton
 import com.example.ds.component.AuraSegmentedSize
 import com.example.ds.component.AuraSegmentedVariant
+import com.example.ds.component.AuraSwitch
+import com.example.ds.component.AuraSwitchSize
 import com.example.ds.component.AuraText
 import com.example.ds.foundation.theme.AuraTheme
 
@@ -326,18 +327,10 @@ private fun SegmentedSwitchRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        AuraText(
-            text = label,
-            style = AuraTheme.typography.bodyMedium,
-        )
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-        )
-    }
+    AuraSwitch(
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+        label = label,
+        size = AuraSwitchSize.Small,
+    )
 }

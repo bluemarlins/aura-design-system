@@ -31,6 +31,10 @@ object ComponentCatalog {
     const val SEGMENTED_BUTTON_ID = "segmented-button"
     const val CHIP_BUTTON_ID = "chip-button"
     const val TEXT_FIELD_ID = "text-field"
+    const val CHECKBOX_ID = "checkbox"
+    const val SWITCH_ID = "switch"
+    const val RADIO_ID = "radio"
+    const val CARD_ID = "card"
 
     val items: List<CatalogItem> = listOf(
         CatalogItem(
@@ -111,25 +115,25 @@ object ComponentCatalog {
             status = CatalogStatus.Planned,
         ),
         CatalogItem(
-            id = "checkbox",
+            id = CHECKBOX_ID,
             name = "AuraCheckbox",
             category = CatalogCategory.Inputs,
             description = "Binary selection control.",
-            status = CatalogStatus.Planned,
+            status = CatalogStatus.Ready,
         ),
         CatalogItem(
-            id = "switch",
+            id = SWITCH_ID,
             name = "AuraSwitch",
             category = CatalogCategory.Inputs,
             description = "Instant boolean toggle control.",
-            status = CatalogStatus.Planned,
+            status = CatalogStatus.Ready,
         ),
         CatalogItem(
-            id = "radio",
+            id = RADIO_ID,
             name = "AuraRadio",
             category = CatalogCategory.Inputs,
             description = "Mutually exclusive single-choice control.",
-            status = CatalogStatus.Planned,
+            status = CatalogStatus.Ready,
         ),
         CatalogItem(
             id = "slider",
@@ -153,11 +157,11 @@ object ComponentCatalog {
             status = CatalogStatus.Planned,
         ),
         CatalogItem(
-            id = "card",
+            id = CARD_ID,
             name = "AuraCard",
             category = CatalogCategory.Containment,
             description = "Grouped surface container for related content.",
-            status = CatalogStatus.Planned,
+            status = CatalogStatus.Ready,
         ),
         CatalogItem(
             id = "dialog",

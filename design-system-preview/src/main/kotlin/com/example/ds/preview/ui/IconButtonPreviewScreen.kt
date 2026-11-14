@@ -31,7 +31,6 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Switch
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -53,6 +52,8 @@ import com.example.ds.component.AuraIconButton
 import com.example.ds.component.AuraIconButtonShape
 import com.example.ds.component.AuraIconButtonSize
 import com.example.ds.component.AuraIconButtonVariant
+import com.example.ds.component.AuraSwitch
+import com.example.ds.component.AuraSwitchSize
 import com.example.ds.component.AuraScaffold
 import com.example.ds.component.AuraText
 import com.example.ds.foundation.theme.AuraTheme
@@ -400,18 +401,10 @@ private fun IconSwitchRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        AuraText(
-            text = label,
-            style = AuraTheme.typography.bodyMedium,
-        )
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-        )
-    }
+    AuraSwitch(
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+        label = label,
+        size = AuraSwitchSize.Small,
+    )
 }

@@ -1,7 +1,6 @@
 package com.example.ds.preview.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,8 +20,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -36,6 +33,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSpecified
 import com.example.ds.component.AuraAdaptiveGrid
+import com.example.ds.component.AuraCard
+import com.example.ds.component.AuraCardPadding
+import com.example.ds.component.AuraCardVariant
 import com.example.ds.component.AuraChipButton
 import com.example.ds.component.AuraChipVariant
 import com.example.ds.component.AuraIcon
@@ -181,42 +181,36 @@ private fun CatalogItemCard(
     val c = AuraTheme.colors
     val t = AuraTheme.typography
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(
-            containerColor = c.surface.default,
-        ),
+    AuraCard(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
+        variant = AuraCardVariant.Outlined,
+        padding = AuraCardPadding.Medium,
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                AuraText(
-                    text = item.name,
-                    style = t.titleMedium,
-                    modifier = Modifier.weight(1f),
-                )
-                StatusBadge(status = item.status)
-            }
-            Spacer(modifier = Modifier.height(4.dp))
             AuraText(
-                text = item.category.label,
-                style = t.labelMedium,
-                color = c.brand.primary,
+                text = item.name,
+                style = t.titleMedium,
+                modifier = Modifier.weight(1f),
             )
-            Spacer(modifier = Modifier.height(6.dp))
-            AuraText(
-                text = item.description,
-                style = t.bodyMedium,
-                color = c.content.secondary,
-            )
+            StatusBadge(status = item.status)
         }
+        Spacer(modifier = Modifier.height(4.dp))
+        AuraText(
+            text = item.category.label,
+            style = t.labelMedium,
+            color = c.brand.primary,
+        )
+        Spacer(modifier = Modifier.height(6.dp))
+        AuraText(
+            text = item.description,
+            style = t.bodyMedium,
+            color = c.content.secondary,
+        )
     }
 }
 
