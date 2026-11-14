@@ -60,7 +60,7 @@ fun CatalogHomeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("DS Preview") },
+                title = { Text("Aura Preview") },
                 actions = {
                     IconButton(onClick = onToggleTheme) {
                         Icon(

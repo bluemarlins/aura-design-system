@@ -38,7 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.ds.component.DsButton
+import com.example.ds.component.AuraButton
 import com.example.ds.foundation.color.AuraColors
 import com.example.ds.foundation.theme.AuraColorMode
 import com.example.ds.foundation.theme.AuraTheme
@@ -227,8 +227,8 @@ private fun ComponentSampleCard() {
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                DsButton(text = "Primary CTA", onClick = {})
-                DsButton(text = "Disabled", onClick = {}, enabled = false)
+                AuraButton(text = "Primary CTA", onClick = {})
+                AuraButton(text = "Disabled", onClick = {}, enabled = false)
             }
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),

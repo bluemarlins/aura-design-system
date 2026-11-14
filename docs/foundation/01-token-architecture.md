@@ -38,4 +38,3 @@ Since Kotlin is the source of truth, Figma Variables mirror Kotlin 1:1:
 ## 5. Open Questions
 
 - Export pipeline: optionally add a Gradle task later to serialize Kotlin tokens to W3C DTCG JSON for Figma import.
-- Rename legacy `DsButton` prefix to `AuraButton` when component specs begin.

@@ -22,6 +22,8 @@
 5. **Separate API.** `AuraTheme` and `AuraColors` do not depend on Material 3 (`material3`), keeping the public surface clean and portable.
 6. **Accessible by default.** Semantic pairs target WCAG AA contrast (4.5:1 text, 3:1 UI/large text), scalable typography (`sp`), and 48dp minimum touch targets.
 7. **Degrade gracefully.** Advanced material treatments (blur/shaders) must cleanly fall back to `Solid` on older API levels or reduced-transparency settings.
+8. **Usage principles before UI.** Every component category and spec must define explicit selection criteria (`When to Use`, `When NOT to Use`, decision trees, and visual hierarchy rules) before detailing visual styles.
+9. **Bidirectional `Specs ↔ Code` for multi-platform reuse.** Every component is backed by a structured Markdown specification (`docs/components/`) separating the platform-agnostic contract (Intent, Anatomy, Variants, State Precedence, Semantic Token Bindings, Accessibility) from platform bindings (`Android Compose`, `iOS SwiftUI`, `Web React`).
 
 ## 4. Glossary
 
@@ -32,3 +34,4 @@
 | `AuraColorMode` | Color axis (`Light`, `Dark`) |
 | `AuraMaterial` | Surface treatment axis (`Solid`, future `Glass`, `LiquidGlass`) |
 | `AuraTheme` | Root `@Composable` provider exposing `AuraTheme.colors`, `colorMode`, `material` |
+| `Component Spec` | Bidirectional Markdown contract in `docs/components/` separating universal rules from platform API bindings |
