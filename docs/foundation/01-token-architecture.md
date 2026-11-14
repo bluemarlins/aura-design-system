@@ -21,9 +21,9 @@ Tier 3: Component (future)        ──▶ Component-specific bindings (optiona
 
 ## 3. Kotlin Naming & API Structure
 
-- **Brand prefix:** `Aura` (`AuraTheme`, `AuraColors`, `AuraPalette`, future `AuraTypography`, `AuraSpacing`).
+- **Brand prefix:** `Aura` (`AuraTheme`, `AuraColors`, `AuraTypography`, `AuraMotion`, `AuraWindowInfo`, `AuraLayout`, `AuraPalette`, future `AuraSpacing`).
 - **Immutability:** Token containers are `@Immutable data class` types backed by `staticCompositionLocalOf` in `AuraTheme`.
-- **Naming grammar:** `{domain}.{group}.{role}` in Kotlin (`AuraTheme.colors.surface.floating`, `AuraTheme.colors.brand.primary`).
+- **Naming grammar:** `{domain}.{group}.{role}` in Kotlin (`AuraTheme.colors.surface.floating`, `AuraTheme.typography.titleMedium`, `AuraTheme.layout.gridColumns`, `AuraTheme.motion.pressInSpring()`).
 
 ## 4. Figma Variable Mapping
 
@@ -33,6 +33,8 @@ Since Kotlin is the source of truth, Figma Variables mirror Kotlin 1:1:
 |---|---|---|---|
 | `AuraPalette` | `Primitives` | `Value` | `neutral/50`, `blue/600` |
 | `AuraColors` | `Color` | `Light`, `Dark` | `surface/floating`, `brand/primary` |
+| `AuraTypography` | `Typography` (Text Styles) | `Scale` (`Compact`, `Square`, `Expanded`) | `title/medium`, `mono/small` |
+| `AuraLayout` | `Layout` | `ExtraSmall`, `Compact`, `Landscape`, `Square`, `Expanded` | `margin/horizontal`, `grid/columns` |
 | Future `AuraMaterial` tokens | `Material` | `Solid`, `Glass`, `LiquidGlass` | `floating/blurRadius` |
 
 ## 5. Open Questions

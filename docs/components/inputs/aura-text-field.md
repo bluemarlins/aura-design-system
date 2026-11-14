@@ -15,6 +15,9 @@ tokens:
   - "brand.*"
   - "status.error.*"
   - "interaction.*"
+  - "typography.*"
+  - "motion.*"
+  - "layout.*"
 ---
 
 # AuraTextField
@@ -49,6 +52,15 @@ Users need a clear, accessible text input surface that scales from structured si
 - **`INP-RULE-001`:** Use `Outlined` or `Filled` for structured forms; use `Paperless` for calm long-form writing (`singleLine = false`, `minLines >= 3`).
 - **`INP-RULE-004`:** Always supply a non-empty `label` for form fields; do not rely solely on `placeholder`.
 - **`INP-RULE-005`:** Pair error borders with explicit `errorText` so validation is clear without relying solely on color.
+
+### Do / Don't
+
+| Do | Don't |
+|---|---|
+| Always provide an accessible `label` above the field (`INP-RULE-004`). | Use `placeholder` alone as the field title—once typed into, context disappears. |
+| Use `Paperless` (`singleLine = false`, `minLines >= 3`) for **My Planner** diary and **My Drink Diary** tasting notes. | Wrap long reflective writing in heavy `Outlined` borders that distract from prose. |
+| Use `prefixText` / `suffixText` (`₩`, `원`, `% ABV`) for units rather than appending symbols to user input values. | Pollute bound text strings with unit suffixes that break numeric editing or validation. |
+| Pass `errorText` so border tint, helper text, and accessibility `semantics.error` update together. | Highlight errors by color alone without explaining how to resolve the error. |
 
 ---
 
@@ -126,34 +138,60 @@ $$\text{Disabled} \succ \text{ReadOnly} \succ \text{Error} \succ \text{Focused} 
 
 ---
 
-## 5. Semantic Token Bindings (`AuraColors`)
+## 5. Semantic Token Bindings (`AuraColors` & `AuraTypography`)
 
-| Part | Variant | State | `AuraColors` Token Path |
+| Part | Variant | State | `AuraColors` / `AuraTypography` Token Path |
 |---|---|---|---|
-| `fieldContainer` (bg) | `Outlined` | `Enabled` / `ReadOnly` | `surface.default` |
-| `fieldContainer` (bg) | `Filled` | `Enabled` / `ReadOnly` | `surface.sunken` |
-| `fieldContainer` (bg) | `Outlined` / `Filled` | `Disabled` | `interaction.disabledContainer` |
+| `fieldContainer` (bg) | `Outlined` | `Enabled` / `ReadOnly` | `colors.surface.default` |
+| `fieldContainer` (bg) | `Filled` | `Enabled` / `ReadOnly` | `colors.surface.sunken` |
+| `fieldContainer` (bg) | `Outlined` / `Filled` | `Disabled` | `colors.interaction.disabledContainer` |
 | `fieldContainer` (bg) | `Paperless` | `*` | `Transparent` |
-| `fieldContainer` (border/line) | `*` | `Disabled` / `ReadOnly` | `border.subtle` |
-| `fieldContainer` (border/line) | `*` | `Error` | `status.error.solid` |
-| `fieldContainer` (border/line) | `*` | `Focused` | `border.focus` |
-| `fieldContainer` (border/line) | `Outlined` / `Paperless` | `Rest` | `border.default` |
-| `fieldContainer` (border/line) | `Filled` | `Rest` | `border.subtle` |
-| `label` | `*` | `Disabled` | `content.disabled` |
-| `label` | `*` | `Error` | `status.error.solid` |
-| `label` | `*` | `Focused` | `brand.primary` |
-| `label` | `*` | `Rest` / `ReadOnly` | `content.secondary` |
-| `inputText` | `*` | `Enabled` / `ReadOnly` | `content.primary` |
-| `inputText` | `*` | `Disabled` | `content.disabled` |
-| `placeholder` | `*` | `Enabled` / `ReadOnly` | `content.tertiary` |
-| `prefix` / `suffix` | `*` | `Enabled` / `ReadOnly` | `content.secondary` |
-| `errorText` | `*` | `Error` | `status.error.solid` |
-| `supportingText` | `*` | `Non-Error` | `content.secondary` |
-| `characterCounter` | `*` | `Rest` / `Error` | `content.tertiary` / `status.error.solid` |
+| `fieldContainer` (border/line) | `*` | `Disabled` / `ReadOnly` | `colors.border.subtle` |
+| `fieldContainer` (border/line) | `*` | `Error` | `colors.status.error.solid` |
+| `fieldContainer` (border/line) | `*` | `Focused` | `colors.border.focus` |
+| `fieldContainer` (border/line) | `Outlined` / `Paperless` | `Rest` | `colors.border.default` |
+| `fieldContainer` (border/line) | `Filled` | `Rest` | `colors.border.subtle` |
+| `label` | `*` | `Disabled` | `colors.content.disabled` |
+| `label` | `*` | `Error` | `colors.status.error.solid` |
+| `label` | `*` | `Focused` | `colors.brand.primary` |
+| `label` | `*` | `Rest` / `ReadOnly` | `colors.content.secondary` |
+| `label` (type) | `*` | `*` | `typography.labelMedium` (`13sp / 18sp`, `Medium`) |
+| `inputText` | `*` | `Enabled` / `ReadOnly` | `colors.content.primary` + `typography.bodyLarge` (`15sp / 22sp`) |
+| `inputText` | `*` | `Disabled` | `colors.content.disabled` |
+| `placeholder` | `*` | `Enabled` / `ReadOnly` | `colors.content.tertiary` + `typography.bodyLarge` (`15sp / 22sp`) |
+| `prefix` / `suffix` | `*` | `Enabled` / `ReadOnly` | `colors.content.secondary` + `typography.bodyMedium` (`Medium`) |
+| `errorText` | `*` | `Error` | `colors.status.error.solid` + `typography.bodySmall` |
+| `supportingText` | `*` | `Non-Error` | `colors.content.secondary` + `typography.bodySmall` |
+| `characterCounter` | `*` | `Rest` / `Error` | `colors.content.tertiary` / `colors.status.error.solid` + `typography.monoSmall` (`tnum`) |
 
 ---
 
-## 6. Accessibility & Guardrails
+## 6. Interaction & Focus Motion Contract
+
+`AuraTextField` drives focus and validation state transitions through `AuraTheme.motion` (see [03-motion-interaction.md](../../foundation/03-motion-interaction.md)):
+
+1. **Focus-In / Focus-Out Transition:**
+   - Border/underline color, label color, footer color, and stroke thickness (`1dp ↔ 2dp` for `Outlined`/`Paperless`, `1dp ↔ 1.5dp` for `Filled`) interpolate via `animateColorAsState` and `animateDpAsState` using `FastOutSlowInEasing`.
+   - **Focus Attack:** `motion.pressInDurationMillis` (`90ms`) gives crisp immediate focus acquisition.
+   - **Blur / Error State Transition:** `motion.stateChangeDurationMillis` (`150ms`) smoothly settles back to rest or validation styling.
+2. **Reduced Motion Compatibility:**
+   - Color and non-spatial border thickness cues remain active so focus and error states remain unmistakable even when system animator scale is `0`.
+
+---
+
+## 7. Responsive Layout Behavior (`Smallest Width` × `Display Ratio`)
+
+| Window / Ratio Profile | Form & Field Layout Adaptation |
+|---|---|
+| **`ExtraSmall` (`sw < 360dp`, Foldable Cover / `UltraTall`)** | Render fields 1 per row (`fillMaxWidth`); keep `prefixText`/`suffixText` concise so editable area stays generous inside tight margins (`12dp`). |
+| **`Compact` (`360..599dp`, Phone Portrait)** | Full-width stacked form inputs with `16dp` outer screen margins. |
+| **`Medium` + `Square` (Unfolded Foldable `~1:1`)** | Pair short metadata fields side-by-side in 2 columns (`Row` + `weight(1f)` + `gridGutter`); place `Paperless` diary/tasting notes in `secondaryPane` (`55%`) via `AuraAdaptiveTwoPane`. |
+| **`PhoneLandscape` + `UltraWide` (`width >= 600dp`, `height < 480dp`)** | Avoid stacking multiple `minLines >= 4` editors above keyboards; show controls in `primaryPane` (`42%`) and active input in `secondaryPane` (`58%`). |
+| **`Expanded` (`>= 840dp`, Tablet / DeX)** | Constrain standalone single-column form width (`<= 600dp` via `maxContentWidth`) or pair metadata fields side-by-side (`weight(1f)`) to preserve comfortable reading line length. |
+
+---
+
+## 8. Accessibility & Guardrails
 
 - **Touch Target:** `fieldContainer` enforces minimum `48dp` height (`44pt` on iOS).
 - **Error Semantics:** Sets Compose `Modifier.semantics { if (isError) error(errorText!!) }`, iOS accessibility hint/label, and Web `aria-invalid="true"` + `aria-describedby`.
@@ -161,9 +199,9 @@ $$\text{Disabled} \succ \text{ReadOnly} \succ \text{Error} \succ \text{Focused} 
 
 ---
 
-## 7. Platform Bindings
+## 9. Platform Bindings
 
-### 7.1. Android (Jetpack Compose)
+### 9.1. Android (Jetpack Compose)
 
 - **Source:** [`AuraTextField.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraTextField.kt)
 - **Dependency Policy:** Built strictly on Compose Foundation `BasicTextField` without `material3`.
@@ -204,7 +242,7 @@ fun AuraTextField(
 ```
 <!-- API:ANDROID:END -->
 
-### 7.2. iOS (SwiftUI Reference Contract — Planned)
+### 9.2. iOS (SwiftUI Reference Contract — Planned)
 
 <!-- API:IOS:BEGIN -->
 ```swift
@@ -233,7 +271,7 @@ public struct AuraTextField<LeadingIcon: View, TrailingIcon: View>: View {
 ```
 <!-- API:IOS:END -->
 
-### 7.3. Web (React / TypeScript Reference Contract — Planned)
+### 9.3. Web (React / TypeScript Reference Contract — Planned)
 
 <!-- API:WEB:BEGIN -->
 ```ts

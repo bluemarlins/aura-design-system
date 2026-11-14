@@ -14,6 +14,9 @@ tokens:
   - "border.*"
   - "status.error.*"
   - "interaction.*"
+  - "motion.*"
+  - "typography.*"
+  - "layout.*"
 ---
 
 # AuraButton
@@ -48,6 +51,15 @@ Users need an unmistakable, accessible control with an explicit verb label to tr
 - **`BTN-RULE-001`:** Maximum 1 `Primary` button per screen or modal dialog.
 - **`BTN-RULE-002`:** Do not place `Primary` inside repeated cards, list rows, or home launcher widgets; use `Secondary`, `Outline`, or `Ghost`.
 - **`BTN-RULE-003`:** Reserve `Destructive` for final confirmation steps; use `Outline` or `Ghost` on first-level surfaces.
+
+### Do / Don't
+
+| Do | Don't |
+|---|---|
+| Use a concise action verb (`"Save Entry"`, `"Add Asset"`) with `Primary` limited to the single key CTA per view. | Place two or more `Primary` buttons competing side-by-side on the same screen. |
+| Pass `loading = true` during async saves to preserve measured width and block double taps. | Replace the button with a standalone spinner that causes layout jump, or wrap it in manual `if (!loading)` clicks. |
+| Use `Outline` or `Ghost` inside repeated cards (**My Drink Diary** cellar list) and compact rows. | Put `Primary` or `Large` `fullWidth` CTAs inside every card of a list or home widget. |
+| Rely on `AuraButtonSize` (`Small`/`Medium`/`Large`) to keep the `>= 48dp` outer touch target automatically. | Override `Modifier.height(32.dp)` directly on the outer button box, shrinking touch accessibility. |
 
 ---
 
@@ -125,34 +137,73 @@ $$\text{Loading} \succ \text{Disabled} \succ \text{Pressed} \succ \text{Focused}
 
 ---
 
-## 5. Semantic Token Bindings (`AuraColors`)
+## 5. Semantic Token Bindings (`AuraColors` & `AuraTypography`)
 
-| Part | Variant | State | `AuraColors` Token Path |
+| Part | Variant | State | `AuraColors` / `AuraTypography` Token Path |
 |---|---|---|---|
-| `root` (bg) | `Primary` | `Rest` / `Loading` | `brand.primary` |
-| `root` (bg) | `Primary` | `Pressed` | `brand.primaryPressed` |
-| `label` / `progressIndicator` | `Primary` | `Rest` / `Pressed` / `Loading` | `brand.onPrimary` |
-| `root` (bg) | `Secondary` | `Rest` / `Loading` | `brand.subtle` |
-| `root` (bg) | `Secondary` | `Pressed` | `interaction.pressedOverlay` over `brand.subtle` |
-| `label` / `progressIndicator` | `Secondary` | `Rest` / `Pressed` / `Loading` | `brand.onSubtle` |
+| `root` (bg) | `Primary` | `Rest` / `Loading` | `colors.brand.primary` |
+| `root` (bg) | `Primary` | `Pressed` | `colors.brand.primaryPressed` |
+| `label` / `progressIndicator` | `Primary` | `Rest` / `Pressed` / `Loading` | `colors.brand.onPrimary` |
+| `root` (bg) | `Secondary` | `Rest` / `Loading` | `colors.brand.subtle` |
+| `root` (bg) | `Secondary` | `Pressed` | `colors.interaction.pressedOverlay` over `colors.brand.subtle` |
+| `label` / `progressIndicator` | `Secondary` | `Rest` / `Pressed` / `Loading` | `colors.brand.onSubtle` |
 | `root` (bg) | `Outline` | `Rest` / `Loading` | `Transparent` |
-| `root` (bg) | `Outline` | `Pressed` | `interaction.pressedOverlay` |
-| `root` (border) | `Outline` | `Enabled` / `Loading` | `1px` `border.default` |
-| `root` (border) | `Outline` | `Disabled` | `1px` `border.subtle` |
-| `label` / `progressIndicator` | `Outline` | `Rest` / `Pressed` / `Loading` | `content.primary` |
+| `root` (bg) | `Outline` | `Pressed` | `colors.interaction.pressedOverlay` |
+| `root` (border) | `Outline` | `Rest` / `Loading` | `1px` `colors.border.default` |
+| `root` (border) | `Outline` | `Pressed` | `1px` `colors.border.strong` |
+| `root` (border) | `Outline` | `Disabled` | `1px` `colors.border.subtle` |
+| `label` / `progressIndicator` | `Outline` | `Rest` / `Pressed` / `Loading` | `colors.content.primary` |
 | `root` (bg) | `Ghost` | `Rest` / `Loading` | `Transparent` |
-| `root` (bg) | `Ghost` | `Pressed` | `interaction.pressedOverlay` |
-| `label` / `progressIndicator` | `Ghost` | `Rest` / `Pressed` / `Loading` | `brand.primary` |
-| `root` (bg) | `Destructive` | `Rest` / `Loading` | `status.error.solid` |
-| `root` (bg) | `Destructive` | `Pressed` | `interaction.pressedOverlay` over `status.error.solid` |
-| `label` / `progressIndicator` | `Destructive` | `Rest` / `Pressed` / `Loading` | `status.error.onSolid` |
-| `root` (bg) | `Primary` / `Secondary` / `Destructive` | `Disabled` | `interaction.disabledContainer` |
+| `root` (bg) | `Ghost` | `Pressed` | `colors.interaction.pressedOverlay` |
+| `label` / `progressIndicator` | `Ghost` | `Rest` / `Pressed` / `Loading` | `colors.brand.primary` |
+| `root` (bg) | `Destructive` | `Rest` / `Loading` | `colors.status.error.solid` |
+| `root` (bg) | `Destructive` | `Pressed` | `colors.interaction.pressedOverlay` over `colors.status.error.solid` |
+| `label` / `progressIndicator` | `Destructive` | `Rest` / `Pressed` / `Loading` | `colors.status.error.onSolid` |
+| `root` (bg) | `Primary` / `Secondary` / `Destructive` | `Disabled` | `colors.interaction.disabledContainer` |
 | `root` (bg) | `Outline` / `Ghost` | `Disabled` | `Transparent` |
-| `label` | `*` | `Disabled` | `content.disabled` |
+| `label` | `*` | `Disabled` | `colors.content.disabled` |
+| `label` (type) | `Small` | `*` | `typography.labelMedium` (`13sp / 18sp`, `SemiBold`) |
+| `label` (type) | `Medium` / `Large` | `*` | `typography.labelLarge` adapted (`14sp/20sp` Medium, `16sp/22sp` Large, `SemiBold`) |
 
 ---
 
-## 6. Accessibility & Guardrails
+## 6. Interaction Motion Contract
+
+Aura uses **Tactile Spring Compression + Smooth State-Layer Interpolation** instead of radial Material ripples (see [03-motion-interaction.md](../../foundation/03-motion-interaction.md)).
+
+1. **Primary Layer — Tactile Spring Scale (`root`):**
+   - `Small` / `Medium`: compresses to `motion.pressedScaleDefault` (`0.96f`)
+   - `Large` / `fullWidth`: compresses to `motion.pressedScaleLarge` (`0.975f`)
+   - `Ghost`: compresses to `motion.pressedScaleGhost` (`0.95f`)
+   - **Asymmetric Spring:** Press in uses `motion.pressInSpring` (`dampingRatio = 0.85f, stiffness = 800f`); release out rebounds via `motion.pressOutSpring` (`dampingRatio = 0.65f, stiffness = 500f`).
+2. **Secondary Layer — Asymmetric Color & Border Interpolation:**
+   - Container, content, and border colors interpolate over `motion.pressInDurationMillis` (`90ms`, `FastOutSlowInEasing`) on press and `motion.pressOutDurationMillis` (`180ms`, `FastOutSlowInEasing`) on release.
+   - `Outline` border strengthens from `border.default` to `border.strong` while pressed.
+   - **Minimum Press Latch (`motion.minPressDurationMillis = 110ms`):** Inside scrollable containers, Compose delays press emission until tap release; latching the pressed state for at least `110ms` ensures quick clicks always render full compression and tint before rebounding.
+3. **Craft Layer — Icon Micro-Nudge:**
+   - `leadingIcon`: scales to `motion.leadingIconPressedScale` (`0.92f`) via `motion.iconSpring`.
+   - `trailingIcon`: translates horizontally forward by `motion.trailingIconNudge` (`2px` / `2.dp`) via `motion.iconSpring`.
+4. **In-Place State Layer — `Rest ↔ Loading` Crossfade & Breathing Spinner:**
+   - Label/icon row fades (`alpha 1f ↔ 0f` over `120ms`) and contracts slightly (`scale 1f ↔ 0.92f`) while preserving measured width.
+   - `progressIndicator` crossfades and pops in (`scale 0.75f ↔ 1.0f`) and combines continuous rotation (`900ms` linear) with breathing arc modulation (`45° ↔ 240°`, `650ms` reverse `FastOutSlowInEasing`).
+5. **Reduced Motion:**
+   - When system animations are disabled (`ANIMATOR_DURATION_SCALE == 0`), scale and icon translation resolve directly to rest (`1.0f`, `0px`) while color and loading state feedback remain active.
+
+---
+
+## 7. Responsive Layout Behavior (`Smallest Width` × `Display Ratio`)
+
+| Window / Ratio Profile | Sizing & Placement Guideline |
+|---|---|
+| **`ExtraSmall` (`sw < 360dp`, Foldable Cover / `UltraTall`)** | Keep action labels short (`1–2` words); use `fullWidth = true` for bottom confirm CTAs and wrap dual actions vertically (`Column`) if combined width exceeds container bounds. |
+| **`Compact` (`360..599dp`, Phone Portrait)** | Use `Large` (`fullWidth = true`) for primary form submission CTAs and equal-weight split rows (`weight(1f)`) for modal Confirm/Cancel pairs. |
+| **`Medium` + `Square` (Unfolded Foldable `~1:1`)** | Place `fullWidth` CTAs only inside bounded panes (`primaryPaneFraction = 0.45f`) or dialogs (`<= 480dp`); never stretch a `Primary` button across the entire `700dp+` canvas. |
+| **`PhoneLandscape` + `UltraWide` (`width >= 600dp`, `height < 480dp`)** | Prefer `Small` or `Medium` inside the `48dp` compact chrome or right-aligned action rows to preserve vertical viewport height. |
+| **`Expanded` (`>= 840dp`, Tablet / DeX)** | Use intrinsic-width or bounded (`<= 320dp`) inline actions positioned near the form footer (`Arrangement.End`) rather than full-bleed `fullWidth` bars. |
+
+---
+
+## 8. Accessibility & Guardrails
 
 - **Role:** `Role.Button` (Android), `.accessibilityAddTraits(.isButton)` (iOS), `<button type="button">` (Web).
 - **Accessible Name:** Derived from `text` (`maxLines = 1`, `TextOverflow.Ellipsis`). Leading/trailing icons are decorative and merged with the button semantics.
@@ -162,9 +213,9 @@ $$\text{Loading} \succ \text{Disabled} \succ \text{Pressed} \succ \text{Focused}
 
 ---
 
-## 7. Platform Bindings
+## 9. Platform Bindings
 
-### 7.1. Android (Jetpack Compose)
+### 9.1. Android (Jetpack Compose)
 
 - **Source:** [`AuraButton.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraButton.kt)
 - **Dependency Policy:** Uses Compose Foundation/UI/Animation primitives only (`material3` independent).
@@ -204,7 +255,7 @@ fun AuraButton(
 ```
 <!-- API:ANDROID:END -->
 
-### 7.2. iOS (SwiftUI Reference Contract — Planned)
+### 9.2. iOS (SwiftUI Reference Contract — Planned)
 
 <!-- API:IOS:BEGIN -->
 ```swift
@@ -233,7 +284,7 @@ public struct AuraButton<LeadingIcon: View, TrailingIcon: View>: View {
 ```
 <!-- API:IOS:END -->
 
-### 7.3. Web (React / TypeScript Reference Contract — Planned)
+### 9.3. Web (React / TypeScript Reference Contract — Planned)
 
 <!-- API:WEB:BEGIN -->
 ```ts

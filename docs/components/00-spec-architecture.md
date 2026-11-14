@@ -2,7 +2,7 @@
 
 ## 1. Purpose
 
-Defines the bidirectional **Markdown Specification ↔ Platform Code** contract for Aura components.
+Defines the bidirectional **Markdown Specification ↔ Platform Code** contract for Aura components. For the mandatory pass/fail quality gate (`EVAL-001` – `EVAL-006`) enforced against every spec and Kotlin file, see [01-component-evaluation-ruleset.md](01-component-evaluation-ruleset.md).
 
 Each component specification serves as an **OS-agnostic behavioral and semantic contract** so that:
 1. **Usage principles come first:** Designers, engineers, and AI agents understand *when* and *why* to select a component before inspecting API props.
@@ -19,16 +19,18 @@ Every component spec in `docs/components/<category>/<component>.md` is divided i
 docs/components/<category>/<component>.md
 ├── YAML Frontmatter          # Machine-readable identity, status, version, platforms, token dependencies
 ├── Layer A: Universal Contract (OS-Agnostic, ~80%)
-│   ├── 1. Intent & Usage Principles (When to Use / When NOT to Use / Alternatives / Context Rules)
+│   ├── 1. Intent & Usage Principles (When to Use / When NOT to Use / Do / Don't / Context Rules)
 │   ├── 2. Anatomy & Canonical Part IDs
 │   ├── 3. Variant, Size & Material Matrix (logical px + forbidden combinations)
 │   ├── 4. Deterministic State Precedence & Behavior
-│   ├── 5. Semantic Token Bindings (Part × Variant × State -> AuraColors / AuraTheme paths)
-│   └── 6. Accessibility & Guardrail Rules (Rule IDs)
+│   ├── 5. Semantic Token Bindings (Part × Variant × State -> AuraColors / AuraTypography / AuraLayout)
+│   ├── 6. Interaction Motion Contract (AuraMotion + Reduced Motion, or passive rationale)
+│   ├── 7. Responsive Layout Behavior (Smallest Width × Display Ratio)
+│   └── 8. Accessibility & Guardrail Rules (Rule IDs)
 └── Layer B: Platform Bindings (OS-Specific, ~20%)
-    ├── 7.1 Android (Jetpack Compose)  <!-- API:ANDROID:BEGIN / END -->
-    ├── 7.2 iOS (SwiftUI Reference)    <!-- API:IOS:BEGIN / END -->
-    └── 7.3 Web (React/TS Reference)   <!-- API:WEB:BEGIN / END -->
+    ├── Android (Jetpack Compose)  <!-- API:ANDROID:BEGIN / END -->
+    ├── iOS (SwiftUI Reference)    <!-- API:IOS:BEGIN / END -->
+    └── Web (React/TS Reference)   <!-- API:WEB:BEGIN / END -->
 ```
 
 ### Bidirectional Sync (`Specs ↔ Code`)

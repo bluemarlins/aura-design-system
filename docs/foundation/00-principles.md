@@ -31,7 +31,11 @@
 |---|---|
 | `AuraPalette` | Tier 1 primitive color values |
 | `AuraColors` | Tier 2 semantic color roles |
+| `AuraMotion` | Tier 2 semantic interaction motion tokens |
+| `AuraTypography` | Tier 2 semantic typography roles with responsive scale support |
+| `AuraWindowInfo` | Device/window telemetry (`smallestWidthDp`, `widthDp`, `heightDp`, `displayRatio`) |
+| `AuraLayout` | Tier 2 responsive layout & two-pane breakpoints derived from `AuraWindowInfo` |
 | `AuraColorMode` | Color axis (`Light`, `Dark`) |
 | `AuraMaterial` | Surface treatment axis (`Solid`, future `Glass`, `LiquidGlass`) |
-| `AuraTheme` | Root `@Composable` provider exposing `AuraTheme.colors`, `colorMode`, `material` |
+| `AuraTheme` | Root `@Composable` provider exposing `AuraTheme.colors`, `typography`, `motion`, `window`, `layout`, `colorMode`, `material` |
 | `Component Spec` | Bidirectional Markdown contract in `docs/components/` separating universal rules from platform API bindings |
