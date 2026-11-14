@@ -1,5 +1,9 @@
 package com.example.ds.component
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -15,11 +19,11 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -196,17 +200,58 @@ fun AuraTextField(
     trailingIcon: (@Composable () -> Unit)? = null,
 ) {
     val colors = AuraTheme.colors
+    val typography = AuraTheme.typography
+    val motion = AuraTheme.motion
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
     val isError = !errorText.isNullOrBlank()
 
-    val resolvedColors = resolveAuraTextFieldColors(
+    val baseColors = resolveAuraTextFieldColors(
         variant = variant,
         enabled = enabled,
         readOnly = readOnly,
         isError = isError,
         isFocused = isFocused,
         colors = colors,
+    )
+    val transitionDurationMillis = if (isFocused) {
+        motion.pressInDurationMillis
+    } else {
+        motion.stateChangeDurationMillis
+    }
+    val colorAnimSpec = tween<Color>(
+        durationMillis = transitionDurationMillis,
+        easing = FastOutSlowInEasing,
+    )
+    val dpAnimSpec = tween<Dp>(
+        durationMillis = transitionDurationMillis,
+        easing = FastOutSlowInEasing,
+    )
+    val animatedBorderColor by animateColorAsState(
+        targetValue = baseColors.border,
+        animationSpec = colorAnimSpec,
+        label = "AuraTextFieldBorderColor",
+    )
+    val animatedLabelColor by animateColorAsState(
+        targetValue = baseColors.label,
+        animationSpec = colorAnimSpec,
+        label = "AuraTextFieldLabelColor",
+    )
+    val animatedFooterColor by animateColorAsState(
+        targetValue = baseColors.footer,
+        animationSpec = colorAnimSpec,
+        label = "AuraTextFieldFooterColor",
+    )
+    val animatedBorderWidth by animateDpAsState(
+        targetValue = baseColors.borderWidth,
+        animationSpec = dpAnimSpec,
+        label = "AuraTextFieldBorderWidth",
+    )
+    val resolvedColors = baseColors.copy(
+        border = animatedBorderColor,
+        borderWidth = animatedBorderWidth,
+        label = animatedLabelColor,
+        footer = animatedFooterColor,
     )
 
     val effectiveMinLines = if (singleLine) 1 else minLines.coerceAtLeast(1)
@@ -225,37 +270,29 @@ fun AuraTextField(
         }
     }
 
-    val inputTextStyle = TextStyle(
+    val inputTextStyle = typography.bodyLarge.copy(
         color = resolvedColors.text,
         fontSize = 15.sp,
         lineHeight = 22.sp,
-        fontWeight = FontWeight.Normal,
     )
-    val placeholderStyle = TextStyle(
+    val placeholderStyle = typography.bodyLarge.copy(
         color = resolvedColors.placeholder,
         fontSize = 15.sp,
         lineHeight = 22.sp,
-        fontWeight = FontWeight.Normal,
     )
-    val affixStyle = TextStyle(
+    val affixStyle = typography.bodyMedium.copy(
         color = resolvedColors.affix,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
         fontWeight = FontWeight.Medium,
     )
 
     Column(modifier = modifier) {
         if (!label.isNullOrBlank()) {
-            BasicText(
+            AuraText(
                 text = label,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = TextStyle(
-                    color = resolvedColors.label,
-                    fontSize = 13.sp,
-                    lineHeight = 18.sp,
-                    fontWeight = FontWeight.Medium,
-                ),
+                color = resolvedColors.label,
+                style = typography.labelMedium,
             )
             Spacer(modifier = Modifier.height(6.dp))
         }
@@ -309,26 +346,18 @@ fun AuraTextField(
             ) {
                 Box(modifier = Modifier.weight(1f)) {
                     if (!footerText.isNullOrBlank()) {
-                        BasicText(
+                        AuraText(
                             text = footerText,
-                            style = TextStyle(
-                                color = resolvedColors.footer,
-                                fontSize = 12.sp,
-                                lineHeight = 16.sp,
-                                fontWeight = FontWeight.Normal,
-                            ),
+                            color = resolvedColors.footer,
+                            style = typography.bodySmall.copy(lineHeight = 16.sp),
                         )
                     }
                 }
                 if (maxLength != null) {
-                    BasicText(
+                    AuraText(
                         text = "${value.length}/${maxLength.coerceAtLeast(0)}",
-                        style = TextStyle(
-                            color = resolvedColors.counter,
-                            fontSize = 12.sp,
-                            lineHeight = 16.sp,
-                            fontWeight = FontWeight.Normal,
-                        ),
+                        color = resolvedColors.counter,
+                        style = typography.monoSmall,
                     )
                 }
             }
@@ -389,16 +418,19 @@ private fun AuraTextFieldContainer(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         if (leadingIcon != null) {
-            Box(
-                modifier = Modifier.size(20.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                leadingIcon()
+            CompositionLocalProvider(LocalAuraContentColor provides resolvedColors.affix) {
+                Box(
+                    modifier = Modifier.size(20.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    leadingIcon()
+                }
             }
         }
         if (!prefixText.isNullOrEmpty()) {
-            BasicText(
+            AuraText(
                 text = prefixText,
+                color = resolvedColors.affix,
                 style = affixStyle,
             )
         }
@@ -407,27 +439,31 @@ private fun AuraTextFieldContainer(
             contentAlignment = contentAlignment,
         ) {
             if (showPlaceholder) {
-                BasicText(
+                AuraText(
                     text = placeholder,
                     maxLines = if (singleLine) 1 else effectiveMaxLines,
                     overflow = TextOverflow.Ellipsis,
+                    color = resolvedColors.placeholder,
                     style = placeholderStyle,
                 )
             }
             innerTextField()
         }
         if (!suffixText.isNullOrEmpty()) {
-            BasicText(
+            AuraText(
                 text = suffixText,
+                color = resolvedColors.affix,
                 style = affixStyle,
             )
         }
         if (trailingIcon != null) {
-            Box(
-                modifier = Modifier.size(20.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                trailingIcon()
+            CompositionLocalProvider(LocalAuraContentColor provides resolvedColors.affix) {
+                Box(
+                    modifier = Modifier.size(20.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    trailingIcon()
+                }
             }
         }
     }
