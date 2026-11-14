@@ -1,0 +1,26 @@
+# Local planning documents, research drafts, and implementation guides
+/.planning/
+
+# Android / Gradle
+*.apk
+*.ap_
+*.aab
+*.dex
+*.class
+bin/
+gen/
+out/
+.gradle/
+build/
+**/build/
+local.properties
+captures/
+*.hprof
+.cxx/
+
+# Android Studio / IntelliJ IDEA / Kotlin
+.idea/
+*.iml
+.kotlin/
+
+
