@@ -68,6 +68,7 @@ private val SearchBarShape = RoundedCornerShape(50)
 /**
  * Instant query search input implementing the `aura.component.search-bar` specification.
  */
+@Suppress("DEPRECATION")
 @Composable
 fun AuraSearchBar(
     query: String,

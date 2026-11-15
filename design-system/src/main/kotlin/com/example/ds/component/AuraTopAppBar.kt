@@ -55,6 +55,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
+import com.example.ds.foundation.elevation.AuraElevation
 import com.example.ds.foundation.theme.AuraTheme
 import kotlin.math.abs
 import kotlin.math.max
@@ -88,6 +89,7 @@ data class AuraMoreMenuAction(
  * pill with scroll-direction reveal, grouped `[Search, Bookmark, More]` capsule with continuous
  * Metaball split/merge physics, and `>= 48.dp` accessible hit bounds.
  */
+@Suppress("DEPRECATION")
 @Composable
 fun FloatingTopPillBar(
     title: String,
@@ -110,8 +112,8 @@ fun FloatingTopPillBar(
     val motion = AuraTheme.motion
     val reducedMotion = rememberAuraReducedMotion()
 
-    val fluidSpring = remember(reducedMotion) {
-        if (reducedMotion) snap<Float>() else spring(dampingRatio = 0.65f, stiffness = 450f)
+    val fluidSpring = remember(reducedMotion, motion) {
+        if (reducedMotion) snap<Float>() else motion.spatialSpring()
     }
 
     val clampedScroll = scrollProgress.coerceIn(0f, 1f)
@@ -265,6 +267,7 @@ fun FloatingTopPillBar(
     }
 }
 
+@Suppress("DEPRECATION")
 @Composable
 private fun GroupedRightActionCluster(
     glassStyle: GlassStyle,
@@ -509,6 +512,7 @@ private fun TopPillActionIconButton(
  * Layer 3 Container-Transform Popover that morphs directly out of the top-right `[More]` capsule
  * using interruptible `Spring(dampingRatio = 0.65f, stiffness = 450f)` physics.
  */
+@Suppress("DEPRECATION")
 @Composable
 fun MorphingMorePopover(
     expanded: Boolean,
@@ -519,12 +523,13 @@ fun MorphingMorePopover(
     glassStyle: GlassStyle = GlassStyle.LIQUID,
 ) {
     val colors = AuraTheme.colors
+    val motion = AuraTheme.motion
     val typography = AuraTheme.typography
     val reducedMotion = rememberAuraReducedMotion()
 
     val morphProgress by animateFloatAsState(
         targetValue = if (expanded) 1f else 0f,
-        animationSpec = if (reducedMotion) snap() else spring(dampingRatio = 0.65f, stiffness = 450f),
+        animationSpec = if (reducedMotion) snap() else motion.spatialSpring(),
         label = "MorphingMorePopoverProgress",
     )
 
@@ -615,6 +620,7 @@ fun MorphingMorePopover(
  * [AuraTopAppBarStyle.FloatingSplit], and [AuraTopAppBarStyle.SurfaceDocked] with
  * [AuraTheme.motion] transitions and semantic tokens.
  */
+@Suppress("DEPRECATION")
 @Composable
 fun AuraTopAppBar(
     title: String,
@@ -744,7 +750,14 @@ fun AuraTopAppBar(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(barHeight)
-                            .shadow(elevation = if (smoothScroll > 0.05f) 8.dp else 4.dp, shape = CircleShape)
+                            .shadow(
+                            elevation = if (smoothScroll > 0.05f) {
+                                AuraTheme.elevation.level2.elevation
+                            } else {
+                                AuraTheme.elevation.level1.elevation
+                            },
+                            shape = CircleShape,
+                        )
                             .clip(CircleShape)
                             .background(barContainerColor, CircleShape)
                             .border(width = 1.dp, color = colors.border.subtle, shape = CircleShape)
@@ -771,7 +784,7 @@ fun AuraTopAppBar(
                     Box(
                         modifier = Modifier
                             .heightIn(min = 48.dp)
-                            .shadow(elevation = 4.dp, shape = CircleShape)
+                            .shadow(elevation = AuraTheme.elevation.level1.elevation, shape = CircleShape)
                             .clip(CircleShape)
                             .background(barContainerColor, CircleShape)
                             .border(width = 1.dp, color = colors.border.subtle, shape = CircleShape)
@@ -804,7 +817,7 @@ fun AuraTopAppBar(
                     Row(
                         modifier = Modifier
                             .heightIn(min = 48.dp)
-                            .shadow(elevation = 4.dp, shape = CircleShape)
+                            .shadow(elevation = AuraTheme.elevation.level1.elevation, shape = CircleShape)
                             .clip(CircleShape)
                             .background(barContainerColor, CircleShape)
                             .border(width = 1.dp, color = colors.border.subtle, shape = CircleShape)

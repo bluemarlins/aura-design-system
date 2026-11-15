@@ -195,8 +195,8 @@ fun FloatingGlassScaffold(
                         .background(
                             Brush.verticalGradient(
                                 colors = listOf(
-                                    edgeScrimBase.copy(alpha = 0.42f),
-                                    edgeScrimBase.copy(alpha = 0.14f),
+                                    edgeScrimBase.copy(alpha = AuraTheme.elevation.level3.scrimAlpha),
+                                    edgeScrimBase.copy(alpha = AuraTheme.elevation.level1.scrimAlpha),
                                     Color.Transparent,
                                 ),
                             ),
@@ -213,8 +213,8 @@ fun FloatingGlassScaffold(
                                 Brush.verticalGradient(
                                     colors = listOf(
                                         Color.Transparent,
-                                        edgeScrimBase.copy(alpha = 0.14f),
-                                        edgeScrimBase.copy(alpha = 0.42f),
+                                        edgeScrimBase.copy(alpha = AuraTheme.elevation.level1.scrimAlpha),
+                                        edgeScrimBase.copy(alpha = AuraTheme.elevation.level3.scrimAlpha),
                                     ),
                                 ),
                             ),
@@ -238,7 +238,11 @@ fun FloatingGlassScaffold(
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(colors.interaction.scrim.copy(alpha = 0.14f))
+                            .background(
+                                colors.interaction.scrim.copy(
+                                    alpha = AuraTheme.elevation.level1.scrimAlpha,
+                                ),
+                            )
                             .clickable(
                                 interactionSource = dismissInteraction,
                                 indication = null,

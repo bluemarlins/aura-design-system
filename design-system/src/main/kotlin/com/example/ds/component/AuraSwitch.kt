@@ -38,6 +38,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.semantics.semantics
+import com.example.ds.foundation.motion.AuraMotionProgressKey
+import com.example.ds.foundation.motion.AuraMotionScaleKey
 import com.example.ds.foundation.theme.AuraTheme
 import kotlin.math.roundToInt
 
@@ -227,10 +230,16 @@ fun AuraSwitch(
         }
     }
 
+    val motionSemantics = Modifier.semantics {
+        this[AuraMotionProgressKey] = thumbProgress
+        this[AuraMotionScaleKey] = trackScale
+    }
+
     if (label == null) {
         Box(
             modifier = modifier
                 .defaultMinSize(minWidth = MinSwitchTouchTarget, minHeight = MinSwitchTouchTarget)
+                .then(motionSemantics)
                 .then(toggleModifier),
             contentAlignment = Alignment.Center,
         ) {
@@ -241,6 +250,7 @@ fun AuraSwitch(
             modifier = modifier
                 .fillMaxWidth()
                 .defaultMinSize(minHeight = MinSwitchTouchTarget)
+                .then(motionSemantics)
                 .then(toggleModifier)
                 .padding(vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,

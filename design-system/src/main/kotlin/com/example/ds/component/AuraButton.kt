@@ -1,7 +1,6 @@
 package com.example.ds.component
 
 import android.os.SystemClock
-import android.provider.Settings
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -48,8 +47,6 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
@@ -63,6 +60,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ds.foundation.color.AuraColors
 import com.example.ds.foundation.theme.AuraColorMode
+import androidx.compose.animation.core.snap
+import com.example.ds.foundation.motion.AuraMotionProgressKey
+import com.example.ds.foundation.motion.AuraMotionScaleKey
 import com.example.ds.foundation.theme.AuraTheme
 import com.example.ds.foundation.typography.AuraTypography
 import kotlinx.coroutines.Job
@@ -285,20 +285,6 @@ private fun rememberTactilePressedState(
     return isVisuallyPressed
 }
 
-@Composable
-private fun rememberReducedMotion(): Boolean {
-    if (LocalInspectionMode.current) return false
-    val context = LocalContext.current
-    return remember(context) {
-        runCatching {
-            Settings.Global.getFloat(
-                context.contentResolver,
-                Settings.Global.ANIMATOR_DURATION_SCALE,
-                1f,
-            ) == 0f
-        }.getOrDefault(false)
-    }
-}
 
 /**
  * Labeled action button implementing the `aura.component.button` specification.
@@ -335,7 +321,7 @@ fun AuraButton(
     val colors = AuraTheme.colors
     val motion = AuraTheme.motion
     val typography = AuraTheme.typography
-    val reducedMotion = rememberReducedMotion()
+    val reducedMotion = rememberAuraReducedMotion()
     val sizeSpec = size.toSpec()
     val labelTextStyle = sizeSpec.textStyle(size, typography)
     val shape = RoundedCornerShape(sizeSpec.cornerRadius)
@@ -359,7 +345,11 @@ fun AuraButton(
     }
     val buttonScale by animateFloatAsState(
         targetValue = targetScale,
-        animationSpec = if (pressedActive) motion.pressInSpring() else motion.pressOutSpring(),
+        animationSpec = when {
+            reducedMotion -> snap()
+            pressedActive -> motion.pressInSpring()
+            else -> motion.pressOutSpring()
+        },
         label = "AuraButtonScale",
     )
 
@@ -452,6 +442,8 @@ fun AuraButton(
             )
             .semantics {
                 role = Role.Button
+                this[AuraMotionScaleKey] = buttonScale
+                this[AuraMotionProgressKey] = if (loading) 1f else 0f
                 if (loading) {
                     stateDescription = "In progress"
                 }

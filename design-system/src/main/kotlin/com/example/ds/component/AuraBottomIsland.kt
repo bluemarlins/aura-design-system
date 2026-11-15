@@ -55,6 +55,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.ds.foundation.theme.AuraColorMode
+import com.example.ds.foundation.motion.AuraMotionProgressKey
+import com.example.ds.foundation.motion.AuraMotionScaleKey
 import com.example.ds.foundation.theme.AuraTheme
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -113,6 +115,7 @@ internal fun calculateLiquidSquishStretch(
  * - Spring-driven sliding Active Indicator pill + velocity-coupled **Elastic Squish & Stretch** in [GlassStyle.LIQUID]
  * - Dual optical materiality ([GlassStyle.FROSTED] / [GlassStyle.LIQUID]) sampling live Layer 0 pixels
  */
+@Suppress("DEPRECATION")
 @Composable
 fun FloatingBottomIsland(
     items: List<AuraBottomIslandItem>,
@@ -141,6 +144,7 @@ fun FloatingBottomIsland(
 /**
  * Aura Navigation Bottom Island component implementing the `aura-bottom-island` contract.
  */
+@Suppress("DEPRECATION")
 @Composable
 fun AuraBottomIsland(
     items: List<AuraBottomIslandItem>,
@@ -168,7 +172,7 @@ fun AuraBottomIsland(
         } else {
             indicatorAnimatable.animateTo(
                 targetValue = clampedSelected.toFloat(),
-                animationSpec = spring(dampingRatio = 0.65f, stiffness = 450f),
+                animationSpec = motion.spatialSpring(),
             )
         }
     }
@@ -181,7 +185,7 @@ fun AuraBottomIsland(
         } else {
             splitAnimatable.animateTo(
                 targetValue = splitTarget,
-                animationSpec = spring(dampingRatio = 0.58f, stiffness = 320f),
+                animationSpec = motion.elasticStretchSpring(),
             )
         }
     }
@@ -198,6 +202,10 @@ fun AuraBottomIsland(
 
     Box(
         modifier = modifier
+            .semantics {
+                this[AuraMotionProgressKey] = indicatorAnimatable.value
+                this[AuraMotionScaleKey] = 1f + islandElasticStretch
+            }
             .fillMaxWidth()
             .padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
         contentAlignment = Alignment.BottomCenter,
@@ -430,6 +438,7 @@ fun AuraBottomIsland(
     }
 }
 
+@Suppress("DEPRECATION")
 @Preview(name = "Floating Bottom Island · Light Liquid", showBackground = true)
 @Composable
 private fun FloatingBottomIslandLiquidPreview() {
@@ -463,6 +472,7 @@ private fun FloatingBottomIslandLiquidPreview() {
     }
 }
 
+@Suppress("DEPRECATION")
 @Preview(name = "Floating Bottom Island · Dark Frosted", showBackground = true, backgroundColor = 0xFF000000)
 @Composable
 private fun FloatingBottomIslandFrostedDarkPreview() {

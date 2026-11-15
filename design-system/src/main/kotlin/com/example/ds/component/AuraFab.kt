@@ -59,6 +59,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.ds.foundation.color.AuraColors
+import com.example.ds.foundation.elevation.AuraElevation
+import com.example.ds.foundation.motion.AuraMotionProgressKey
+import com.example.ds.foundation.motion.AuraMotionScaleKey
 import com.example.ds.foundation.theme.AuraTheme
 
 enum class AuraFabVariant {
@@ -131,6 +134,7 @@ fun AuraFab(
         variant = variant,
         enabled = enabled,
         colors = colors,
+        elevationTokens = AuraTheme.elevation,
     )
     val dims = resolveAuraFabDimensions(
         size = size,
@@ -212,6 +216,8 @@ fun AuraFab(
         modifier = modifier
             .defaultMinSize(minWidth = MinFabTouchTargetSize, minHeight = MinFabTouchTargetSize)
             .semantics {
+                this[AuraMotionScaleKey] = containerScale
+                this[AuraMotionProgressKey] = if (showExtendedLabel) 1f else 0f
                 if (contentDescription != null) {
                     this.contentDescription = contentDescription
                 }
@@ -306,17 +312,17 @@ fun AuraFab(
                         EnterTransition.None
                     } else {
                         expandHorizontally(
-                            animationSpec = motion.pressOutSpring(),
+                            animationSpec = motion.spatialSpring(),
                             expandFrom = Alignment.Start,
-                        ) + fadeIn(tween(durationMillis = motion.stateChangeDurationMillis))
+                        ) + fadeIn(motion.enterSpec())
                     },
                     exit = if (reducedMotion) {
                         ExitTransition.None
                     } else {
                         shrinkHorizontally(
-                            animationSpec = motion.pressOutSpring(),
+                            animationSpec = motion.spatialSpring(),
                             shrinkTowards = Alignment.Start,
-                        ) + fadeOut(tween(durationMillis = motion.stateChangeDurationMillis))
+                        ) + fadeOut(motion.exitSpec())
                     },
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -340,6 +346,7 @@ private fun resolveAuraFabPalette(
     variant: AuraFabVariant,
     enabled: Boolean,
     colors: AuraColors,
+    elevationTokens: AuraElevation,
 ): AuraFabPalette {
     if (!enabled) {
         return AuraFabPalette(
@@ -355,25 +362,25 @@ private fun resolveAuraFabPalette(
             containerColor = colors.brand.primary,
             contentColor = colors.brand.onPrimary,
             borderColor = Color.Transparent,
-            elevation = 8.dp,
+            elevation = elevationTokens.level3.elevation,
         )
         AuraFabVariant.Secondary -> AuraFabPalette(
             containerColor = colors.brand.subtle,
             contentColor = colors.brand.onSubtle,
             borderColor = Color.Transparent,
-            elevation = 6.dp,
+            elevation = elevationTokens.level2.elevation,
         )
         AuraFabVariant.Surface -> AuraFabPalette(
             containerColor = colors.surface.floating,
             contentColor = colors.content.primary,
             borderColor = colors.border.subtle,
-            elevation = 8.dp,
+            elevation = elevationTokens.level3.elevation,
         )
         AuraFabVariant.Glass -> AuraFabPalette(
             containerColor = colors.surface.floating.copy(alpha = 0.80f),
             contentColor = colors.content.primary,
             borderColor = colors.border.subtle,
-            elevation = 6.dp,
+            elevation = elevationTokens.level2.elevation,
         )
     }
 }

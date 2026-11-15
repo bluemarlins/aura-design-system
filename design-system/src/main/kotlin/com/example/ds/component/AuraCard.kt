@@ -77,8 +77,8 @@ fun AuraCard(
     val shape = RoundedCornerShape(cornerRadius)
     val elevation = when {
         !enabled -> 0.dp
-        variant == AuraCardVariant.Elevated -> 4.dp
-        variant == AuraCardVariant.Glass -> 2.dp
+        variant == AuraCardVariant.Elevated -> AuraTheme.elevation.level2.elevation
+        variant == AuraCardVariant.Glass -> AuraTheme.elevation.level1.elevation
         else -> 0.dp
     }
     val paddingDp = when (padding) {

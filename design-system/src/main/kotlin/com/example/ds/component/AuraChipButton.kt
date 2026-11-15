@@ -318,7 +318,7 @@ private fun resolveAuraChipPalette(
             },
             contentColor = if (selected) colors.brand.onPrimary else colors.content.primary,
             borderColor = colors.border.subtle,
-            elevation = 2.dp,
+            elevation = AuraTheme.elevation.level1.elevation,
         )
     }
 }

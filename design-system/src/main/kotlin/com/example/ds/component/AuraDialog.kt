@@ -38,6 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.ds.foundation.theme.AuraColorMode
+import com.example.ds.foundation.motion.AuraMotionProgressKey
+import com.example.ds.foundation.motion.AuraMotionScaleKey
 import com.example.ds.foundation.theme.AuraTheme
 
 /**
@@ -59,6 +61,7 @@ private val DialogCornerRadius = 24.dp
 /**
  * Focused modal confirmation and alert surface implementing the `aura.component.dialog` specification.
  */
+@Suppress("DEPRECATION")
 @Composable
 fun AuraDialog(
     visible: Boolean,
@@ -89,12 +92,12 @@ fun AuraDialog(
 
     val containerScale by animateFloatAsState(
         targetValue = if (entered) 1f else 0.94f,
-        animationSpec = if (reducedMotion) snap() else motion.pressOutSpring(),
+        animationSpec = if (reducedMotion) snap() else motion.spatialSpring(),
         label = "AuraDialogScale",
     )
     val containerAlpha by animateFloatAsState(
         targetValue = if (entered) 1f else 0f,
-        animationSpec = if (reducedMotion) snap() else tween(durationMillis = motion.stateChangeDurationMillis),
+        animationSpec = if (reducedMotion) snap() else motion.enterSpec(),
         label = "AuraDialogAlpha",
     )
 
@@ -108,7 +111,7 @@ fun AuraDialog(
     ) {
         val animatedScrim = animateColorAsState(
             targetValue = colors.interaction.scrim,
-            animationSpec = tween(durationMillis = motion.stateChangeDurationMillis),
+            animationSpec = if (reducedMotion) snap() else tween(durationMillis = motion.scrimFadeDurationMillis),
             label = "AuraDialogScrim",
         )
         Box(
@@ -134,6 +137,10 @@ fun AuraDialog(
                 confirmEnabled = confirmEnabled,
                 content = content,
                 modifier = modifier
+                    .semantics {
+                        this[AuraMotionScaleKey] = containerScale
+                        this[AuraMotionProgressKey] = containerAlpha
+                    }
                     .widthIn(min = 280.dp, max = 420.dp)
                     .fillMaxWidth()
                     .background(Color.Transparent, RoundedCornerShape(DialogCornerRadius))
@@ -146,6 +153,7 @@ fun AuraDialog(
     }
 }
 
+@Suppress("DEPRECATION")
 @Composable
 internal fun AuraDialogSurfaceCard(
     title: String,
@@ -318,6 +326,7 @@ private fun DialogAlertGlyph(
     }
 }
 
+@Suppress("DEPRECATION")
 @Preview(name = "AuraDialog Surface Light", showBackground = true)
 @Composable
 private fun AuraDialogSurfaceLightPreview() {

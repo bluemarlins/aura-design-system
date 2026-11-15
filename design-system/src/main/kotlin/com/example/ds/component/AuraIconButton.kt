@@ -61,6 +61,8 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.ds.foundation.elevation.AuraElevation
+import com.example.ds.foundation.motion.rememberAuraReducedMotion as rememberSystemReducedMotion
 import com.example.ds.foundation.theme.AuraTheme
 import kotlinx.coroutines.delay
 
@@ -131,6 +133,7 @@ fun AuraIconButton(
         enabled = enabled,
         selected = isSelected,
         colors = colors,
+        elevationTokens = AuraTheme.elevation,
     )
 
     val colorAnimSpec = if (reducedMotion) {
@@ -307,6 +310,7 @@ private fun resolveAuraIconButtonPalette(
     enabled: Boolean,
     selected: Boolean,
     colors: com.example.ds.foundation.color.AuraColors,
+    elevationTokens: AuraElevation = AuraTheme.elevation,
 ): AuraIconButtonPalette {
     if (!enabled) {
         val isGhostOrOutlined = variant == AuraIconButtonVariant.Ghost || variant == AuraIconButtonVariant.Outlined
@@ -347,7 +351,7 @@ private fun resolveAuraIconButtonPalette(
             containerColor = if (selected) colors.brand.primary else colors.surface.floating.copy(alpha = 0.92f),
             contentColor = if (selected) colors.brand.onPrimary else colors.content.primary,
             borderColor = if (selected) Color.Transparent else colors.border.subtle,
-            elevation = 6.dp,
+            elevation = elevationTokens.level2.elevation,
         )
         AuraIconButtonVariant.Destructive -> AuraIconButtonPalette(
             containerColor = if (selected) colors.status.error.solid else colors.status.error.subtle,
@@ -359,17 +363,8 @@ private fun resolveAuraIconButtonPalette(
 }
 
 @Composable
-internal fun rememberAuraReducedMotion(): Boolean {
-    val context = LocalContext.current
-    return remember(context) {
-        val scale = Settings.Global.getFloat(
-            context.contentResolver,
-            Settings.Global.ANIMATOR_DURATION_SCALE,
-            1f,
-        )
-        scale == 0f
-    }
-}
+internal fun rememberAuraReducedMotion(): Boolean =
+    AuraTheme.motion.reduceMotion || rememberSystemReducedMotion()
 
 /**
  * Keeps pressed feedback visible for at least [minPressDurationMillis] so quick taps inside

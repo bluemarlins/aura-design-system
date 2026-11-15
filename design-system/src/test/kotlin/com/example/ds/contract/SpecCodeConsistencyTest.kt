@@ -91,6 +91,19 @@ class SpecCodeConsistencyTest {
                     ktProdCode.contains("AuraTheme.motion"),
                 )
             }
+            val codeWithoutComments = ktProdCode
+                .replace(Regex("/\\*.*?\\*/", RegexOption.DOT_MATCHES_ALL), "")
+                .lines()
+                .filterNot { it.trimStart().startsWith("//") }
+                .joinToString("\n")
+            assertTrue(
+                "${kotlinFile.name} [EVAL-004]: hardcoded tween(duration) literal forbidden in component production code",
+                !Regex("""\btween\s*(?:<[^>]+>\s*)?\(\s*(?:durationMillis\s*=\s*)?\d""").containsMatchIn(codeWithoutComments),
+            )
+            assertTrue(
+                "${kotlinFile.name} [EVAL-004]: hardcoded spring(dampingRatio/stiffness) literal forbidden in component production code",
+                !Regex("""\bspring\s*(?:<[^>]+>\s*)?\(\s*(?:dampingRatio|stiffness)\s*=\s*[\d.]""").containsMatchIn(codeWithoutComments),
+            )
 
             // EVAL-005: State Precedence & Accessibility
             assertTrue(
@@ -113,6 +126,64 @@ class SpecCodeConsistencyTest {
                 )
             }
             verifyAndroidApiSync(relativePath, spec, kotlinFile.name, ktProdCode)
+
+            // EVAL-007: Materiality & Elevation Matrix
+            val layer = frontmatter["layer"]
+            assertTrue(
+                "$relativePath [EVAL-007]: frontmatter 'layer' must be one of canvas, content, chrome, spatial (was '$layer')",
+                layer in setOf("canvas", "content", "chrome", "spatial"),
+            )
+            val materialAllowed = (frontmatter["material_allowed"] ?: "")
+                .removePrefix("[")
+                .removeSuffix("]")
+                .split(",")
+                .map { it.trim().trim('"', '\'') }
+                .filter { it.isNotEmpty() }
+            assertTrue(
+                "$relativePath [EVAL-007]: frontmatter 'material_allowed' must be a non-empty subset of Solid, Glass, LiquidGlass",
+                materialAllowed.isNotEmpty() && materialAllowed.all { it in setOf("Solid", "Glass", "LiquidGlass") },
+            )
+            if (layer == "content" || layer == "canvas") {
+                assertTrue(
+                    "${kotlinFile.name} [EVAL-007]: content/canvas component must not invoke GlassSurface(",
+                    !ktProdCode.contains("GlassSurface("),
+                )
+            }
+            if (ktProdCode.contains("GlassSurface(")) {
+                assertTrue(
+                    "$relativePath [EVAL-007]: Glass/LiquidGlass component spec must document Reduced Transparency and 4.5:1 contrast",
+                    spec.contains("Reduced Transparency") && spec.contains("4.5:1"),
+                )
+            }
+
+            // EVAL-008: Dual-Track Motion Profile & MainClock Verification
+            val motionTrack = frontmatter["motion_track"]
+            assertTrue(
+                "$relativePath [EVAL-008]: frontmatter 'motion_track' must be Standard, Expressive, or none (was '$motionTrack')",
+                motionTrack in setOf("Standard", "Expressive", "none"),
+            )
+            if (category != "layout") {
+                assertTrue(
+                    "$relativePath [EVAL-008]: non-layout component must specify 'motion_track' as Standard or Expressive (was '$motionTrack')",
+                    motionTrack in setOf("Standard", "Expressive"),
+                )
+            }
+        }
+
+        val motionBehaviorTest = File(
+            repoRoot,
+            "design-system/src/test/kotlin/com/example/ds/motion/ComponentMotionBehaviorTest.kt",
+        )
+        assertTrue(
+            "[EVAL-008]: ComponentMotionBehaviorTest.kt must exist at ${motionBehaviorTest.path}",
+            motionBehaviorTest.isFile,
+        )
+        val motionBehaviorSource = motionBehaviorTest.readText()
+        listOf("AuraButton", "AuraSwitch", "AuraFab", "AuraBottomIsland", "AuraDialog", "GlassSurface").forEach { symbol ->
+            assertTrue(
+                "[EVAL-008]: ComponentMotionBehaviorTest.kt must test $symbol",
+                motionBehaviorSource.contains(symbol),
+            )
         }
     }
 

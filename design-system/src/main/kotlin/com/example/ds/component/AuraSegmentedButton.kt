@@ -348,6 +348,7 @@ private fun resolveAuraSegmentedPalette(
     enabled: Boolean,
     colors: AuraColors,
 ): AuraSegmentedPalette {
+    val elevationTokens = AuraTheme.elevation
     if (!enabled) {
         return AuraSegmentedPalette(
             trackBackground = colors.interaction.disabledContainer,
@@ -366,7 +367,7 @@ private fun resolveAuraSegmentedPalette(
             thumbBackground = colors.surface.floating,
             activeContent = colors.content.primary,
             inactiveContent = colors.content.secondary,
-            thumbElevation = 2.dp,
+            thumbElevation = elevationTokens.level1.elevation,
         )
         AuraSegmentedVariant.Outlined -> AuraSegmentedPalette(
             trackBackground = colors.surface.default,
@@ -382,7 +383,7 @@ private fun resolveAuraSegmentedPalette(
             thumbBackground = colors.brand.primary,
             activeContent = colors.brand.onPrimary,
             inactiveContent = colors.content.primary,
-            thumbElevation = 2.dp,
+            thumbElevation = elevationTokens.level1.elevation,
         )
     }
 }
