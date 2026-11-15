@@ -2,7 +2,11 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    `maven-publish`
 }
+
+group = "com.github.bluemarlins"
+version = "1.0.0"
 
 android {
     namespace = "com.example.ds"
@@ -35,17 +39,49 @@ android {
     buildFeatures {
         compose = true
     }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
     implementation(libs.androidx.core.ktx)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
+    api(platform(libs.androidx.compose.bom))
+    api(libs.androidx.compose.ui)
+    api(libs.androidx.compose.ui.graphics)
+    api(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.foundation)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     testImplementation(libs.junit)
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "com.github.bluemarlins"
+            artifactId = "aura-design-system"
+            version = "1.0.0"
+
+            afterEvaluate {
+                from(components["release"])
+            }
+
+            pom {
+                name.set("Aura Design System")
+                description.set("One UI-inspired, zero-Material3 Jetpack Compose design system with Glassmorphism, tactile spring physics, and 2-axis adaptive layouts.")
+                url.set("https://github.com/bluemarlins/aura-design-system")
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = "ReleaseArtifacts"
+            url = uri(layout.buildDirectory.dir("repo"))
+        }
+    }
 }
