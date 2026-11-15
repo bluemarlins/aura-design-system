@@ -90,7 +90,8 @@ Every Aura component must satisfy all six rules before reaching `status: "ready"
 | `AuraCard` | [aura-card.md](containment/aura-card.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Ready |
 | `AuraScaffold` | [aura-scaffold.md](layout/aura-scaffold.md) | Pass | Pass | Pass | Pass (Passive container) | Pass | Pass | Ready |
 | `AuraAdaptiveTwoPane` | [aura-adaptive-two-pane.md](layout/aura-adaptive-two-pane.md) | Pass | Pass | Pass (`AuraTheme.layout`) | Pass (Passive container) | Pass | Pass | Ready |
-| `AuraTopAppBar` | [aura-top-app-bar.md](navigation/aura-top-app-bar.md) | Pass | Pass | Pass | Pass (Floating Scroll Spec) | Pass | Spec Only | Planned |
+| `AuraTopAppBar` | [aura-top-app-bar.md](navigation/aura-top-app-bar.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion` + Spring Physics) | Pass | Pass | Ready |
+| `AuraBottomIsland` | [aura-bottom-island.md](navigation/aura-bottom-island.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion` + Squish/Stretch) | Pass | Pass | Ready |
 
 ---
 

@@ -2,7 +2,7 @@
 id: "aura-top-app-bar"
 name: "AuraTopAppBar"
 category: "navigation"
-status: "planned"
+status: "ready"
 platforms:
   android: "com.example.ds.component.AuraTopAppBar"
   ios: "AuraTopAppBar"
@@ -19,16 +19,15 @@ tokens:
   - "typography.titleLarge"
   - "typography.titleMedium"
   - "typography.labelMedium"
+  - "motion.pressInSpring"
   - "motion.pressOutSpring"
   - "motion.stateChangeDurationMillis"
+  - "motion.minPressDurationMillis"
 ---
 
-# AuraTopAppBar (Floating Concept)
+# AuraTopAppBar & FloatingTopPillBar
 
-> **Status: `planned` — Reinforced Floating Concept Spec.**
-> Kotlin implementation is deferred to the next implementation milestone once Floating Concept geometry, Glass fallback rules, and `AuraIconButton` / `AuraChipButton` slots stabilize.
-
-Canvas-first top navigation bar designed around detached **Floating Capsule** and **Floating Split** geometry with scroll-responsive compaction, built directly atop `AuraIconButton` and `AuraChipButton`.
+Canvas-first top navigation system combining an Adaptive Scroll-Responsive **Floating Top Pill Bar** (`FloatingTopPillBar` with `GlassStyle.FROSTED` / `GlassStyle.LIQUID`, Metaball capsule merging, and Layer 3 Morphing `[More]` Popover) with standardized **Floating Capsule / Split / Docked** headers (`AuraTopAppBar`).
 
 ## 1. Intent & Usage Principles
 
@@ -82,10 +81,11 @@ Traditional Material top bars span edge-to-edge as opaque rectangles, cutting of
 ### Surface Materiality (`AuraTopAppBarSurface`)
 
 - **`SolidElevated`**: `surface.floating` fill + `1.dp` `border.subtle` hairline + `8.dp` ambient shadow (`0.dp` flat blend on `SurfaceDocked` when unscrolled). Default fallback across all API levels.
-- **`TranslucentGlass`**:
-  - Translucent frosted container (`surface.floating` at `0.78f` light / `0.72f` dark alpha) + backdrop blur on supported platforms + luminous top/outer `border.subtle` highlight.
-  - Automatic top edge gradient veil (`interaction.scrim` `0.18f` -> `0f`) behind floating pills on `TranslucentGlass` so scrolling high-contrast photos never wash out adjacent controls.
-  - Falls back deterministically to `SolidElevated` when platform blur is unavailable or system Reduced Transparency is active.
+- **`TranslucentGlass` (`GlassStyle.FROSTED` / `GlassStyle.LIQUID`)**:
+  - **Layer 0 -> Layer 1 -> Layer 2 Spatial Pass-Through:** Scrolls live Layer 0 canvas content directly behind the floating capsules through a progressive Layer 1 top edge scrim (`interaction.scrim`).
+  - **`GlassStyle.FROSTED`:** `28.dp` uniform backdrop blur + `1.3x` saturation boost (API 31+), Light `White 72%` / Dark `#1E1E22 68%` tint, `1.dp` diagonal specular stroke (`White 55% -> 8%`), dual shadow (`Y-offset 10.dp, Blur 24.dp, Alpha 15%`).
+  - **`GlassStyle.LIQUID`:** `8.dp` convex edge bevel AGSL `RuntimeShader` refraction + `~1.2.dp` chromatic dispersion + `6.dp` Fresnel inner glow (`White 35%`) over a soft Safe-Zone blur (`>= 48.dp` touch target on `40×40dp` Back & `42dp` grouped right action pill), plus viscous Metaball merging/splitting (`metaballSplitProgress`) and spring-driven Layer 3 **Morphing Popover** for `[More]`.
+  - Falls back cleanly without crash on API levels without AGSL (`RuntimeShader`) or hardware backdrop blur.
 
 ### Scroll Behaviors (`AuraTopAppBarScrollBehavior`)
 
@@ -135,12 +135,10 @@ Traditional Material top bars span edge-to-edge as opaque rectangles, cutting of
 - **Focus Order**: Keyboard `Tab` traverses Leading Navigation -> Trailing Actions -> Optional Sub-ribbon `AuraChipButton`s -> Main Screen Content (skipping scrolled-underneath obscured items outside the visible viewport).
 - **Reduced Transparency & High Contrast**: Automatically bypasses translucent blur layers in favor of opaque `SolidElevated` surfaces (`>= 7:1` headline contrast when High Contrast is active).
 
-## 8. Platform API Contracts (Planned Preview)
+## 8. Cross-Platform API Contracts
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
-package com.example.ds.component
-
 enum class AuraTopAppBarStyle {
     FloatingCapsule,
     FloatingSplit,
@@ -157,6 +155,24 @@ enum class AuraTopAppBarScrollBehavior {
     EnterAlways,
     CompactOnScroll,
 }
+
+@Composable
+fun FloatingTopPillBar(
+    title: String,
+    scrollProgress: Float,
+    modifier: Modifier = Modifier,
+    subtitle: String? = null,
+    glassStyle: GlassStyle = GlassStyle.LIQUID,
+    isScrollingDown: Boolean = false,
+    hideTitleOnScrollDown: Boolean = true,
+    metaballSplitProgress: Float = 0f,
+    onBackClick: (() -> Unit)? = null,
+    onSearchClick: (() -> Unit)? = null,
+    isBookmarked: Boolean = false,
+    onBookmarkClick: (() -> Unit)? = null,
+    moreMenuExpanded: Boolean = false,
+    onMoreMenuExpandedChange: (Boolean) -> Unit = {},
+)
 
 @Composable
 fun AuraTopAppBar(

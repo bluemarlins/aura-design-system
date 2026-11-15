@@ -14,6 +14,6 @@ Aura Design System shifts top-level chrome from rigid full-bleed slabs to a **Ca
 
 | Component | Category | Concept Role | Spec Status |
 |---|---|---|---|
-| `AuraTopAppBar` | Navigation | Floating Capsule / Split / Docked top bar hosting `AuraIconButton` + `AuraChipButton` slots | `planned` |
-| `AuraNavigationBar` | Navigation | Bottom capsule / rail switcher across core destinations | `planned` |
+| `AuraTopAppBar` | Navigation | Floating Pill / Capsule / Split / Docked top bar with Morphing Popover & Dual Glass | `ready` |
+| `AuraBottomIsland` | Navigation | Floating Bottom Island with Split Action, Metaball Merge, & Elastic Sliding Pill | `ready` |
 | `AuraBottomSheet` | Navigation / Overlays | Floating modal & standard sheet surfaces | `planned` |
