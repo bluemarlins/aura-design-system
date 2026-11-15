@@ -2,7 +2,7 @@
 trigger: always_on
 ---
 
-# Git Commit Guidelines (mobile-design-system)
+# Git Commit Guidelines (aura-design-system)
 
 이 저장소에서 Git Commit을 생성할 때는 반드시 아래의 **카테고리별 분리 원칙**과 **Conventional Commits 1.0.0 규칙**을 준수한다.
 
