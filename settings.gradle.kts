@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "mobile-design-system"
+rootProject.name = "aura-design-system"
 include(":design-system")
 include(":design-system-preview")
