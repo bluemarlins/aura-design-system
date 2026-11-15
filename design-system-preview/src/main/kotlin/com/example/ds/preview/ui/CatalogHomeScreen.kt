@@ -33,6 +33,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSpecified
 import com.example.ds.component.AuraAdaptiveGrid
+import com.example.ds.component.AuraBadge
+import com.example.ds.component.AuraBadgeSize
+import com.example.ds.component.AuraBadgeVariant
 import com.example.ds.component.AuraCard
 import com.example.ds.component.AuraCardPadding
 import com.example.ds.component.AuraCardVariant
@@ -216,26 +219,12 @@ private fun CatalogItemCard(
 
 @Composable
 private fun StatusBadge(status: CatalogStatus) {
-    val c = AuraTheme.colors
-    val t = AuraTheme.typography
-    val containerColor = when (status) {
-        CatalogStatus.Ready -> c.brand.subtle
-        CatalogStatus.Planned -> c.surface.sunken
-    }
-    val contentColor = when (status) {
-        CatalogStatus.Ready -> c.brand.onSubtle
-        CatalogStatus.Planned -> c.content.secondary
-    }
-
-    Box(
-        modifier = Modifier
-            .background(containerColor, RoundedCornerShape(8.dp))
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-    ) {
-        AuraText(
-            text = status.label,
-            style = t.labelSmall,
-            color = contentColor,
-        )
-    }
+    AuraBadge(
+        label = status.label,
+        variant = when (status) {
+            CatalogStatus.Ready -> AuraBadgeVariant.Success
+            CatalogStatus.Planned -> AuraBadgeVariant.Neutral
+        },
+        size = AuraBadgeSize.Small,
+    )
 }

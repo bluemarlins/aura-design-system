@@ -69,6 +69,43 @@ class ComponentCatalogTest {
         val bottomIsland = ComponentCatalog.findById(ComponentCatalog.BOTTOM_ISLAND_ID)
         assertNotNull(bottomIsland)
         assertEquals(CatalogStatus.Ready, bottomIsland?.status)
+
+        val numberField = ComponentCatalog.findById(ComponentCatalog.NUMBER_FIELD_ID)
+        assertNotNull(numberField)
+        assertEquals(CatalogStatus.Ready, numberField?.status)
+
+        val searchBar = ComponentCatalog.findById(ComponentCatalog.SEARCH_BAR_ID)
+        assertNotNull(searchBar)
+        assertEquals(CatalogStatus.Ready, searchBar?.status)
+
+        val dateTimePicker = ComponentCatalog.findById(ComponentCatalog.DATE_TIME_PICKER_ID)
+        assertNotNull(dateTimePicker)
+        assertEquals(CatalogStatus.Ready, dateTimePicker?.status)
+
+        val slider = ComponentCatalog.findById(ComponentCatalog.SLIDER_ID)
+        assertNotNull(slider)
+        assertEquals(CatalogStatus.Ready, slider?.status)
+
+        val ratingBar = ComponentCatalog.findById(ComponentCatalog.RATING_BAR_ID)
+        assertNotNull(ratingBar)
+        assertEquals(CatalogStatus.Ready, ratingBar?.status)
+
+        val dialog = ComponentCatalog.findById(ComponentCatalog.DIALOG_ID)
+        assertNotNull(dialog)
+        assertEquals(CatalogStatus.Ready, dialog?.status)
+
+        val badge = ComponentCatalog.findById(ComponentCatalog.BADGE_ID)
+        assertNotNull(badge)
+        assertEquals(CatalogStatus.Ready, badge?.status)
+    }
+
+    @Test
+    fun `every registered catalog item has Ready status`() {
+        assertEquals(21, ComponentCatalog.items.size)
+        assertEquals(
+            setOf(CatalogStatus.Ready),
+            ComponentCatalog.items.map { it.status }.toSet(),
+        )
     }
 
     @Test

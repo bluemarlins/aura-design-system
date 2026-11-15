@@ -31,12 +31,19 @@ object ComponentCatalog {
     const val SEGMENTED_BUTTON_ID = "segmented-button"
     const val CHIP_BUTTON_ID = "chip-button"
     const val TEXT_FIELD_ID = "text-field"
+    const val NUMBER_FIELD_ID = "number-field"
+    const val SEARCH_BAR_ID = "search-bar"
+    const val DATE_TIME_PICKER_ID = "date-time-picker"
     const val CHECKBOX_ID = "checkbox"
     const val SWITCH_ID = "switch"
     const val RADIO_ID = "radio"
+    const val SLIDER_ID = "slider"
+    const val RATING_BAR_ID = "rating-bar"
     const val TOP_APP_BAR_ID = "top-app-bar"
     const val BOTTOM_ISLAND_ID = "bottom-island"
     const val CARD_ID = "card"
+    const val DIALOG_ID = "dialog"
+    const val BADGE_ID = "badge"
 
     val items: List<CatalogItem> = listOf(
         CatalogItem(
@@ -96,25 +103,25 @@ object ComponentCatalog {
             status = CatalogStatus.Ready,
         ),
         CatalogItem(
-            id = "number-field",
+            id = NUMBER_FIELD_ID,
             name = "AuraNumberField",
             category = CatalogCategory.Inputs,
-            description = "Formatted numeric and currency input with unit affixes.",
-            status = CatalogStatus.Planned,
+            description = "Formatted numeric and currency input with unit affixes and steppers.",
+            status = CatalogStatus.Ready,
         ),
         CatalogItem(
-            id = "search-bar",
+            id = SEARCH_BAR_ID,
             name = "AuraSearchBar",
             category = CatalogCategory.Inputs,
-            description = "Search input with instant filter and Glass surface support.",
-            status = CatalogStatus.Planned,
+            description = "Search input with instant filter, badge counter, and Glass surface support.",
+            status = CatalogStatus.Ready,
         ),
         CatalogItem(
-            id = "date-time-picker",
+            id = DATE_TIME_PICKER_ID,
             name = "AuraDateTimePicker",
             category = CatalogCategory.Inputs,
-            description = "Date, time, vintage year, and period selector.",
-            status = CatalogStatus.Planned,
+            description = "Date, time, and vintage year selector.",
+            status = CatalogStatus.Ready,
         ),
         CatalogItem(
             id = CHECKBOX_ID,
@@ -138,18 +145,18 @@ object ComponentCatalog {
             status = CatalogStatus.Ready,
         ),
         CatalogItem(
-            id = "slider",
+            id = SLIDER_ID,
             name = "AuraSlider",
             category = CatalogCategory.Inputs,
             description = "Continuous and stepped value or sensory profile slider.",
-            status = CatalogStatus.Planned,
+            status = CatalogStatus.Ready,
         ),
         CatalogItem(
-            id = "rating-bar",
+            id = RATING_BAR_ID,
             name = "AuraRatingBar",
             category = CatalogCategory.Inputs,
             description = "Star and half-star rating input for tasting notes.",
-            status = CatalogStatus.Planned,
+            status = CatalogStatus.Ready,
         ),
         CatalogItem(
             id = TOP_APP_BAR_ID,
@@ -173,18 +180,18 @@ object ComponentCatalog {
             status = CatalogStatus.Ready,
         ),
         CatalogItem(
-            id = "dialog",
+            id = DIALOG_ID,
             name = "AuraDialog",
             category = CatalogCategory.Containment,
-            description = "Modal confirmation and alert surface.",
-            status = CatalogStatus.Planned,
+            description = "Modal confirmation and alert surface with Standard, Destructive, and Glass modes.",
+            status = CatalogStatus.Ready,
         ),
         CatalogItem(
-            id = "badge",
+            id = BADGE_ID,
             name = "AuraBadge",
             category = CatalogCategory.Feedback,
-            description = "Compact count and status indicator.",
-            status = CatalogStatus.Planned,
+            description = "Compact count, status pill, and unread presence indicator.",
+            status = CatalogStatus.Ready,
         ),
     )
 
