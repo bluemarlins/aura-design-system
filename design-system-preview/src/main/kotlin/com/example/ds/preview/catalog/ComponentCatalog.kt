@@ -25,6 +25,7 @@ data class CatalogItem(
 object ComponentCatalog {
     const val COLOR_SCHEME_ID = "color-scheme"
     const val TYPOGRAPHY_LAYOUT_ID = "typography-layout"
+    const val INTERACTION_PRINCIPLES_ID = "interaction-principles"
     const val BUTTON_ID = "button"
     const val ICON_BUTTON_ID = "icon-button"
     const val FAB_ID = "fab"
@@ -58,6 +59,13 @@ object ComponentCatalog {
             name = "AuraTypography & Layout",
             category = CatalogCategory.Foundation,
             description = "Responsive typography scale and 2-axis layout (Smallest Width × Display Ratio).",
+            status = CatalogStatus.Ready,
+        ),
+        CatalogItem(
+            id = INTERACTION_PRINCIPLES_ID,
+            name = "Motion & Visual Interaction",
+            category = CatalogCategory.Foundation,
+            description = "Dual-track spring physics (Standard / Expressive), Solid/Glass/LiquidGlass materiality, and Z-axis elevation ladder.",
             status = CatalogStatus.Ready,
         ),
         CatalogItem(

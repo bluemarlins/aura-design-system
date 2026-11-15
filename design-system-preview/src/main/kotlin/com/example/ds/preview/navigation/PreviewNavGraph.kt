@@ -18,6 +18,7 @@ import com.example.ds.preview.ui.DialogBadgePreviewScreen
 import com.example.ds.preview.ui.FabPreviewScreen
 import com.example.ds.preview.ui.FloatingNavigationPreviewScreen
 import com.example.ds.preview.ui.IconButtonPreviewScreen
+import com.example.ds.preview.ui.InteractionPrinciplesPreviewScreen
 import com.example.ds.preview.ui.NumberFieldPreviewScreen
 import com.example.ds.preview.ui.PlannedComponentScreen
 import com.example.ds.preview.ui.RadioPreviewScreen
@@ -32,6 +33,7 @@ private object PreviewRoutes {
     const val HOME = "home"
     const val COLOR_SCHEME = "foundation/${ComponentCatalog.COLOR_SCHEME_ID}"
     const val TYPOGRAPHY_LAYOUT = "foundation/${ComponentCatalog.TYPOGRAPHY_LAYOUT_ID}"
+    const val INTERACTION_PRINCIPLES = "foundation/${ComponentCatalog.INTERACTION_PRINCIPLES_ID}"
     const val BUTTON = "component/${ComponentCatalog.BUTTON_ID}"
     const val ICON_BUTTON = "component/${ComponentCatalog.ICON_BUTTON_ID}"
     const val FAB = "component/${ComponentCatalog.FAB_ID}"
@@ -75,6 +77,7 @@ fun PreviewNavGraph(
                     when (item.id) {
                         ComponentCatalog.COLOR_SCHEME_ID -> navController.navigate(PreviewRoutes.COLOR_SCHEME)
                         ComponentCatalog.TYPOGRAPHY_LAYOUT_ID -> navController.navigate(PreviewRoutes.TYPOGRAPHY_LAYOUT)
+                        ComponentCatalog.INTERACTION_PRINCIPLES_ID -> navController.navigate(PreviewRoutes.INTERACTION_PRINCIPLES)
                         ComponentCatalog.BUTTON_ID -> navController.navigate(PreviewRoutes.BUTTON)
                         ComponentCatalog.ICON_BUTTON_ID -> navController.navigate(PreviewRoutes.ICON_BUTTON)
                         ComponentCatalog.FAB_ID -> navController.navigate(PreviewRoutes.FAB)
@@ -108,6 +111,11 @@ fun PreviewNavGraph(
         }
         composable(PreviewRoutes.TYPOGRAPHY_LAYOUT) {
             TypographyLayoutPreviewScreen(
+                onBack = { navController.popBackStack() },
+            )
+        }
+        composable(PreviewRoutes.INTERACTION_PRINCIPLES) {
+            InteractionPrinciplesPreviewScreen(
                 onBack = { navController.popBackStack() },
             )
         }
