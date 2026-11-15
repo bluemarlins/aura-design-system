@@ -3,6 +3,9 @@ component_id: "aura.component.text-field"
 name: "AuraTextField"
 category: "inputs"
 status: "ready"
+layer: "content"
+material_allowed: ["Solid"]
+motion_track: "Standard"
 version: "0.1.0"
 platforms:
   android: "com.example.ds.component.AuraTextField"

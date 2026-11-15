@@ -70,8 +70,8 @@ $$\text{Primary} \succ \text{Destructive (Solid)} \succ \text{Secondary (Tonal)}
 Aligned with `AuraMaterial` in [00-principles.md](../../foundation/00-principles.md):
 
 - **`Solid` (Default):** Mandatory on solid canvas surfaces (`background.primary`, `surface.default`, `surface.raised`) used across **My Planner** forms and **My Finance** tables.
-- **`Glass` / `Floating` (Future `AuraMaterial.Glass`):** Reserved strictly for controls floating over dynamic imagery, wallpapers, or 3D effects—such as **Home Launcher** desktop overlays, **My Drink Diary** bottle photo overlays, or floating calendar toolbars.
-- **`BTN-RULE-004` (No Decorative Glass):** Do not use `Glass` buttons inside standard opaque cards or settings forms.
+- **`Glass` / `Floating` (`AuraMaterial.Glass` / `LiquidGlass`):** Reserved strictly for controls floating over dynamic imagery, wallpapers, or 3D effects—such as **Home Launcher** desktop overlays, **My Drink Diary** bottle photo overlays, or floating calendar toolbars (`VIS-RULE-001`, `VIS-RULE-004`).
+- **`BTN-RULE-004` (No Decorative Glass):** Do not use `Glass` buttons inside standard opaque cards or settings forms (`content` layer). Maintain `>= 4.5:1` label contrast and fall back to `Solid` when `AuraTheme.reduceTransparency` is active.
 
 ---
 

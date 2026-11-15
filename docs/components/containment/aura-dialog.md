@@ -4,6 +4,9 @@ name: "AuraDialog"
 category: "containment"
 status: "ready"
 version: "1.0.0"
+layer: "spatial"
+material_allowed: ["Solid", "Glass"]
+motion_track: "Expressive"
 platforms:
   android: "com.example.ds.component.AuraDialog"
   ios: "AuraDialog"
@@ -106,14 +109,15 @@ Focused modal confirmation, alert, and high-consequence action dialog (`Standard
 - Wraps modal in Jetpack Compose `Dialog` (`DialogProperties`) so TalkBack traps focus cleanly inside the dialog and restores focus to the trigger control upon dismissal.
 - Marks `title` with `semantics { heading() }` for immediate modal announcement.
 - Enforces `>= 48.dp` touch height on both confirm and dismiss `AuraButton`s.
+- **Reduced Transparency & Contrast (`VIS-RULE-003`–`004`):** Maintains `>= 4.5:1` body/title text contrast (`>= 3:1` borders/actions) on `AuraDialogVariant.Glass` and falls back to opaque `Solid` (`colors.surface.floating`) via `AuraTheme.effectiveMaterial(...)` when Reduced Transparency, Battery Saver, or High-Contrast Text is active.
 
 ---
 
 ## 5. Motion
 
-Consumes `AuraTheme.motion`:
+Consumes `AuraTheme.motion` (`Expressive` profile recommended for spatial modal entrance):
 
-1. **Modal Entrance & Exit:** Container animates subtly in scale (`0.94f -> 1.0f`) and alpha (`0f -> 1f`) using `AuraTheme.motion.pressOutSpring()`, while state transitions (`confirmEnabled`) crossfade over `AuraTheme.motion.stateChangeDurationMillis`.
+1. **Modal Entrance, Exit & Scrim:** Container animates smoothly in scale (`0.94f -> 1.0f`) via `AuraTheme.motion.spatialSpring()`, alpha (`0f -> 1f`) via `AuraTheme.motion.enterSpec()`, and modal scrim fades over `AuraTheme.motion.scrimFadeDurationMillis`, while state transitions (`confirmEnabled`) crossfade over `AuraTheme.motion.stateChangeDurationMillis`.
 2. **Action Tactile Physics:** Footer buttons inherit `AuraButton` spring press compression (`pressInSpring()` / `pressOutSpring()`).
 3. **Reduced Motion:** Uses `snap()` when `rememberAuraReducedMotion()` is active.
 

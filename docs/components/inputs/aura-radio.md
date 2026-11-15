@@ -3,6 +3,9 @@ id: "aura-radio"
 name: "AuraRadio"
 category: "inputs"
 status: "ready"
+layer: "content"
+material_allowed: ["Solid"]
+motion_track: "Standard"
 version: "1.0.0"
 platforms:
   android: "com.example.ds.component.AuraRadio"

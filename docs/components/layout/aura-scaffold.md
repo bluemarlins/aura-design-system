@@ -3,6 +3,9 @@ component_id: "aura.component.scaffold"
 name: "AuraScaffold"
 category: "layout"
 status: "ready"
+layer: "canvas"
+material_allowed: ["Solid"]
+motion_track: "none"
 version: "0.1.0"
 platforms:
   android: "com.example.ds.component.AuraScaffold"

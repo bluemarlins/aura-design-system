@@ -3,6 +3,9 @@ id: "aura-fab"
 name: "AuraFab"
 category: "actions"
 status: "ready"
+layer: "chrome"
+material_allowed: ["Solid", "Glass"]
+motion_track: "Expressive"
 platforms:
   android: "com.example.ds.component.AuraFab"
   ios: "AuraFab"

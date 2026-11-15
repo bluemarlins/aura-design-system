@@ -3,6 +3,9 @@ component_id: "aura.component.adaptive-two-pane"
 name: "AuraAdaptiveTwoPane"
 category: "layout"
 status: "ready"
+layer: "canvas"
+material_allowed: ["Solid"]
+motion_track: "none"
 version: "0.1.0"
 platforms:
   android: "com.example.ds.component.AuraAdaptiveTwoPane"

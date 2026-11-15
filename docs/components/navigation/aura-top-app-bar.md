@@ -3,6 +3,9 @@ id: "aura-top-app-bar"
 name: "AuraTopAppBar"
 category: "navigation"
 status: "ready"
+layer: "chrome"
+material_allowed: ["Solid", "Glass", "LiquidGlass"]
+motion_track: "Standard"
 platforms:
   android: "com.example.ds.component.AuraTopAppBar"
   ios: "AuraTopAppBar"

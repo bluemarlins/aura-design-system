@@ -3,6 +3,9 @@ id: "aura-icon-button"
 name: "AuraIconButton"
 category: "actions"
 status: "ready"
+layer: "chrome"
+material_allowed: ["Solid", "Glass"]
+motion_track: "Standard"
 platforms:
   android: "com.example.ds.component.AuraIconButton"
   ios: "AuraIconButton"

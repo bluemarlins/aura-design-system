@@ -4,6 +4,9 @@ name: "AuraSearchBar"
 category: "inputs"
 status: "ready"
 version: "1.0.0"
+layer: "chrome"
+material_allowed: ["Solid", "Glass"]
+motion_track: "Standard"
 platforms:
   android: "com.example.ds.component.AuraSearchBar"
   ios: "AuraSearchBar"
@@ -102,6 +105,7 @@ Instant query bar engineered for real-time filtering, universal search, and quic
 
 - Uses `ImeAction.Search` (`KeyboardOptions(imeAction = ImeAction.Search)`).
 - Clear (`×`) and Filter (`onFilterClick`) buttons provide `Role.Button` with descriptive `contentDescription` (`"Clear search"` and `"Filter (${activeFilterCount} active)"`) and minimum `48.dp` tap area.
+- **Reduced Transparency & Contrast (`VIS-RULE-003`–`004`):** `AuraSearchBarSurface.Glass` maintains `>= 4.5:1` query/placeholder contrast (`>= 3:1` borders/icons) over dynamic backdrops and falls back cleanly to opaque `AuraMaterial.Solid` (`colors.surface.floating`) via `AuraTheme.effectiveMaterial(...)` when Reduced Transparency, Battery Saver, or High-Contrast Text is enabled.
 
 ---
 

@@ -24,6 +24,8 @@
 7. **Degrade gracefully.** Advanced material treatments (blur/shaders) must cleanly fall back to `Solid` on older API levels or reduced-transparency settings.
 8. **Usage principles before UI.** Every component category and spec must define explicit selection criteria (`When to Use`, `When NOT to Use`, decision trees, and visual hierarchy rules) before detailing visual styles.
 9. **Bidirectional `Specs ↔ Code` for multi-platform reuse.** Every component is backed by a structured Markdown specification (`docs/components/`) separating the platform-agnostic contract (Intent, Anatomy, Variants, State Precedence, Semantic Token Bindings, Accessibility) from platform bindings (`Android Compose`, `iOS SwiftUI`, `Web React`).
+10. **Purposeful dual-track motion (`Standard` / `Expressive`).** Motion exists only to orient, focus, express, or connect (`MOT-RULE-001`), using Aura-original `Standard` (productive) and `Expressive` (moment-focused) spring/duration profiles exposed via `AuraTheme.motion` with zero numeric literals in components (`MOT-RULE-002`).
+11. **Layered materiality & depth discipline.** Four surface layers (`canvas`, `content`, `chrome`, `spatial`) govern where `Solid`, `Glass`, and `LiquidGlass` (`<= 1` hero per screen) may live (`VIS-RULE-001`–`006`), degrading cleanly under Reduced Transparency or legacy OS APIs via `resolveEffectiveMaterial()` and `AuraTheme.elevation`.
 
 ## 4. Glossary
 
@@ -32,10 +34,13 @@
 | `AuraPalette` | Tier 1 primitive color values |
 | `AuraColors` | Tier 2 semantic color roles |
 | `AuraMotion` | Tier 2 semantic interaction motion tokens |
+| `AuraMotionProfile` | Dual-track Aura-original motion profile (`Standard`, `Expressive`) |
+| `AuraElevation` | Tier 2 5-step depth, key/ambient shadow, and scrim alpha ladder (`level0`–`level4`) |
 | `AuraTypography` | Tier 2 semantic typography roles with responsive scale support |
 | `AuraWindowInfo` | Device/window telemetry (`smallestWidthDp`, `widthDp`, `heightDp`, `displayRatio`) |
 | `AuraLayout` | Tier 2 responsive layout & two-pane breakpoints derived from `AuraWindowInfo` |
 | `AuraColorMode` | Color axis (`Light`, `Dark`) |
-| `AuraMaterial` | Surface treatment axis (`Solid`, future `Glass`, `LiquidGlass`) |
-| `AuraTheme` | Root `@Composable` provider exposing `AuraTheme.colors`, `typography`, `motion`, `window`, `layout`, `colorMode`, `material` |
+| `AuraMaterial` | Surface treatment axis (`Solid`, `Glass`, `LiquidGlass`) |
+| `Reduced Transparency` | Accessibility/power mode (`AuraTheme.reduceTransparency`) collapsing translucent `Glass`/`LiquidGlass` to opaque `Solid` |
+| `AuraTheme` | Root `@Composable` provider exposing `AuraTheme.colors`, `typography`, `motion`, `elevation`, `window`, `layout`, `colorMode`, `material`, `reduceTransparency` |
 | `Component Spec` | Bidirectional Markdown contract in `docs/components/` separating universal rules from platform API bindings |

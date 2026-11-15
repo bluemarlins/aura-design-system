@@ -3,6 +3,9 @@ id: "aura-segmented-button"
 name: "AuraSegmentedButton"
 category: "actions"
 status: "ready"
+layer: "content"
+material_allowed: ["Solid", "Glass"]
+motion_track: "Standard"
 platforms:
   android: "com.example.ds.component.AuraSegmentedButton"
   ios: "AuraSegmentedButton"

@@ -4,6 +4,9 @@ name: "AuraBottomIsland"
 category: "navigation"
 status: "ready"
 version: "1.0.0"
+layer: "chrome"
+material_allowed: ["Solid", "Glass", "LiquidGlass"]
+motion_track: "Expressive"
 platforms:
   android: "com.example.ds.component.AuraBottomIsland"
   ios: "AuraBottomIsland"
@@ -107,11 +110,11 @@ Traditional bottom navigation bars occupy an opaque rectangle pinned to the bott
 
 ## 6. Motion & Physics
 
-Consumes `AuraTheme.motion` and interruptible spring curves (`Linear` curves prohibited):
+Consumes `AuraTheme.motion` (`Expressive` track recommended for floating island chrome) and interruptible spring curves (`Linear` curves prohibited):
 
-1. **Interactive Press Scale:** Holding any tab or the Split Action island compresses smoothly to `0.92x` via `AuraTheme.motion.pressInSpring()` and rebounds on release with `spring(dampingRatio = 0.65f, stiffness = 450f)`.
-2. **Sliding Active Indicator:** Animates horizontally between tab centers with `spring(dampingRatio = 0.65f, stiffness = 450f)`.
-3. **Elastic Squish & Stretch (`GlassStyle.LIQUID`):** During indicator travel between indices, horizontal stretch scales proportionally (`up to 1.26x width`, `0.86x height`) mid-flight and gently squishes upon settling into the destination slot.
+1. **Interactive Press Scale:** Holding any tab or the Split Action island compresses smoothly to `0.92x` via `AuraTheme.motion.pressInSpring()` and rebounds on release with `AuraTheme.motion.spatialSpring()`.
+2. **Sliding Active Indicator:** Animates horizontally between tab centers with `AuraTheme.motion.spatialSpring()`.
+3. **Elastic Squish & Stretch (`AuraMaterial.LiquidGlass` / legacy `GlassStyle.LIQUID`):** During indicator travel between indices, horizontal stretch scales smoothly via `AuraTheme.motion.elasticStretchSpring()` mid-flight and gently squishes upon settling into the destination slot.
 4. **Gooey Metaball Split/Merge:** Toggling `isActionSplit` animates the gap (`0.dp <-> 10.dp`) with an elastic bridge (`LiquidMetaballBridge`) whose concave liquid neck snaps cleanly past break threshold.
 5. **Reduced Motion (`ANIMATOR_DURATION_SCALE == 0f`):** Replaces overshoot springs and squish deformation with instant `snap()` state transitions.
 
@@ -123,6 +126,7 @@ Consumes `AuraTheme.motion` and interruptible spring curves (`Linear` curves pro
 - [ ] Split Action circular capsule exposes `Role.Button` with non-empty `contentDescription` (`splitActionLabel`).
 - [ ] All interactive tab targets and the Split Action capsule enforce at least `48.dp × 48.dp` touch bounds.
 - [ ] Selected vs. unselected distinction pairs color change (`brand.primary`) with structural indicator pill, icon style (`Filled` vs. `Outlined`), and visible text label.
+- [ ] **Reduced Transparency & Contrast (`VIS-RULE-003`–`004`):** Maintains `>= 4.5:1` label contrast (`>= 3:1` icons/borders) over blurred backdrops and degrades cleanly to opaque `AuraMaterial.Solid` (`colors.surface.floating`) via `AuraTheme.effectiveMaterial(...)` when Reduced Transparency, Battery Saver, or High-Contrast Text is enabled.
 
 ---
 

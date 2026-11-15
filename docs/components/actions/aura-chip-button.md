@@ -3,6 +3,9 @@ id: "aura-chip-button"
 name: "AuraChipButton"
 category: "actions"
 status: "ready"
+layer: "content"
+material_allowed: ["Solid", "Glass"]
+motion_track: "Standard"
 platforms:
   android: "com.example.ds.component.AuraChipButton"
   ios: "AuraChipButton"

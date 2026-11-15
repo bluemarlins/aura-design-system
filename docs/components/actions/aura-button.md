@@ -3,6 +3,9 @@ component_id: "aura.component.button"
 name: "AuraButton"
 category: "actions"
 status: "ready"
+layer: "content"
+material_allowed: ["Solid", "Glass"]
+motion_track: "Standard"
 version: "0.2.0"
 platforms:
   android: "com.example.ds.component.AuraButton"

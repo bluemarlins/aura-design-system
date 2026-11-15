@@ -3,6 +3,9 @@ id: "aura-card"
 name: "AuraCard"
 category: "containment"
 status: "ready"
+layer: "content"
+material_allowed: ["Solid", "Glass"]
+motion_track: "Standard"
 version: "1.0.0"
 platforms:
   android: "com.example.ds.component.AuraCard"
