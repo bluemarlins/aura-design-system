@@ -9,6 +9,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,10 +26,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -45,6 +50,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ds.component.AuraBadge
 import com.example.ds.component.AuraBadgeSize
@@ -57,6 +63,10 @@ import com.example.ds.component.AuraButtonVariant
 import com.example.ds.component.AuraCard
 import com.example.ds.component.AuraCardPadding
 import com.example.ds.component.AuraCardVariant
+import com.example.ds.component.AuraChipButton
+import com.example.ds.component.AuraChipVariant
+import com.example.ds.component.AuraDialog
+import com.example.ds.component.AuraDialogVariant
 import com.example.ds.component.AuraFab
 import com.example.ds.component.AuraIcon
 import com.example.ds.component.AuraIconButton
@@ -70,6 +80,7 @@ import com.example.ds.component.GlassStyle
 import com.example.ds.component.GlassSurface
 import com.example.ds.foundation.motion.AuraMotionDefaults
 import com.example.ds.foundation.motion.AuraMotionProfile
+import com.example.ds.foundation.theme.AuraColorMode
 import com.example.ds.foundation.theme.AuraMaterial
 import com.example.ds.foundation.theme.AuraTheme
 import kotlinx.coroutines.delay
@@ -78,14 +89,24 @@ import kotlinx.coroutines.delay
 @Composable
 fun InteractionPrinciplesPreviewScreen(
     onBack: () -> Unit,
+    isDarkTheme: Boolean = false,
+    onToggleTheme: () -> Unit = {},
+    initialProfile: AuraMotionProfile = AuraTheme.motion.profile,
+    onProfileChange: (AuraMotionProfile) -> Unit = {},
+    initialMaterial: AuraMaterial = AuraTheme.material,
+    onMaterialChange: (AuraMaterial) -> Unit = {},
+    initialReduceMotion: Boolean = AuraTheme.motion.reduceMotion,
+    onReduceMotionChange: (Boolean) -> Unit = {},
+    initialReduceTransparency: Boolean = AuraTheme.reduceTransparency,
+    onReduceTransparencyChange: (Boolean) -> Unit = {},
 ) {
     val c = AuraTheme.colors
     val t = AuraTheme.typography
 
-    var selectedProfile by remember { mutableStateOf(AuraMotionProfile.Standard) }
-    var selectedMaterial by remember { mutableStateOf(AuraMaterial.LiquidGlass) }
-    var simReduceMotion by remember { mutableStateOf(false) }
-    var simReduceTransparency by remember { mutableStateOf(false) }
+    var selectedProfile by remember(initialProfile) { mutableStateOf(initialProfile) }
+    var selectedMaterial by remember(initialMaterial) { mutableStateOf(initialMaterial) }
+    var simReduceMotion by remember(initialReduceMotion) { mutableStateOf(initialReduceMotion) }
+    var simReduceTransparency by remember(initialReduceTransparency) { mutableStateOf(initialReduceTransparency) }
 
     val workbenchMotion = remember(selectedProfile, simReduceMotion) {
         AuraMotionDefaults.forProfile(selectedProfile).copy(reduceMotion = simReduceMotion)
@@ -104,6 +125,7 @@ fun InteractionPrinciplesPreviewScreen(
                     containerColor = c.background.primary,
                     titleContentColor = c.content.primary,
                     navigationIconContentColor = c.content.primary,
+                    actionIconContentColor = c.content.primary,
                 ),
                 navigationIcon = {
                     AuraIconButton(
@@ -113,6 +135,18 @@ fun InteractionPrinciplesPreviewScreen(
                     ) {
                         AuraIcon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = null,
+                        )
+                    }
+                },
+                actions = {
+                    AuraIconButton(
+                        onClick = onToggleTheme,
+                        variant = AuraIconButtonVariant.Ghost,
+                        contentDescription = if (isDarkTheme) "Switch to light theme" else "Switch to dark theme",
+                    ) {
+                        AuraIcon(
+                            imageVector = if (isDarkTheme) Icons.Filled.LightMode else Icons.Filled.DarkMode,
                             contentDescription = null,
                         )
                     }
@@ -148,7 +182,11 @@ fun InteractionPrinciplesPreviewScreen(
                 AuraSegmentedButton(
                     options = profileOptions.map { it.name },
                     selectedIndex = profileOptions.indexOf(selectedProfile),
-                    onOptionSelected = { index -> selectedProfile = profileOptions[index] },
+                    onOptionSelected = { index ->
+                        val next = profileOptions[index]
+                        selectedProfile = next
+                        onProfileChange(next)
+                    },
                     size = AuraSegmentedSize.Small,
                 )
 
@@ -163,20 +201,30 @@ fun InteractionPrinciplesPreviewScreen(
                 AuraSegmentedButton(
                     options = materialOptions.map { it.name },
                     selectedIndex = materialOptions.indexOf(selectedMaterial),
-                    onOptionSelected = { index -> selectedMaterial = materialOptions[index] },
+                    onOptionSelected = { index ->
+                        val next = materialOptions[index]
+                        selectedMaterial = next
+                        onMaterialChange(next)
+                    },
                     size = AuraSegmentedSize.Small,
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
                 AuraSwitch(
                     checked = simReduceMotion,
-                    onCheckedChange = { simReduceMotion = it },
+                    onCheckedChange = {
+                        simReduceMotion = it
+                        onReduceMotionChange(it)
+                    },
                     label = "Simulate Reduce Motion",
                     description = "Forces snap() physics and disables spatial bounce.",
                 )
                 AuraSwitch(
                     checked = simReduceTransparency,
-                    onCheckedChange = { simReduceTransparency = it },
+                    onCheckedChange = {
+                        simReduceTransparency = it
+                        onReduceTransparencyChange(it)
+                    },
                     label = "Simulate Reduce Transparency",
                     description = "Forces Glass/LiquidGlass layers onto Solid floating surfaces.",
                 )
@@ -189,14 +237,13 @@ fun InteractionPrinciplesPreviewScreen(
                 reduceTransparency = simReduceTransparency,
                 motion = workbenchMotion,
             ) {
-                WorkbenchContent(
-                    selectedMaterial = selectedMaterial,
-                )
+                WorkbenchContent(selectedMaterial = selectedMaterial)
             }
         }
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun WorkbenchContent(
     selectedMaterial: AuraMaterial,
@@ -207,9 +254,14 @@ private fun WorkbenchContent(
     val elevation = AuraTheme.elevation
     val effectiveMaterial = AuraTheme.effectiveMaterial()
 
+    var buttonLoading by remember { mutableStateOf(false) }
+    var chipSelected by remember { mutableStateOf(true) }
     var switchState by remember { mutableStateOf(true) }
     var fabExpanded by remember { mutableStateOf(true) }
     var selectedTab by remember { mutableIntStateOf(0) }
+    var isSplitIsland by remember { mutableStateOf(true) }
+    var splitTapCount by remember { mutableIntStateOf(0) }
+    var showSpatialDialog by remember { mutableStateOf(false) }
     var replayNonce by remember { mutableIntStateOf(0) }
     var cascadeStep by remember { mutableIntStateOf(3) }
 
@@ -227,6 +279,28 @@ private fun WorkbenchContent(
                 cascadeStep = index
             }
         }
+    }
+
+    val glassStyle = if (selectedMaterial == AuraMaterial.LiquidGlass) {
+        GlassStyle.LIQUID
+    } else {
+        GlassStyle.FROSTED
+    }
+
+    if (showSpatialDialog) {
+        AuraDialog(
+            visible = true,
+            title = "Spatial Entrance (${m.profile.name})",
+            message = "Enters with spatialSpring(damping=${m.spatialDampingRatio}, stiffness=${m.spatialStiffness}) and scrimFade=${m.scrimFadeDurationMillis}ms.",
+            variant = if (selectedMaterial == AuraMaterial.Solid) {
+                AuraDialogVariant.Standard
+            } else {
+                AuraDialogVariant.Glass
+            },
+            glassStyle = glassStyle,
+            onConfirm = { showSpatialDialog = false },
+            onDismissRequest = { showSpatialDialog = false },
+        )
     }
 
     Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
@@ -254,28 +328,49 @@ private fun WorkbenchContent(
             }
             Spacer(modifier = Modifier.height(4.dp))
             AuraText(
-                text = "spatial(damping=${m.spatialDampingRatio}, stiffness=${m.spatialStiffness}) · pressOut(damping=${m.pressOutDampingRatio}, stiffness=${m.pressOutStiffness}) · reduceMotion=${m.reduceMotion}",
+                text = "pressIn(${m.pressInDampingRatio}/${m.pressInStiffness}) · pressOut(${m.pressOutDampingRatio}/${m.pressOutStiffness}) · reduceMotion=${m.reduceMotion}",
                 style = t.monoSmall,
                 color = c.content.secondary,
             )
             Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 AuraButton(
                     text = "Primary Action",
                     onClick = {},
+                    loading = buttonLoading,
                     variant = AuraButtonVariant.Primary,
                     size = AuraButtonSize.Medium,
                 )
                 AuraButton(
-                    text = "Secondary",
+                    text = "Ghost Scale",
                     onClick = {},
-                    variant = AuraButtonVariant.Secondary,
+                    variant = AuraButtonVariant.Ghost,
                     size = AuraButtonSize.Medium,
                 )
+                AuraIconButton(
+                    onClick = { chipSelected = !chipSelected },
+                    variant = AuraIconButtonVariant.Tonal,
+                    contentDescription = "Favorite interaction",
+                ) {
+                    AuraIcon(imageVector = Icons.Filled.Star, contentDescription = null)
+                }
+                AuraChipButton(
+                    label = if (chipSelected) "Chip Active" else "Chip Idle",
+                    selected = chipSelected,
+                    variant = AuraChipVariant.Filter,
+                    onClick = { chipSelected = !chipSelected },
+                )
             }
+            Spacer(modifier = Modifier.height(8.dp))
+            AuraSwitch(
+                checked = buttonLoading,
+                onCheckedChange = { buttonLoading = it },
+                label = "Button Loading Crossfade",
+                description = "Preserves width & retains In progress semantics.",
+            )
             Spacer(modifier = Modifier.height(12.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -297,13 +392,61 @@ private fun WorkbenchContent(
             }
         }
 
-        // 2. Materiality & Optical Fallback
+        // 2. Spatial & Liquid Physics (Metaball Split + Dialog Spatial Entry)
         AuraCard(
             modifier = Modifier.fillMaxWidth(),
             variant = AuraCardVariant.Outlined,
             padding = AuraCardPadding.Medium,
         ) {
-            AuraText(text = "2. Materiality & Fallback", style = t.titleMedium)
+            AuraText(text = "2. Spatial & Liquid Physics", style = t.titleMedium)
+            Spacer(modifier = Modifier.height(4.dp))
+            AuraText(
+                text = "spatial(${m.spatialDampingRatio}/${m.spatialStiffness}) · elastic(${m.elasticDampingRatio}/${m.elasticStiffness})",
+                style = t.monoSmall,
+                color = c.content.secondary,
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            AuraSwitch(
+                checked = isSplitIsland,
+                onCheckedChange = { isSplitIsland = it },
+                label = "Split Island (Metaball)",
+                description = "Detaches auxiliary pill with elasticStretchSpring() · taps=$splitTapCount",
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            val islandItems = remember {
+                listOf(
+                    AuraBottomIslandItem(id = "home", label = "Home", icon = Icons.Filled.Home),
+                    AuraBottomIslandItem(id = "search", label = "Search", icon = Icons.Filled.Search),
+                    AuraBottomIslandItem(id = "profile", label = "Profile", icon = Icons.Filled.Person),
+                )
+            }
+            AuraBottomIsland(
+                items = islandItems,
+                selectedIndex = selectedTab,
+                onItemSelected = { selectedTab = it },
+                glassStyle = glassStyle,
+                splitActionIcon = Icons.Filled.Add,
+                splitActionLabel = "New action",
+                isActionSplit = isSplitIsland,
+                onSplitActionClick = { splitTapCount++ },
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            AuraButton(
+                text = "Open Spatial AuraDialog",
+                onClick = { showSpatialDialog = true },
+                variant = AuraButtonVariant.Secondary,
+                size = AuraButtonSize.Medium,
+                fullWidth = true,
+            )
+        }
+
+        // 3. Materiality & Optical Fallback
+        AuraCard(
+            modifier = Modifier.fillMaxWidth(),
+            variant = AuraCardVariant.Outlined,
+            padding = AuraCardPadding.Medium,
+        ) {
+            AuraText(text = "3. Materiality & Optical Fallback", style = t.titleMedium)
             Spacer(modifier = Modifier.height(4.dp))
             AuraText(
                 text = "requested=$selectedMaterial · effective=$effectiveMaterial · reduceTransparency=${AuraTheme.reduceTransparency}",
@@ -312,11 +455,6 @@ private fun WorkbenchContent(
             )
             Spacer(modifier = Modifier.height(12.dp))
 
-            val glassStyle = if (selectedMaterial == AuraMaterial.LiquidGlass) {
-                GlassStyle.LIQUID
-            } else {
-                GlassStyle.FROSTED
-            }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -392,30 +530,15 @@ private fun WorkbenchContent(
                     }
                 }
             }
-
-            Spacer(modifier = Modifier.height(14.dp))
-            val islandItems = remember {
-                listOf(
-                    AuraBottomIslandItem(id = "home", label = "Home", icon = Icons.Filled.Home),
-                    AuraBottomIslandItem(id = "search", label = "Search", icon = Icons.Filled.Search),
-                    AuraBottomIslandItem(id = "profile", label = "Profile", icon = Icons.Filled.Person),
-                )
-            }
-            AuraBottomIsland(
-                items = islandItems,
-                selectedIndex = selectedTab,
-                onItemSelected = { selectedTab = it },
-                glassStyle = glassStyle,
-            )
         }
 
-        // 3. Z-Axis Elevation Ladder
+        // 4. Z-Axis Elevation Ladder
         AuraCard(
             modifier = Modifier.fillMaxWidth(),
             variant = AuraCardVariant.Outlined,
             padding = AuraCardPadding.Medium,
         ) {
-            AuraText(text = "3. Z-Axis Elevation Ladder", style = t.titleMedium)
+            AuraText(text = "4. Z-Axis Elevation Ladder", style = t.titleMedium)
             Spacer(modifier = Modifier.height(4.dp))
             AuraText(
                 text = "Five discrete steps (level0..level4) binding shadow & scrim tokens.",
@@ -464,7 +587,7 @@ private fun WorkbenchContent(
             }
         }
 
-        // 4. Staggered Choreography Cascade
+        // 5. Staggered Choreography Cascade
         AuraCard(
             modifier = Modifier.fillMaxWidth(),
             variant = AuraCardVariant.Outlined,
@@ -475,7 +598,7 @@ private fun WorkbenchContent(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                AuraText(text = "4. Staggered Choreography", style = t.titleMedium)
+                AuraText(text = "5. Staggered Choreography", style = t.titleMedium)
                 AuraButton(
                     text = "Replay Cascade",
                     onClick = { replayNonce++ },
@@ -536,5 +659,32 @@ private fun WorkbenchContent(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 412, heightDp = 915)
+@Composable
+private fun InteractionPrinciplesLightPreview() {
+    AuraTheme(
+        colorMode = AuraColorMode.Light,
+        material = AuraMaterial.LiquidGlass,
+        motionProfile = AuraMotionProfile.Standard,
+    ) {
+        InteractionPrinciplesPreviewScreen(onBack = {})
+    }
+}
+
+@Preview(showBackground = true, widthDp = 412, heightDp = 915)
+@Composable
+private fun InteractionPrinciplesDarkPreview() {
+    AuraTheme(
+        colorMode = AuraColorMode.Dark,
+        material = AuraMaterial.LiquidGlass,
+        motionProfile = AuraMotionProfile.Expressive,
+    ) {
+        InteractionPrinciplesPreviewScreen(
+            onBack = {},
+            isDarkTheme = true,
+        )
     }
 }

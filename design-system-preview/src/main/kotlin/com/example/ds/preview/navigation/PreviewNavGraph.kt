@@ -6,6 +6,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.ds.foundation.motion.AuraMotionProfile
+import com.example.ds.foundation.theme.AuraMaterial
 import com.example.ds.preview.catalog.ComponentCatalog
 import com.example.ds.preview.ui.ButtonPreviewScreen
 import com.example.ds.preview.ui.CardPreviewScreen
@@ -62,6 +64,14 @@ private object PreviewRoutes {
 fun PreviewNavGraph(
     isDarkTheme: Boolean,
     onToggleTheme: () -> Unit,
+    motionProfile: AuraMotionProfile = AuraMotionProfile.Standard,
+    onSelectMotionProfile: (AuraMotionProfile) -> Unit = {},
+    material: AuraMaterial = AuraMaterial.Solid,
+    onSelectMaterial: (AuraMaterial) -> Unit = {},
+    reduceMotion: Boolean = false,
+    onToggleReduceMotion: (Boolean) -> Unit = {},
+    reduceTransparency: Boolean = false,
+    onToggleReduceTransparency: (Boolean) -> Unit = {},
 ) {
     val navController = rememberNavController()
 
@@ -73,6 +83,14 @@ fun PreviewNavGraph(
             CatalogHomeScreen(
                 isDarkTheme = isDarkTheme,
                 onToggleTheme = onToggleTheme,
+                motionProfile = motionProfile,
+                onSelectMotionProfile = onSelectMotionProfile,
+                material = material,
+                onSelectMaterial = onSelectMaterial,
+                reduceMotion = reduceMotion,
+                onToggleReduceMotion = onToggleReduceMotion,
+                reduceTransparency = reduceTransparency,
+                onToggleReduceTransparency = onToggleReduceTransparency,
                 onSelectItem = { item ->
                     when (item.id) {
                         ComponentCatalog.COLOR_SCHEME_ID -> navController.navigate(PreviewRoutes.COLOR_SCHEME)
@@ -117,6 +135,16 @@ fun PreviewNavGraph(
         composable(PreviewRoutes.INTERACTION_PRINCIPLES) {
             InteractionPrinciplesPreviewScreen(
                 onBack = { navController.popBackStack() },
+                isDarkTheme = isDarkTheme,
+                onToggleTheme = onToggleTheme,
+                initialProfile = motionProfile,
+                onProfileChange = onSelectMotionProfile,
+                initialMaterial = material,
+                onMaterialChange = onSelectMaterial,
+                initialReduceMotion = reduceMotion,
+                onReduceMotionChange = onToggleReduceMotion,
+                initialReduceTransparency = reduceTransparency,
+                onReduceTransparencyChange = onToggleReduceTransparency,
             )
         }
         composable(PreviewRoutes.BUTTON) {

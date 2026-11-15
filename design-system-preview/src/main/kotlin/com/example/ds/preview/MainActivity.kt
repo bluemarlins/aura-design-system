@@ -12,7 +12,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import com.example.ds.foundation.motion.AuraMotionDefaults
+import com.example.ds.foundation.motion.AuraMotionProfile
 import com.example.ds.foundation.theme.AuraColorMode
+import com.example.ds.foundation.theme.AuraMaterial
 import com.example.ds.foundation.theme.AuraTheme
 import com.example.ds.preview.navigation.PreviewNavGraph
 
@@ -23,9 +26,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             val systemDark = isSystemInDarkTheme()
             var isDarkTheme by rememberSaveable { mutableStateOf(systemDark) }
+            var motionProfile by rememberSaveable { mutableStateOf(AuraMotionProfile.Standard) }
+            var material by rememberSaveable { mutableStateOf(AuraMaterial.Solid) }
+            var reduceMotion by rememberSaveable { mutableStateOf(false) }
+            var reduceTransparency by rememberSaveable { mutableStateOf(false) }
 
             AuraTheme(
                 colorMode = if (isDarkTheme) AuraColorMode.Dark else AuraColorMode.Light,
+                material = material,
+                motionProfile = motionProfile,
+                reduceTransparency = reduceTransparency,
+                motion = AuraMotionDefaults.forProfile(motionProfile).copy(reduceMotion = reduceMotion),
             ) {
                 val auraColors = AuraTheme.colors
                 // Temporary minimal MaterialTheme bridge until Steps 2-5 replace TopAppBar/FilterChip/Switch/Card.
@@ -62,6 +73,14 @@ class MainActivity : ComponentActivity() {
                     PreviewNavGraph(
                         isDarkTheme = isDarkTheme,
                         onToggleTheme = { isDarkTheme = !isDarkTheme },
+                        motionProfile = motionProfile,
+                        onSelectMotionProfile = { motionProfile = it },
+                        material = material,
+                        onSelectMaterial = { material = it },
+                        reduceMotion = reduceMotion,
+                        onToggleReduceMotion = { reduceMotion = it },
+                        reduceTransparency = reduceTransparency,
+                        onToggleReduceTransparency = { reduceTransparency = it },
                     )
                 }
             }

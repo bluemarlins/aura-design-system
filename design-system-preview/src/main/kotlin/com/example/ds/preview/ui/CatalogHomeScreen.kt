@@ -46,6 +46,8 @@ import com.example.ds.component.AuraIconButton
 import com.example.ds.component.AuraIconButtonVariant
 import com.example.ds.component.AuraScaffold
 import com.example.ds.component.AuraText
+import com.example.ds.foundation.motion.AuraMotionProfile
+import com.example.ds.foundation.theme.AuraMaterial
 import com.example.ds.foundation.theme.AuraTheme
 import com.example.ds.preview.catalog.CatalogCategory
 import com.example.ds.preview.catalog.CatalogItem
@@ -58,6 +60,14 @@ fun CatalogHomeScreen(
     isDarkTheme: Boolean,
     onToggleTheme: () -> Unit,
     onSelectItem: (CatalogItem) -> Unit,
+    motionProfile: AuraMotionProfile = AuraMotionProfile.Standard,
+    onSelectMotionProfile: (AuraMotionProfile) -> Unit = {},
+    material: AuraMaterial = AuraMaterial.Solid,
+    onSelectMaterial: (AuraMaterial) -> Unit = {},
+    reduceMotion: Boolean = false,
+    onToggleReduceMotion: (Boolean) -> Unit = {},
+    reduceTransparency: Boolean = false,
+    onToggleReduceTransparency: (Boolean) -> Unit = {},
 ) {
     var selectedCategory by remember { mutableStateOf<CatalogCategory?>(null) }
     val c = AuraTheme.colors
@@ -141,6 +151,57 @@ fun CatalogHomeScreen(
                             onClick = {
                                 selectedCategory = if (selectedCategory == category) null else category
                             },
+                        )
+                    }
+                }
+
+                LazyRow(
+                    contentPadding = PaddingValues(
+                        horizontal = layout.screenMarginHorizontal,
+                        vertical = 2.dp,
+                    ),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    item {
+                        val nextProfile = if (motionProfile == AuraMotionProfile.Standard) {
+                            AuraMotionProfile.Expressive
+                        } else {
+                            AuraMotionProfile.Standard
+                        }
+                        AuraChipButton(
+                            label = "Motion: ${motionProfile.name}",
+                            selected = motionProfile == AuraMotionProfile.Expressive,
+                            variant = AuraChipVariant.Filter,
+                            onClick = { onSelectMotionProfile(nextProfile) },
+                        )
+                    }
+                    item {
+                        val nextMaterial = when (material) {
+                            AuraMaterial.Solid -> AuraMaterial.Glass
+                            AuraMaterial.Glass -> AuraMaterial.LiquidGlass
+                            AuraMaterial.LiquidGlass -> AuraMaterial.Solid
+                        }
+                        AuraChipButton(
+                            label = "Material: ${material.name}",
+                            selected = material != AuraMaterial.Solid,
+                            variant = AuraChipVariant.Filter,
+                            onClick = { onSelectMaterial(nextMaterial) },
+                        )
+                    }
+                    item {
+                        AuraChipButton(
+                            label = "Reduce Motion",
+                            selected = reduceMotion,
+                            variant = AuraChipVariant.Filter,
+                            onClick = { onToggleReduceMotion(!reduceMotion) },
+                        )
+                    }
+                    item {
+                        AuraChipButton(
+                            label = "Reduce Transparency",
+                            selected = reduceTransparency,
+                            variant = AuraChipVariant.Filter,
+                            onClick = { onToggleReduceTransparency(!reduceTransparency) },
                         )
                     }
                 }
