@@ -34,6 +34,8 @@ object ComponentCatalog {
     const val CHECKBOX_ID = "checkbox"
     const val SWITCH_ID = "switch"
     const val RADIO_ID = "radio"
+    const val TOP_APP_BAR_ID = "top-app-bar"
+    const val BOTTOM_ISLAND_ID = "bottom-island"
     const val CARD_ID = "card"
 
     val items: List<CatalogItem> = listOf(
@@ -150,11 +152,18 @@ object ComponentCatalog {
             status = CatalogStatus.Planned,
         ),
         CatalogItem(
-            id = "top-app-bar",
-            name = "AuraTopAppBar",
+            id = TOP_APP_BAR_ID,
+            name = "AuraTopAppBar · Floating Pill",
             category = CatalogCategory.Navigation,
-            description = "Screen header with navigation and actions.",
-            status = CatalogStatus.Planned,
+            description = "Scroll-adaptive Floating Pill Bar with Dual Glass & Morphing Popover.",
+            status = CatalogStatus.Ready,
+        ),
+        CatalogItem(
+            id = BOTTOM_ISLAND_ID,
+            name = "AuraBottomIsland · Split Island",
+            category = CatalogCategory.Navigation,
+            description = "Floating Bottom Island with Metaball split action & elastic sliding pill.",
+            status = CatalogStatus.Ready,
         ),
         CatalogItem(
             id = CARD_ID,

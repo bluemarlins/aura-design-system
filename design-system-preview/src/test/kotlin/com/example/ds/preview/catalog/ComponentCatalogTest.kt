@@ -61,6 +61,14 @@ class ComponentCatalogTest {
         val card = ComponentCatalog.findById(ComponentCatalog.CARD_ID)
         assertNotNull(card)
         assertEquals(CatalogStatus.Ready, card?.status)
+
+        val topAppBar = ComponentCatalog.findById(ComponentCatalog.TOP_APP_BAR_ID)
+        assertNotNull(topAppBar)
+        assertEquals(CatalogStatus.Ready, topAppBar?.status)
+
+        val bottomIsland = ComponentCatalog.findById(ComponentCatalog.BOTTOM_ISLAND_ID)
+        assertNotNull(bottomIsland)
+        assertEquals(CatalogStatus.Ready, bottomIsland?.status)
     }
 
     @Test

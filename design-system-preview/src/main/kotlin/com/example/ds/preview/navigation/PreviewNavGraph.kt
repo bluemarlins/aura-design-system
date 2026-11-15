@@ -14,6 +14,7 @@ import com.example.ds.preview.ui.CheckboxPreviewScreen
 import com.example.ds.preview.ui.ChipButtonPreviewScreen
 import com.example.ds.preview.ui.ColorSchemePreviewScreen
 import com.example.ds.preview.ui.FabPreviewScreen
+import com.example.ds.preview.ui.FloatingNavigationPreviewScreen
 import com.example.ds.preview.ui.IconButtonPreviewScreen
 import com.example.ds.preview.ui.PlannedComponentScreen
 import com.example.ds.preview.ui.RadioPreviewScreen
@@ -35,6 +36,8 @@ private object PreviewRoutes {
     const val CHECKBOX = "component/${ComponentCatalog.CHECKBOX_ID}"
     const val SWITCH = "component/${ComponentCatalog.SWITCH_ID}"
     const val RADIO = "component/${ComponentCatalog.RADIO_ID}"
+    const val TOP_APP_BAR = "component/${ComponentCatalog.TOP_APP_BAR_ID}"
+    const val BOTTOM_ISLAND = "component/${ComponentCatalog.BOTTOM_ISLAND_ID}"
     const val CARD = "component/${ComponentCatalog.CARD_ID}"
     const val PLANNED = "planned/{itemId}"
 
@@ -69,6 +72,8 @@ fun PreviewNavGraph(
                         ComponentCatalog.CHECKBOX_ID -> navController.navigate(PreviewRoutes.CHECKBOX)
                         ComponentCatalog.SWITCH_ID -> navController.navigate(PreviewRoutes.SWITCH)
                         ComponentCatalog.RADIO_ID -> navController.navigate(PreviewRoutes.RADIO)
+                        ComponentCatalog.TOP_APP_BAR_ID -> navController.navigate(PreviewRoutes.TOP_APP_BAR)
+                        ComponentCatalog.BOTTOM_ISLAND_ID -> navController.navigate(PreviewRoutes.BOTTOM_ISLAND)
                         ComponentCatalog.CARD_ID -> navController.navigate(PreviewRoutes.CARD)
                         else -> navController.navigate(PreviewRoutes.planned(item.id))
                     }
@@ -135,6 +140,22 @@ fun PreviewNavGraph(
         composable(PreviewRoutes.CARD) {
             CardPreviewScreen(
                 onBack = { navController.popBackStack() },
+            )
+        }
+        composable(PreviewRoutes.TOP_APP_BAR) {
+            FloatingNavigationPreviewScreen(
+                isDarkTheme = isDarkTheme,
+                onToggleTheme = onToggleTheme,
+                onBack = { navController.popBackStack() },
+                initialTabIndex = 0,
+            )
+        }
+        composable(PreviewRoutes.BOTTOM_ISLAND) {
+            FloatingNavigationPreviewScreen(
+                isDarkTheme = isDarkTheme,
+                onToggleTheme = onToggleTheme,
+                onBack = { navController.popBackStack() },
+                initialTabIndex = 1,
             )
         }
         composable(
