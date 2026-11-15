@@ -8,17 +8,18 @@
 
 **Aura** (`aura-design-system`) is a general-purpose Android (Jetpack Compose) design system built directly on Compose Foundation (`androidx.compose.foundation`) and Compose UI without any `androidx.compose.material3` dependency in the `:design-system` library module.
 
-Inspired by Samsung One UI's calm surface hierarchy and blue-led clarity, Aura pairs high-legibility solid surfaces with first-class **Dual-Materiality Glassmorphism** (`GlassStyle.FROSTED` & `GlassStyle.LIQUID`), **Tactile Spring Cushion** interaction motion (`AuraMotion`), and **Smallest Width × Display Ratio** responsive layouts (`AuraWindowInfo` / `AuraLayout`).
+Inspired by Samsung One UI's calm surface hierarchy and blue-led clarity, Aura pairs high-legibility solid surfaces with first-class **Dual-Materiality Glassmorphism** (`AuraMaterial.Solid` / `Glass` / `LiquidGlass` + `reduceTransparency` fallbacks), **Dual-Track Interaction Physics** (`AuraMotionProfile.Standard` / `Expressive` via `AuraMotion`), a 5-step **Z-Axis Depth Ladder** (`AuraElevation`), and **Smallest Width × Display Ratio** responsive layouts (`AuraWindowInfo` / `AuraLayout`).
 
-Every component in `:design-system` is backed by a bidirectional **`Specs ↔ Code`** Markdown contract under [`docs/components/`](docs/components/), verified automatically on every build by [`SpecCodeConsistencyTest`](design-system/src/test/kotlin/com/example/ds/contract/SpecCodeConsistencyTest.kt) against rules `EVAL-001` through `EVAL-006`.
+Every component in `:design-system` is backed by a bidirectional **`Specs ↔ Code`** Markdown contract under [`docs/components/`](docs/components/), verified automatically on every build by [`SpecCodeConsistencyTest`](design-system/src/test/kotlin/com/example/ds/contract/SpecCodeConsistencyTest.kt), [`MotionTokenInvariantTest`](design-system/src/test/kotlin/com/example/ds/contract/MotionTokenInvariantTest.kt), [`MaterialResolutionTest`](design-system/src/test/kotlin/com/example/ds/foundation/theme/MaterialResolutionTest.kt), and Robolectric `mainClock` tests ([`ComponentMotionBehaviorTest`](design-system/src/test/kotlin/com/example/ds/motion/ComponentMotionBehaviorTest.kt)) against rules `EVAL-001` through `EVAL-008`.
 
-### Repository Modules
+### Repository Modules & Assets
 
 | Module | Description |
 |---|---|
 | [`:design-system`](design-system/) | Publishable Android library (`com.example.ds`) containing foundation tokens, `AuraTheme`, `GlassSurface`, and all UI components. |
-| [`:design-system-preview`](design-system-preview/) | Interactive catalog app showcasing Light/Dark themes, token matrices, responsive breakpoints, and live component playgrounds. |
+| [`:design-system-preview`](design-system-preview/) | Interactive catalog app showcasing Light/Dark themes, Interaction Principles playgrounds, token matrices, and live components. |
 | [`docs/`](docs/) | Foundation specifications (`docs/foundation/`) and bidirectional component specs (`docs/components/`). |
+| [`skills/aura-design-system/`](skills/aura-design-system/) | Distributable **Consumer App Skill Kit** (`SKILL.md`, API/token references, recipes, AAR sync & app compliance verification scripts) for AI vibe-coding in external Android apps. |
 
 ---
 
@@ -278,10 +279,33 @@ fun SpatialHomeScreen() {
 }
 ```
 
+### AI Agent Skill for App Developers (`skills/aura-design-system/`)
+
+Building or vibe-coding an external Android app with Aura? Install the standalone **Consumer Skill Kit** from [`skills/aura-design-system/`](skills/aura-design-system/) so coding agents automatically apply `AuraTheme` tokens, `Standard`/`Expressive` motion rules, 4-layer `Glass`/`LiquidGlass` discipline, and zero-M3 guardrails:
+
+```powershell
+# 1. Build latest :design-system release AAR and sync AAR + skill into your consumer app
+#    (Installs AAR to <app>/app/libs/ and skills to .agents/skills/ & .claude/skills/)
+powershell -ExecutionPolicy Bypass -File skills/aura-design-system/scripts/install-aura-to-app.ps1 `
+    -TargetAppDir C:\path\to\your-android-app
+
+# 2. Audit consumer app Kotlin files for Material 3 imports, hardcoded Color(0x...), .sp, or tween/spring literals
+powershell -ExecutionPolicy Bypass -File skills/aura-design-system/scripts/verify-aura-app.ps1 `
+    -TargetAppDir C:\path\to\your-android-app `
+    -FailOnViolation
+```
+
+**Skill Kit Contents:**
+- [`SKILL.md`](skills/aura-design-system/SKILL.md) — Core rules, quick setup, component selection matrix, and progressive disclosure guide
+- [`references/tokens-and-theme.md`](skills/aura-design-system/references/tokens-and-theme.md) — `AuraColors`, 16 `AuraTypography` roles, `AuraLayout`, `AuraMotion`, `AuraElevation`, and `AuraMaterial`
+- [`references/components-api.md`](skills/aura-design-system/references/components-api.md) — Complete Kotlin signatures across all 21 Ready components and `GlassSurface` helpers
+- [`references/motion-and-visual-rules.md`](skills/aura-design-system/references/motion-and-visual-rules.md) — 4-layer surface discipline (`VIS-RULE-001`–`007`) & motion rules (`MOT-RULE-001`–`007`)
+- [`references/recipes-and-patterns.md`](skills/aura-design-system/references/recipes-and-patterns.md) — Copy-ready `FloatingGlassScaffold`, `AuraScaffold`, `AuraAdaptiveTwoPane`, `AuraDialog`, and app gap-component templates
+
 ### Running the Preview App & Verifying Contracts
 
 ```powershell
-# Run all unit tests (including SpecCodeConsistencyTest EVAL-001..EVAL-006)
+# Run all unit tests (SpecCodeConsistencyTest EVAL-001..008, MotionTokenInvariantTest, MaterialResolutionTest, ComponentMotionBehaviorTest)
 .\gradlew.bat testDebugUnitTest
 
 # Build release AAR and preview APK
@@ -299,15 +323,16 @@ fun SpatialHomeScreen() {
 
 - **Primitive (`AuraPalette`) → Semantic (`AuraColors`)**: Cool-neutral One UI-aligned palette (`Neutral50` `#F2F3F7` Light canvas, OLED-true `Neutral1000` `#000000` Dark canvas, vivid `Blue600`/`Blue400` brand accents) mapped to role groups (`background`, `surface`, `content`, `brand`, `border`, `status`, `interaction`).
 - **Typography (`AuraTypography` + `AuraText`)**: 16 semantic text roles (`displayLarge`..`displayMedium`, `headline*`, `title*`, `body*`, `label*`, `monoMedium`, `monoSmall` with `tnum` tabular numerals). Display, Headline, and Title roles scale automatically via `AuraTheme.layout.typographyScale` (`0.92f`–`1.08f`) while preserving Body, Label, and Mono legibility.
-- **Tactile Spring Cushion (`AuraMotion`)**: Replaces Material radial ripples with GPU-accelerated spring compression (`pressInSpring`, `pressOutSpring`, `iconSpring`), asymmetric attack/release durations (`90ms` / `180ms`), `110ms` minimum visual press latch inside scrollable lists, and automatic Reduced Motion fallback (`ANIMATOR_DURATION_SCALE == 0f`).
+- **Tactile Spring Cushion & Dual-Track Motion (`AuraMotion` / `AuraMotionProfile`)**: Replaces Material radial ripples with GPU-accelerated spring compression (`pressInSpring`, `pressOutSpring`, `iconSpring`), dual-track profiles (`Standard` for restrained productivity flows vs. `Expressive` for spatial chrome and modal choreography), `spatialSpring`/`elasticStretchSpring`, staggered delays capped at `400ms`, asymmetric attack/release durations (`90ms` / `180ms`), `110ms` minimum visual press latch, and automatic Reduced Motion fallback (`ANIMATOR_DURATION_SCALE == 0f` or `AuraMotion.reduceMotion`).
 - **Two-Axis Responsive Layout (`Smallest Width × Display Ratio`)**: Classifies windows across `AuraWidthClass` (`ExtraSmall`, `Compact`, `Medium`, `Expanded`), `AuraHeightClass`, and `AuraDisplayRatio` (`UltraTall`, `Portrait`, `Square`, `Landscape`, `UltraWide`) to provide deterministic margins, column counts (`gridColumns`), `maxContentWidth`, and two-pane split ratios (`AuraAdaptiveTwoPane`, `AuraAdaptiveGrid`).
+- **Z-Axis Depth Ladder (`AuraElevation`)**: 5 stepped elevation & protective scrim levels (`level0`–`level4`, `0.dp`–`24.dp`) governing shadows and gradient edge scrims cleanly across layers.
 
 ### 2. Dual-Materiality Glassmorphism & Spatial Navigation
 
-- **`GlassSurface` (`FROSTED` & `LIQUID`)**: Live Layer 0 pixel sampling (`rememberGlassBackdropState` + `Modifier.glassBackdropSource`) with graceful multi-API degradation:
-  - **API 33+**: AGSL `RuntimeShader` droplet bevel refraction, chromatic RGB dispersion, and inner Fresnel highlights in `LIQUID` mode.
-  - **API 31–32**: `RenderEffect` backdrop blur and saturation boost.
-  - **API 26–30**: Crisp translucent surface fallback with specular highlight borders.
+- **`AuraMaterial` & `GlassSurface` (`Solid`, `Glass`/`FROSTED`, `LiquidGlass`/`LIQUID`)**: Live Layer 0 pixel sampling (`rememberGlassBackdropState` + `Modifier.glassBackdropSource`) routed through `resolveEffectiveMaterial(...)` and `AuraTheme.reduceTransparency`:
+  - **API 33+**: AGSL `RuntimeShader` droplet bevel refraction, chromatic RGB dispersion, and inner Fresnel highlights in `LiquidGlass` mode (`<= 1` hero per screen).
+  - **API 31–32**: `RenderEffect` backdrop blur and saturation boost in `Glass` mode (`<= 3` live-blur surfaces per viewport).
+  - **API 26–30 & Reduced Transparency (`PowerSaveMode` / High-Contrast Text)**: Clean opaque `Solid` (`aura_glass_surface_solid_fallback`) or translucent bordered fallback.
 - **`FloatingGlassScaffold`**: 4-layer edge-to-edge spatial container coordinating Layer 0 live backdrop recording, Layer 1 edge scrims, Layer 2 floating chrome clearance (`calculateBottomIslandContentPadding`), and Layer 3 dismissible overlays.
 - **`AuraTopAppBar` / `FloatingTopPillBar`**: Supports `FloatingCapsule`, `FloatingSplit`, and `SurfaceDocked` modes, scroll-reactive opacity/pill transitions (`rememberFloatingScrollProgress`), `MorphingMorePopover`, and Metaball action splitting.
 - **`AuraBottomIsland` / `FloatingBottomIsland`**: Stadium capsule navigation bar with spring-driven sliding active indicator pill, velocity-coupled **Elastic Squish & Stretch**, and `LiquidMetaballBridge` split auxiliary FAB.
@@ -339,13 +364,15 @@ fun SpatialHomeScreen() {
 | **Feedback** | `AuraBadge` / `AuraBadgedBox` | `Dot`, `Small`, and `Medium` semantic pills and `"99+"` count badges | [`aura-badge.md`](docs/components/feedback/aura-badge.md) |
 | **Layout** | `AuraScaffold` & `AuraAdaptiveTwoPane` & `AuraAdaptiveGrid` | Zero-M3 screen scaffolds and adaptive split/grid containers | [`aura-scaffold.md`](docs/components/layout/aura-scaffold.md) · [`aura-adaptive-two-pane.md`](docs/components/layout/aura-adaptive-two-pane.md) |
 
-### 4. Automated `Specs ↔ Code` Quality Gate (`EVAL-001` – `EVAL-006`)
+### 4. Automated `Specs ↔ Code` Quality Gate (`EVAL-001` – `EVAL-008`)
 
-Every component specification and Kotlin source file is verified by [`SpecCodeConsistencyTest`](design-system/src/test/kotlin/com/example/ds/contract/SpecCodeConsistencyTest.kt) against [`01-component-evaluation-ruleset.md`](docs/components/01-component-evaluation-ruleset.md):
+Every component specification and Kotlin source file is verified by [`SpecCodeConsistencyTest`](design-system/src/test/kotlin/com/example/ds/contract/SpecCodeConsistencyTest.kt), [`MotionTokenInvariantTest`](design-system/src/test/kotlin/com/example/ds/contract/MotionTokenInvariantTest.kt), [`MaterialResolutionTest`](design-system/src/test/kotlin/com/example/ds/foundation/theme/MaterialResolutionTest.kt), and [`ComponentMotionBehaviorTest`](design-system/src/test/kotlin/com/example/ds/motion/ComponentMotionBehaviorTest.kt) against [`01-component-evaluation-ruleset.md`](docs/components/01-component-evaluation-ruleset.md):
 
 - **`EVAL-001`** — Explicit usage principles (`When to Use`, `When NOT to Use`, and `Do / Don't` rows).
 - **`EVAL-002`** — Semantic token compliance (`AuraTheme.colors` / `AuraTheme.typography`, zero `material3` imports, zero hardcoded hex colors in production code).
 - **`EVAL-003`** — Responsive behavior across `ExtraSmall`, `Compact`, `Square`, `UltraWide`, and `Expanded` profiles.
-- **`EVAL-004`** — `AuraTheme.motion` interaction contract and Reduced Motion fallback.
+- **`EVAL-004`** — `AuraTheme.motion` interaction contract, zero hardcoded numeric `tween`/`spring` literals in production components, and Reduced Motion fallback.
 - **`EVAL-005`** — Deterministic state precedence and `48dp` minimum accessible hit targets.
 - **`EVAL-006`** — Cross-platform API blocks (`ANDROID`, `IOS`, `WEB`) with automated Kotlin parameter signature verification.
+- **`EVAL-007`** — Layer & material compliance (`layer` & `material_allowed` frontmatter, no `GlassSurface` in `content`/`canvas` layers, `Reduced Transparency` & `4.5:1` contrast docs, SDK fallback matrix).
+- **`EVAL-008`** — Motion track governance (`motion_track` frontmatter) and deterministic Robolectric + Compose `mainClock` verification (`ComponentMotionBehaviorTest`).
