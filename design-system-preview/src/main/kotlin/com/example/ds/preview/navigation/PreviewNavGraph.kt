@@ -17,7 +17,9 @@ import com.example.ds.preview.ui.ChipButtonPreviewScreen
 import com.example.ds.preview.ui.ColorSchemePreviewScreen
 import com.example.ds.preview.ui.DateTimePickerPreviewScreen
 import com.example.ds.preview.ui.DialogBadgePreviewScreen
+import com.example.ds.preview.ui.DividerPreviewScreen
 import com.example.ds.preview.ui.FabPreviewScreen
+import com.example.ds.preview.ui.FeedbackProgressSnackbarPreviewScreen
 import com.example.ds.preview.ui.FloatingNavigationPreviewScreen
 import com.example.ds.preview.ui.IconButtonPreviewScreen
 import com.example.ds.preview.ui.InteractionPrinciplesPreviewScreen
@@ -54,7 +56,10 @@ private object PreviewRoutes {
     const val BOTTOM_ISLAND = "component/${ComponentCatalog.BOTTOM_ISLAND_ID}"
     const val CARD = "component/${ComponentCatalog.CARD_ID}"
     const val DIALOG = "component/${ComponentCatalog.DIALOG_ID}"
+    const val DIVIDER = "component/${ComponentCatalog.DIVIDER_ID}"
     const val BADGE = "component/${ComponentCatalog.BADGE_ID}"
+    const val PROGRESS_BAR = "component/${ComponentCatalog.PROGRESS_BAR_ID}"
+    const val SNACKBAR = "component/${ComponentCatalog.SNACKBAR_ID}"
     const val PLANNED = "planned/{itemId}"
 
     fun planned(itemId: String): String = "planned/$itemId"
@@ -114,7 +119,10 @@ fun PreviewNavGraph(
                         ComponentCatalog.BOTTOM_ISLAND_ID -> navController.navigate(PreviewRoutes.BOTTOM_ISLAND)
                         ComponentCatalog.CARD_ID -> navController.navigate(PreviewRoutes.CARD)
                         ComponentCatalog.DIALOG_ID -> navController.navigate(PreviewRoutes.DIALOG)
+                        ComponentCatalog.DIVIDER_ID -> navController.navigate(PreviewRoutes.DIVIDER)
                         ComponentCatalog.BADGE_ID -> navController.navigate(PreviewRoutes.BADGE)
+                        ComponentCatalog.PROGRESS_BAR_ID -> navController.navigate(PreviewRoutes.PROGRESS_BAR)
+                        ComponentCatalog.SNACKBAR_ID -> navController.navigate(PreviewRoutes.SNACKBAR)
                         else -> navController.navigate(PreviewRoutes.planned(item.id))
                     }
                 },
@@ -230,10 +238,27 @@ fun PreviewNavGraph(
                 initialFocusBadge = false,
             )
         }
+        composable(PreviewRoutes.DIVIDER) {
+            DividerPreviewScreen(
+                onBack = { navController.popBackStack() },
+            )
+        }
         composable(PreviewRoutes.BADGE) {
             DialogBadgePreviewScreen(
                 onBack = { navController.popBackStack() },
                 initialFocusBadge = true,
+            )
+        }
+        composable(PreviewRoutes.PROGRESS_BAR) {
+            FeedbackProgressSnackbarPreviewScreen(
+                onBack = { navController.popBackStack() },
+                initialFocusSnackbar = false,
+            )
+        }
+        composable(PreviewRoutes.SNACKBAR) {
+            FeedbackProgressSnackbarPreviewScreen(
+                onBack = { navController.popBackStack() },
+                initialFocusSnackbar = true,
             )
         }
         composable(PreviewRoutes.TOP_APP_BAR) {

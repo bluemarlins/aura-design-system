@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -69,7 +70,7 @@ fun TypographyLayoutPreviewScreen(
             TopAppBar(
                 title = {
                     AuraText(
-                        text = "AuraTypography & Layout",
+                        text = "AuraTypography, Shapes & Layout",
                         style = AuraTheme.typography.titleLarge,
                     )
                 },
@@ -282,6 +283,58 @@ private fun TypographySpecimensPane() {
                     style = style,
                     sample = sample,
                 )
+            }
+        }
+
+        val shapes = AuraTheme.shapes
+        val shapeTokens = listOf(
+            Triple("extraSmall", "4.dp", shapes.extraSmall),
+            Triple("small", "8.dp", shapes.small),
+            Triple("medium", "12.dp", shapes.medium),
+            Triple("large", "16.dp", shapes.large),
+            Triple("extraLarge", "24.dp", shapes.extraLarge),
+            Triple("full", "CircleShape", shapes.full),
+        )
+        AuraText(
+            text = "AuraShapes Corner Tokens",
+            style = t.titleMedium,
+            modifier = Modifier.padding(top = 8.dp),
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(c.surface.default, cardShape)
+                .border(1.dp, c.border.subtle, cardShape)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            shapeTokens.forEach { (name, radiusLabel, shape) ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(40.dp)
+                            .background(c.brand.subtle, shape)
+                            .border(1.dp, c.brand.primary, shape)
+                            .padding(horizontal = 12.dp),
+                        contentAlignment = Alignment.CenterStart,
+                    ) {
+                        AuraText(
+                            text = "AuraTheme.shapes.$name",
+                            style = t.monoSmall,
+                            color = c.brand.onSubtle,
+                        )
+                    }
+                    AuraText(
+                        text = radiusLabel,
+                        style = t.monoSmall,
+                        color = c.content.tertiary,
+                    )
+                }
             }
         }
     }

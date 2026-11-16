@@ -101,11 +101,23 @@ class ComponentCatalogTest {
         val badge = ComponentCatalog.findById(ComponentCatalog.BADGE_ID)
         assertNotNull(badge)
         assertEquals(CatalogStatus.Ready, badge?.status)
+
+        val divider = ComponentCatalog.findById(ComponentCatalog.DIVIDER_ID)
+        assertNotNull(divider)
+        assertEquals(CatalogStatus.Ready, divider?.status)
+
+        val progressBar = ComponentCatalog.findById(ComponentCatalog.PROGRESS_BAR_ID)
+        assertNotNull(progressBar)
+        assertEquals(CatalogStatus.Ready, progressBar?.status)
+
+        val snackbar = ComponentCatalog.findById(ComponentCatalog.SNACKBAR_ID)
+        assertNotNull(snackbar)
+        assertEquals(CatalogStatus.Ready, snackbar?.status)
     }
 
     @Test
     fun `every registered catalog item has Ready status`() {
-        assertEquals(22, ComponentCatalog.items.size)
+        assertEquals(25, ComponentCatalog.items.size)
         assertEquals(
             setOf(CatalogStatus.Ready),
             ComponentCatalog.items.map { it.status }.toSet(),

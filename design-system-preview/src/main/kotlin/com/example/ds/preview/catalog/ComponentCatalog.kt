@@ -44,7 +44,10 @@ object ComponentCatalog {
     const val BOTTOM_ISLAND_ID = "bottom-island"
     const val CARD_ID = "card"
     const val DIALOG_ID = "dialog"
+    const val DIVIDER_ID = "divider"
     const val BADGE_ID = "badge"
+    const val PROGRESS_BAR_ID = "progress-bar"
+    const val SNACKBAR_ID = "snackbar"
 
     val items: List<CatalogItem> = listOf(
         CatalogItem(
@@ -56,9 +59,9 @@ object ComponentCatalog {
         ),
         CatalogItem(
             id = TYPOGRAPHY_LAYOUT_ID,
-            name = "AuraTypography & Layout",
+            name = "AuraTypography, Shapes & Layout",
             category = CatalogCategory.Foundation,
-            description = "Responsive typography scale and 2-axis layout (Smallest Width × Display Ratio).",
+            description = "Responsive typography scale, AuraShapes corner tokens, and 2-axis layout.",
             status = CatalogStatus.Ready,
         ),
         CatalogItem(
@@ -195,10 +198,31 @@ object ComponentCatalog {
             status = CatalogStatus.Ready,
         ),
         CatalogItem(
+            id = DIVIDER_ID,
+            name = "AuraDivider",
+            category = CatalogCategory.Containment,
+            description = "Hairline horizontal and vertical separator using semantic border tokens.",
+            status = CatalogStatus.Ready,
+        ),
+        CatalogItem(
             id = BADGE_ID,
             name = "AuraBadge",
             category = CatalogCategory.Feedback,
             description = "Compact count, status pill, and unread presence indicator.",
+            status = CatalogStatus.Ready,
+        ),
+        CatalogItem(
+            id = PROGRESS_BAR_ID,
+            name = "AuraProgressBar",
+            category = CatalogCategory.Feedback,
+            description = "Linear and segmented step progress indicators with semantic status variants.",
+            status = CatalogStatus.Ready,
+        ),
+        CatalogItem(
+            id = SNACKBAR_ID,
+            name = "AuraSnackbar",
+            category = CatalogCategory.Feedback,
+            description = "Queued transient feedback banner with Solid/Glass materiality and scaffold integration.",
             status = CatalogStatus.Ready,
         ),
     )
