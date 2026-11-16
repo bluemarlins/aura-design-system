@@ -92,6 +92,7 @@ Every screen across **My Planner**, **My Finance**, **My Drink Diary**, and **`:
 | `topBar` | Empty composable | Rendered at top; its height sets top inset if present (with window top inset fallback when absent) |
 | `bottomBar` | Empty composable | Rendered at bottom; its height sets bottom inset if present |
 | `floatingActionButton` | Empty composable | Placed at `Alignment.BottomEnd`, `16px` margin from `bottomBar` top or bottom window inset |
+| `snackbarHost` | Empty composable | Centered horizontally above `bottomBar` or bottom system inset |
 | `containerColor` | `AuraTheme.colors.background.primary` | Screen canvas color (`background.secondary` allowed for grouped sheet-style screens) |
 | `contentColor` | `AuraTheme.colors.content.primary` | Provided via `LocalAuraContentColor` to descendants |
 | `contentWindowInsets` | `WindowInsets.systemBars` | Safe area insets propagated to `innerPadding` when bars are absent |
@@ -147,6 +148,7 @@ fun AuraScaffold(
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
+    snackbarHost: @Composable () -> Unit = {},
     containerColor: Color = AuraTheme.colors.background.primary,
     contentColor: Color = AuraTheme.colors.content.primary,
     contentWindowInsets: WindowInsets = WindowInsets.systemBars,

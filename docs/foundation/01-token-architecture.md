@@ -21,7 +21,7 @@ Tier 3: Component (future)        ──▶ Component-specific bindings (optiona
 
 ## 3. Kotlin Naming & API Structure
 
-- **Brand prefix:** `Aura` (`AuraTheme`, `AuraColors`, `AuraTypography`, `AuraMotion`, `AuraWindowInfo`, `AuraLayout`, `AuraPalette`, future `AuraSpacing`).
+- **Brand prefix:** `Aura` (`AuraTheme`, `AuraColors`, `AuraTypography`, `AuraShapes`, `AuraMotion`, `AuraWindowInfo`, `AuraLayout`, `AuraPalette`, future `AuraSpacing`).
 - **Immutability:** Token containers are `@Immutable data class` types backed by `staticCompositionLocalOf` in `AuraTheme`.
 - **Naming grammar:** `{domain}.{group}.{role}` in Kotlin (`AuraTheme.colors.surface.floating`, `AuraTheme.typography.titleMedium`, `AuraTheme.layout.gridColumns`, `AuraTheme.motion.pressInSpring()`).
 

@@ -18,8 +18,8 @@ Defines the **Containment Component Taxonomy** and the **Surface Separation Prin
 | `AuraCard` | Grouped surface container (`Elevated`, `Filled`, `Outlined`, `Glass`) with optional interactive click | Holdings summary (**Finance**), Tasting log entry (**Drink Diary**), Agenda block (**Planner**), Glass widget (**Launcher**) |
 | `AuraListItem` | Structured single/multi-line row inside lists or settings sheets *(Planned)* | Transaction rows (**Finance**), Preference toggles (**Settings**) |
 | `AuraBottomSheet` | Modal or docked bottom overlay sheet *(Planned)* | Quick log entry (**Drink Diary**), Account filter sheet (**Finance**) |
-| `AuraDialog` | High-priority modal decision / alert container *(Planned)* | Destructive delete confirmation, Quick edit form |
-| `AuraDivider` | Subtle `1.dp` hairline separator (`border.subtle`) *(Planned)* | Section breaks inside dense cards or lists |
+| `AuraDialog` | High-priority modal decision / alert container | Destructive delete confirmation, Quick edit form |
+| `AuraDivider` | Subtle `1.dp` hairline separator (`border.subtle`, `default`, `strong`) | Section breaks inside dense cards, detail views, or lists |
 
 ---
 

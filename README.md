@@ -1,6 +1,6 @@
 # Aura Design System
 
-**Version `1.0.0`** · One UI-inspired, zero-Material 3 Jetpack Compose design system featuring Glassmorphism, tactile spring physics, and two-axis adaptive layouts.
+**Version `1.1.0`** · One UI-inspired, zero-Material 3 Jetpack Compose design system featuring Glassmorphism, tactile spring physics, and two-axis adaptive layouts.
 
 ---
 
@@ -54,19 +54,19 @@ Add the library dependency to your module's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.github.bluemarlins:aura-design-system:1.0.0")
+    implementation("com.github.bluemarlins:aura-design-system:1.1.0")
 }
 ```
 
-#### Option 2 — Direct AAR from GitHub Releases (`1.0.0`)
+#### Option 2 — Direct AAR from GitHub Releases (`1.1.0`)
 
-1. Download `aura-design-system-1.0.0.aar` (and optionally `aura-design-system-1.0.0-sources.jar`) from the [GitHub Releases (`1.0.0`)](https://github.com/bluemarlins/aura-design-system/releases/tag/1.0.0) page.
-2. Place the `.aar` file inside your app module's `libs/` directory (e.g., `app/libs/aura-design-system-1.0.0.aar`).
+1. Download `aura-design-system-1.1.0.aar` (and optionally `aura-design-system-1.1.0-sources.jar`) from the [GitHub Releases (`1.1.0`)](https://github.com/bluemarlins/aura-design-system/releases/tag/1.1.0) page.
+2. Place the `.aar` file inside your app module's `libs/` directory (e.g., `app/libs/aura-design-system-1.1.0.aar`).
 3. Declare the AAR alongside Compose Foundation/UI dependencies in `app/build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation(files("libs/aura-design-system-1.0.0.aar"))
+    implementation(files("libs/aura-design-system-1.1.0.aar"))
 
     implementation(platform("androidx.compose:compose-bom:2025.02.00"))
     implementation("androidx.compose.ui:ui")
@@ -78,7 +78,7 @@ dependencies {
 
 #### Option 3 — Local Maven (`mavenLocal()`)
 
-Publish the `1.0.0` artifact locally from a clone of this repository:
+Publish the `1.1.0` artifact locally from a clone of this repository:
 
 ```powershell
 .\gradlew.bat :design-system:publishToMavenLocal
@@ -87,7 +87,7 @@ Publish the `1.0.0` artifact locally from a clone of this repository:
 Then enable `mavenLocal()` in `settings.gradle.kts` and add:
 
 ```kotlin
-implementation("com.github.bluemarlins:aura-design-system:1.0.0")
+implementation("com.github.bluemarlins:aura-design-system:1.1.0")
 ```
 
 ### Quick Start
@@ -361,7 +361,10 @@ powershell -ExecutionPolicy Bypass -File skills/aura-design-system/scripts/verif
 | **Navigation** | `AuraBottomIsland` / `FloatingBottomIsland` | Detached floating bottom island with Metaball split action & elastic pill | [`aura-bottom-island.md`](docs/components/navigation/aura-bottom-island.md) |
 | **Containment** | `AuraCard` | `Elevated`, `Filled`, `Outlined`, and `Glass` containers with tactile press response | [`aura-card.md`](docs/components/containment/aura-card.md) |
 | **Containment** | `AuraDialog` | `Standard`, `Destructive`, and `Glass` modal confirmation surfaces with adaptive button stacking | [`aura-dialog.md`](docs/components/containment/aura-dialog.md) |
+| **Containment** | `AuraDivider` | `Horizontal` / `Vertical` hairline separators with `Subtle`, `Default`, and `Strong` tones | [`aura-divider.md`](docs/components/containment/aura-divider.md) |
 | **Feedback** | `AuraBadge` / `AuraBadgedBox` | `Dot`, `Small`, and `Medium` semantic pills and `"99+"` count badges | [`aura-badge.md`](docs/components/feedback/aura-badge.md) |
+| **Feedback** | `AuraProgressBar` (`Linear` / `Step`) | Continuous & segmented step progress bars with semantic status variants | [`aura-progress-bar.md`](docs/components/feedback/aura-progress-bar.md) |
+| **Feedback** | `AuraSnackbar` / `AuraSnackbarHost` | Queued transient feedback banners with `Solid` / `Glass` materiality and scaffold clearance | [`aura-snackbar.md`](docs/components/feedback/aura-snackbar.md) |
 | **Layout** | `AuraScaffold` & `AuraAdaptiveTwoPane` & `AuraAdaptiveGrid` | Zero-M3 screen scaffolds and adaptive split/grid containers | [`aura-scaffold.md`](docs/components/layout/aura-scaffold.md) · [`aura-adaptive-two-pane.md`](docs/components/layout/aura-adaptive-two-pane.md) |
 
 ### 4. Automated `Specs ↔ Code` Quality Gate (`EVAL-001` – `EVAL-008`)

@@ -12,6 +12,9 @@ Defines the **Feedback & Progress Component Taxonomy** governing non-intrusive s
 |---|---|---|
 | `AuraBadge` | Compact inline status pill, semantic count tag, or minimal presence dot | Catalog `"Ready"` / `"Planned"` status pills, unread notifications (`3`, `99+`), portfolio alert dot, bottle stock level (`In Cellar`) |
 | `AuraBadgedBox` | Anchored overlay container placing an `AuraBadge` at the top-end corner of icons/actions | Filter button active count badge, notification bell dot |
+| `AuraLinearProgressBar` | Continuous `0f..1f` completion bar (`surface.sunken` track + semantic indicator) | Taste readiness meter, upload/export progress |
+| `AuraStepProgressBar` | Discrete equal-width segmented step bar | Multi-step input flow, onboarding steps |
+| `AuraSnackbar` / `AuraSnackbarHost` | Transient queued feedback banner with optional single action | Save confirmations, undo prompts, recoverable errors |
 
 ---
 
