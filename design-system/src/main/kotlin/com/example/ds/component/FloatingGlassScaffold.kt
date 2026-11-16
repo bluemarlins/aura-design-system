@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
@@ -137,6 +138,7 @@ fun FloatingGlassScaffold(
     hasBottomIsland: Boolean = true,
     bottomIslandHeight: Dp = 60.dp,
     bottomIslandMargin: Dp = 16.dp,
+    snackbarHost: @Composable () -> Unit = {},
     containerColor: Color = AuraTheme.colors.background.primary,
     contentColor: Color = AuraTheme.colors.content.primary,
     content: @Composable (PaddingValues) -> Unit,
@@ -230,6 +232,22 @@ fun FloatingGlassScaffold(
                         .navigationBarsPadding(),
                 ) {
                     bottomBar(backdropState)
+                }
+
+                // Layer 2/3: Snackbar host clearing bottom navigation chrome and insets
+                val snackbarBottomOffset = if (hasBottomIsland) {
+                    navBottomPadding + bottomIslandHeight + bottomIslandMargin
+                } else {
+                    navBottomPadding
+                }
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .padding(bottom = snackbarBottomOffset),
+                    contentAlignment = Alignment.BottomCenter,
+                ) {
+                    snackbarHost()
                 }
 
                 // Layer 3: Transient Overlay Scrim + Morphing Popover Layer

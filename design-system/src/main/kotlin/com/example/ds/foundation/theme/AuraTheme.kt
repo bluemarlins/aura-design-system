@@ -26,6 +26,8 @@ import com.example.ds.foundation.motion.AuraMotion
 import com.example.ds.foundation.motion.AuraMotionDefaults
 import com.example.ds.foundation.motion.AuraMotionProfile
 import com.example.ds.foundation.motion.rememberAuraReducedMotion
+import com.example.ds.foundation.shape.AuraShapes
+import com.example.ds.foundation.shape.AuraShapesDefaults
 import com.example.ds.foundation.typography.AuraTypography
 import com.example.ds.foundation.typography.AuraTypographyDefaults
 
@@ -104,6 +106,7 @@ private val LocalAuraWindowInfo = staticCompositionLocalOf {
 }
 private val LocalAuraLayout = staticCompositionLocalOf { AuraLayoutDefaults.Compact }
 private val LocalAuraTypography = staticCompositionLocalOf { AuraTypographyDefaults.Standard }
+private val LocalAuraShapes = staticCompositionLocalOf { AuraShapesDefaults.Standard }
 
 /**
  * Root theme provider for the Aura design system.
@@ -123,6 +126,7 @@ fun AuraTheme(
     windowInfo: AuraWindowInfo = rememberAuraWindowInfo(),
     layout: AuraLayout = AuraLayoutDefaults.fromWindowInfo(windowInfo),
     typography: AuraTypography = AuraTypographyDefaults.scaled(layout.typographyScale),
+    shapes: AuraShapes = AuraShapesDefaults.Standard,
     content: @Composable () -> Unit,
 ) {
     val colors = when (colorMode) {
@@ -146,6 +150,7 @@ fun AuraTheme(
         LocalAuraWindowInfo provides windowInfo,
         LocalAuraLayout provides layout,
         LocalAuraTypography provides typography,
+        LocalAuraShapes provides shapes,
         LocalAuraContentColor provides colors.content.primary,
         LocalAuraTextStyle provides typography.bodyMedium,
         content = content,
@@ -162,6 +167,11 @@ object AuraTheme {
         @Composable
         @ReadOnlyComposable
         get() = LocalAuraTypography.current
+
+    val shapes: AuraShapes
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalAuraShapes.current
 
     val motion: AuraMotion
         @Composable

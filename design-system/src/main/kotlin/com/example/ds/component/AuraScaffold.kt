@@ -18,6 +18,7 @@ private enum class AuraScaffoldSlot {
     TopBar,
     BottomBar,
     FloatingActionButton,
+    Snackbar,
     Content,
 }
 
@@ -35,6 +36,7 @@ fun AuraScaffold(
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
+    snackbarHost: @Composable () -> Unit = {},
     containerColor: Color = AuraTheme.colors.background.primary,
     contentColor: Color = AuraTheme.colors.content.primary,
     contentWindowInsets: WindowInsets = WindowInsets.systemBars,
@@ -71,6 +73,10 @@ fun AuraScaffold(
             val insetRight = contentWindowInsets.getRight(this, layoutDirection)
             val insetBottom = contentWindowInsets.getBottom(this)
 
+            val snackbarMaxWidth = (layoutWidth - insetLeft - insetRight).coerceAtLeast(0)
+            val snackbarPlaceables = subcompose(AuraScaffoldSlot.Snackbar, snackbarHost)
+                .map { it.measure(looseConstraints.copy(maxWidth = snackbarMaxWidth)) }
+
             val topPaddingPx = if (topBarHeight > 0) topBarHeight else insetTop
             val bottomPaddingPx = if (bottomBarHeight > 0) bottomBarHeight else insetBottom
 
@@ -97,6 +103,11 @@ fun AuraScaffold(
                 topBarPlaceables.forEach { it.place(0, 0) }
                 bottomBarPlaceables.forEach { it.place(0, layoutHeight - it.height) }
                 fabPlaceables.forEach { it.place(fabX, fabY) }
+                snackbarPlaceables.forEach { snackbar ->
+                    val snackbarX = insetLeft + ((snackbarMaxWidth - snackbar.width) / 2).coerceAtLeast(0)
+                    val snackbarY = (layoutHeight - fabBottomOffset - snackbar.height).coerceAtLeast(0)
+                    snackbar.place(snackbarX, snackbarY)
+                }
             }
         }
     }
