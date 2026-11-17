@@ -375,7 +375,7 @@ fun FloatingNavigationPreviewScreen(
                 }
 
                 AnimatedVisibility(
-                    visible = showQuickHud && !moreMenuExpanded,
+                    visible = !useAdaptiveOneUiBar && showQuickHud && !moreMenuExpanded,
                     enter = fadeIn(),
                     exit = fadeOut(),
                 ) {
