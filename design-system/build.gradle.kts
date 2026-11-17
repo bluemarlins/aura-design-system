@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.github.bluemarlins"
-version = "1.1.1"
+version = "1.1.2"
 
 android {
     namespace = "com.example.ds"
@@ -75,7 +75,7 @@ publishing {
         register<MavenPublication>("release") {
             groupId = "com.github.bluemarlins"
             artifactId = "aura-design-system"
-            version = "1.1.1"
+            version = "1.1.2"
 
             afterEvaluate {
                 from(components["release"])

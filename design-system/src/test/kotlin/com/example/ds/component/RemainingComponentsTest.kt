@@ -69,4 +69,35 @@ class RemainingComponentsTest {
         assertEquals("4.0", formatRatingReadout(4f))
         assertEquals("4.5", formatRatingReadout(4.5f))
     }
+
+    // Stars are 40px wide with 10px gaps, so the fourth star spans 150..190px.
+    private fun valueAt(x: Float, isTap: Boolean, current: Float = 0f) =
+        starValueAt(
+            pointerX = x,
+            starSizePx = 40f,
+            starSpacingPx = 10f,
+            maxStars = 5,
+            allowHalfRating = true,
+            currentRating = current,
+            isTap = isTap,
+        )
+
+    @Test
+    fun `tapping the middle of a star fills the whole star`() {
+        assertEquals(4f, valueAt(170f, isTap = true), 0.0001f)
+        assertEquals(3.5f, valueAt(160f, isTap = true), 0.0001f)
+        assertEquals(4f, valueAt(185f, isTap = true), 0.0001f)
+    }
+
+    @Test
+    fun `dragging still splits each star in half`() {
+        assertEquals(3.5f, valueAt(170f, isTap = false), 0.0001f)
+        assertEquals(4f, valueAt(175f, isTap = false), 0.0001f)
+    }
+
+    @Test
+    fun `tapping the left edge of a half first star clears the rating`() {
+        assertEquals(0f, valueAt(5f, isTap = true, current = 0.5f), 0.0001f)
+        assertEquals(0.5f, valueAt(5f, isTap = true, current = 3f), 0.0001f)
+    }
 }

@@ -104,6 +104,37 @@ internal fun snapRatingValue(
     }
 }
 
+// A tap lands on the half star only on the left third of a star. Tapping the middle of a star
+// is how people mean "this many stars", so it should fill the whole star. Dragging keeps the
+// even split so scrubbing still moves in half steps.
+internal const val TAP_HALF_STAR_FRACTION = 1f / 3f
+
+internal fun starValueAt(
+    pointerX: Float,
+    starSizePx: Float,
+    starSpacingPx: Float,
+    maxStars: Int,
+    allowHalfRating: Boolean,
+    currentRating: Float,
+    isTap: Boolean,
+): Float {
+    val stepPx = starSizePx + starSpacingPx
+    val starIndex = (pointerX / stepPx).toInt().coerceIn(0, maxStars - 1)
+    val localX = (pointerX - starIndex * stepPx).coerceIn(0f, starSizePx)
+    val fractionInsideStar = localX / starSizePx
+    val clearsFirstStar = isTap && pointerX < starSizePx * 0.2f
+    return if (allowHalfRating) {
+        val halfLimit = if (isTap) TAP_HALF_STAR_FRACTION else 0.5f
+        when {
+            clearsFirstStar && currentRating == 0.5f -> 0f
+            fractionInsideStar <= halfLimit -> starIndex + 0.5f
+            else -> (starIndex + 1).toFloat()
+        }
+    } else {
+        if (clearsFirstStar && currentRating == 1f) 0f else (starIndex + 1).toFloat()
+    }
+}
+
 internal fun formatRatingReadout(rating: Float): String {
     val roundedHalf = (rating * 2f).roundToInt() / 2f
     return if (roundedHalf % 1f == 0f) {
@@ -161,27 +192,16 @@ fun AuraRatingBar(
         label = "AuraRatingActiveScale",
     )
 
-    fun computeStarValueAt(pointerX: Float, isTap: Boolean): Float {
-        val stepPx = starSizePx + starSpacingPx
-        val starIndex = (pointerX / stepPx).toInt().coerceIn(0, currentMaxStars - 1)
-        val localX = (pointerX - starIndex * stepPx).coerceIn(0f, starSizePx)
-        val fractionInsideStar = localX / starSizePx
-        return if (currentAllowHalf) {
-            if (isTap && pointerX < starSizePx * 0.2f && clampedRating == 0.5f) {
-                0f
-            } else if (fractionInsideStar <= 0.5f) {
-                starIndex + 0.5f
-            } else {
-                (starIndex + 1).toFloat()
-            }
-        } else {
-            if (isTap && pointerX < starSizePx * 0.2f && clampedRating == 1f) {
-                0f
-            } else {
-                (starIndex + 1).toFloat()
-            }
-        }
-    }
+    fun computeStarValueAt(pointerX: Float, isTap: Boolean): Float =
+        starValueAt(
+            pointerX = pointerX,
+            starSizePx = starSizePx,
+            starSpacingPx = starSpacingPx,
+            maxStars = currentMaxStars,
+            allowHalfRating = currentAllowHalf,
+            currentRating = clampedRating,
+            isTap = isTap,
+        )
 
     Column(
         modifier = modifier.semantics(mergeDescendants = false) {

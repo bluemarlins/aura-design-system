@@ -82,6 +82,7 @@ fun AuraSearchBar(
     activeFilterCount: Int = 0,
     onFilterClick: (() -> Unit)? = null,
     interactionSource: MutableInteractionSource? = null,
+    clearContentDescription: String = "Clear search",
 ) {
     val colors = AuraTheme.colors
     val typography = AuraTheme.typography
@@ -170,6 +171,7 @@ fun AuraSearchBar(
             ) {
                 SearchClearButton(
                     color = colors.content.secondary,
+                    contentDescription = clearContentDescription,
                     onClick = { onQueryChange("") },
                 )
             }
@@ -225,6 +227,7 @@ fun AuraSearchBar(
 @Composable
 private fun SearchClearButton(
     color: Color,
+    contentDescription: String,
     onClick: () -> Unit,
 ) {
     val motion = AuraTheme.motion
@@ -252,7 +255,7 @@ private fun SearchClearButton(
                 scaleY = scale
             }
             .clip(RoundedCornerShape(50))
-            .semantics { contentDescription = "Clear search" }
+            .semantics { this.contentDescription = contentDescription }
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
