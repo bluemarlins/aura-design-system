@@ -105,6 +105,7 @@ Instant query bar engineered for real-time filtering, universal search, and quic
 
 - Uses `ImeAction.Search` (`KeyboardOptions(imeAction = ImeAction.Search)`).
 - Clear (`×`) and Filter (`onFilterClick`) buttons provide `Role.Button` with descriptive `contentDescription` (`"Clear search"` and `"Filter (${activeFilterCount} active)"`) and minimum `48.dp` tap area.
+- The clear button's description is `clearContentDescription` (Android, since `1.1.2`), so apps whose UI language is not English can pass their own label (for example `"검색어 지우기"`).
 - **Reduced Transparency & Contrast (`VIS-RULE-003`–`004`):** `AuraSearchBarSurface.Glass` maintains `>= 4.5:1` query/placeholder contrast (`>= 3:1` borders/icons) over dynamic backdrops and falls back cleanly to opaque `AuraMaterial.Solid` (`colors.surface.floating`) via `AuraTheme.effectiveMaterial(...)` when Reduced Transparency, Battery Saver, or High-Contrast Text is enabled.
 
 ---
@@ -153,6 +154,7 @@ fun AuraSearchBar(
     activeFilterCount: Int = 0,
     onFilterClick: (() -> Unit)? = null,
     interactionSource: MutableInteractionSource? = null,
+    clearContentDescription: String = "Clear search",
 )
 ```
 <!-- API:ANDROID:END -->

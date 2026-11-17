@@ -1,6 +1,6 @@
 # Aura Design System
 
-**Version `1.1.1`** · One UI-inspired, zero-Material 3 Jetpack Compose design system featuring Glassmorphism, tactile spring physics, and two-axis adaptive layouts.
+**Version `1.1.2`** · One UI-inspired, zero-Material 3 Jetpack Compose design system featuring Glassmorphism, tactile spring physics, and two-axis adaptive layouts.
 
 ---
 
@@ -54,21 +54,21 @@ Add the library dependency to your module's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.github.bluemarlins:aura-design-system:1.1.1")
+    implementation("com.github.bluemarlins:aura-design-system:1.1.2")
 }
 ```
 
 Compose `ui`, `ui-graphics`, and `foundation` come in transitively. Aura does not export an icon set, so if your app uses `Icons.*` glyphs (as the samples below do), also add `implementation("androidx.compose.material:material-icons-core")`.
 
-#### Option 2 — Direct AAR from GitHub Releases (`1.1.1`)
+#### Option 2 — Direct AAR from GitHub Releases (`1.1.2`)
 
-1. Download `aura-design-system-1.1.1.aar` (and optionally `aura-design-system-1.1.1-sources.jar`) from the [GitHub Releases (`1.1.1`)](https://github.com/bluemarlins/aura-design-system/releases/tag/1.1.1) page.
-2. Place the `.aar` file inside your app module's `libs/` directory (e.g., `app/libs/aura-design-system-1.1.1.aar`).
+1. Download `aura-design-system-1.1.2.aar` (and optionally `aura-design-system-1.1.2-sources.jar`) from the [GitHub Releases (`1.1.2`)](https://github.com/bluemarlins/aura-design-system/releases/tag/1.1.2) page.
+2. Place the `.aar` file inside your app module's `libs/` directory (e.g., `app/libs/aura-design-system-1.1.2.aar`).
 3. Declare the AAR alongside Compose Foundation/UI dependencies in `app/build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation(files("libs/aura-design-system-1.1.1.aar"))
+    implementation(files("libs/aura-design-system-1.1.2.aar"))
 
     implementation(platform("androidx.compose:compose-bom:2025.02.00"))
     implementation("androidx.compose.ui:ui")
@@ -81,7 +81,7 @@ dependencies {
 
 #### Option 3 — Local Maven (`mavenLocal()`)
 
-Publish the `1.1.1` artifact locally from a clone of this repository:
+Publish the `1.1.2` artifact locally from a clone of this repository:
 
 ```powershell
 .\gradlew.bat :design-system:publishToMavenLocal
@@ -90,7 +90,7 @@ Publish the `1.1.1` artifact locally from a clone of this repository:
 Then enable `mavenLocal()` in `settings.gradle.kts` and add:
 
 ```kotlin
-implementation("com.github.bluemarlins:aura-design-system:1.1.1")
+implementation("com.github.bluemarlins:aura-design-system:1.1.2")
 ```
 
 ### Quick Start

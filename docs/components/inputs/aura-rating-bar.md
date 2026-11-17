@@ -56,6 +56,7 @@ Star and half-star rating input and display control tailored for sensory enjoyme
 | Do | Don't |
 |---|---|
 | Support both single-star taps (toggle left half vs. full star) and smooth horizontal slide scrubbing. | Force users to hunt pixel-perfect half edges with only tap gestures. |
+| On a tap, give the half star only to the left third of a star, so tapping the middle fills it (Android, since `1.1.2`). Dragging keeps the even half split. | Turn a tap on the centre of the fourth star into `3.5`. |
 | Use `AuraRatingBarSize.Small` (`onRatingChange = null`) for compact list cards and `Large` on detail review sheets. | Cram tiny `16dp` interactive stars into primary modal review sheets. |
 | Render clear stroke outlines (`border.strong`) on unfilled stars in both Light and Dark themes. | Leave unfilled stars invisible against sunken dark cards. |
 | Provide descriptive `label` (`"Overall Impression"`) above or beside stars when multiple ratings coexist. | Display anonymous floating stars without explaining what aspect is being rated. |
