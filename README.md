@@ -58,6 +58,8 @@ dependencies {
 }
 ```
 
+Compose `ui`, `ui-graphics`, and `foundation` come in transitively. Aura does not export an icon set, so if your app uses `Icons.*` glyphs (as the samples below do), also add `implementation("androidx.compose.material:material-icons-core")`.
+
 #### Option 2 — Direct AAR from GitHub Releases (`1.1.0`)
 
 1. Download `aura-design-system-1.1.0.aar` (and optionally `aura-design-system-1.1.0-sources.jar`) from the [GitHub Releases (`1.1.0`)](https://github.com/bluemarlins/aura-design-system/releases/tag/1.1.0) page.
@@ -73,6 +75,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.foundation:foundation")
     implementation("androidx.core:core-ktx:1.15.0")
+    implementation("androidx.compose.material:material-icons-core") // only for Icons.* glyphs
 }
 ```
 
@@ -281,7 +284,25 @@ fun SpatialHomeScreen() {
 
 ### AI Agent Skill for App Developers (`skills/aura-design-system/`)
 
-Building or vibe-coding an external Android app with Aura? Install the standalone **Consumer Skill Kit** from [`skills/aura-design-system/`](skills/aura-design-system/) so coding agents automatically apply `AuraTheme` tokens, `Standard`/`Expressive` motion rules, 4-layer `Glass`/`LiquidGlass` discipline, and zero-M3 guardrails:
+Building or vibe-coding an external Android app with Aura? Install the standalone **Consumer Skill Kit** from [`skills/aura-design-system/`](skills/aura-design-system/) so coding agents automatically apply `AuraTheme` tokens, `Standard`/`Expressive` motion rules, 4-layer `Glass`/`LiquidGlass` discipline, and zero-M3 guardrails.
+
+#### Install the skill only (no build required)
+
+Run one of these from the root of your Android app, then ask your agent: *"Apply Aura Design System to my app."* The skill walks the agent through adding the JitPack dependency, wrapping the root in `AuraTheme`, migrating Material 3 screens, and auditing the result.
+
+```bash
+# Any agent supported by the skills CLI (Claude Code, Codex, Gemini CLI, ...)
+npx skills add bluemarlins/aura-design-system
+```
+
+```bash
+# Or copy it manually (use .agents/skills/ instead for Codex / Gemini CLI)
+git clone --depth 1 https://github.com/bluemarlins/aura-design-system.git .aura-tmp
+mkdir -p .claude/skills && cp -r .aura-tmp/skills/aura-design-system .claude/skills/
+rm -rf .aura-tmp
+```
+
+#### Build the AAR and sync it with the skill (Windows, from a clone of this repository)
 
 ```powershell
 # 1. Build latest :design-system release AAR and sync AAR + skill into your consumer app
@@ -296,9 +317,9 @@ powershell -ExecutionPolicy Bypass -File skills/aura-design-system/scripts/verif
 ```
 
 **Skill Kit Contents:**
-- [`SKILL.md`](skills/aura-design-system/SKILL.md) — Core rules, quick setup, component selection matrix, and progressive disclosure guide
+- [`SKILL.md`](skills/aura-design-system/SKILL.md) — Step-by-step "apply Aura to an app" workflow, Gradle setup, core rules, Material 3 → Aura component map, and progressive disclosure guide
 - [`references/tokens-and-theme.md`](skills/aura-design-system/references/tokens-and-theme.md) — `AuraColors`, 16 `AuraTypography` roles, `AuraLayout`, `AuraMotion`, `AuraElevation`, and `AuraMaterial`
-- [`references/components-api.md`](skills/aura-design-system/references/components-api.md) — Complete Kotlin signatures across all 21 Ready components and `GlassSurface` helpers
+- [`references/components-api.md`](skills/aura-design-system/references/components-api.md) — Complete Kotlin signatures across all Ready components and `GlassSurface` helpers
 - [`references/motion-and-visual-rules.md`](skills/aura-design-system/references/motion-and-visual-rules.md) — 4-layer surface discipline (`VIS-RULE-001`–`007`) & motion rules (`MOT-RULE-001`–`007`)
 - [`references/recipes-and-patterns.md`](skills/aura-design-system/references/recipes-and-patterns.md) — Copy-ready `FloatingGlassScaffold`, `AuraScaffold`, `AuraAdaptiveTwoPane`, `AuraDialog`, and app gap-component templates
 
