@@ -95,12 +95,12 @@ Traditional Material top bars span edge-to-edge as opaque rectangles, cutting of
 - **`Pinned`**: Stays anchored at top while content scrolls underneath; transitions resting separation (`SolidElevated` border/shadow opacity and blur intensity) smoothly as `firstVisibleItemScrollOffset > 0`.
 - **`EnterAlways`**: Translates upward smoothly into negative offset (clipped safely below system status bar region or faded cleanly) on upward scroll, snapping right back into view on downward scroll.
 - **`CompactOnScroll`**: Starts expanded (`titleLarge`, optional rich subtitle or attached `subContent` `AuraChipButton` ribbon) and compresses smoothly toward a compact `48.dp` capsule (`titleMedium`, condensed actions) as scroll progresses.
-- **`AdaptiveFloating`** *(One UI State-Driven Morphing)*:
-  - **`DockedExpanded` (`Y == 0dp` or `maxScrollOffset < 160dp`)**: Full-width (`0.dp` margin, `0.dp` radius), flat background, expanded Viewing Area header (`headlineMedium`), blur off, elevation `0.dp`.
-  - **`CollapsingTransition` (`0dp < Y < 160dp`)**: Crossfades expanded title out while interpolating horizontal margin (`0dp -> 16dp`), corner radius (`0dp -> 28dp`, or `24dp` continuous squircle with `subContent`), top offset (`0dp -> 8dp`), and glass/shadow intensity (`0 -> 1`), snapping at `50%` on release (`FAB-06`).
-  - **`FloatingVisible` / `FloatingPinned` (`Y >= 160dp`, `ΔY < -12dp` or `isFocused || isMenuOpen`)**: Centered Floating Pill (`maxWidth = 640.dp` on tablets/foldables) with `26.dp` backdrop blur, `1.2x` saturation boost, `surface.floatingGlass` (`#CCF7F7F9` / `#CC1C1C1E`), `border.glassSpecular` (`0.75.dp`), and `elevation.level2` (`6.dp`) shadow (`8%` ambient / `14%` spot).
-  - **`FloatingHidden` (`Y >= 160dp`, `ΔY > +24dp`, jitter `< 12dp` ignored)**: Slides upward off-screen (`180ms`, `CubicBezierEasing(0.4f, 0.0f, 1.0f, 1f)`) and reappears (`250ms`, `CubicBezierEasing(0.22f, 1.0f, 0.36f, 1f)`) in the same frame as `FloatingBottomIsland` when coordinated via `FloatingGlassScaffold`.
-  - **`CompactDocked` (`IME Visible` or `heightDp < 480dp`)**: Drops floating margins/radius and stays docked at `48.dp` height.
+- **`AdaptiveFloating`** *(One UI State-Driven Split-Pill Morphing)*:
+  - **`DockedExpanded` (`Y == 0dp` or `maxScrollOffset < 160dp`)**: Full-width (`0.dp` margin, `0.dp` radius), flat background, expanded Viewing Area header (`headlineMedium`), flat Ghost buttons, blur off, elevation `0.dp`.
+  - **`CollapsingTransition` (`0dp < Y < 160dp`)**: Fades out the expanded title (`alpha 1 -> 0`) and collapses the title area (`height -> 0.dp`), leaving the upper-center viewport completely open while leading (`navigationIcon`) and trailing (`actions`) `AuraIconButton` controls individually morph into circular floating glass pills (`CircleShape`), snapping at `50%` on release (`FAB-06`).
+  - **`FloatingVisible` / `FloatingPinned` (`Y >= 160dp`, `ΔY < -12dp` or `isFocused || isMenuOpen`)**: Title remains hidden and center remains unobstructed; leading/trailing action buttons float as individual circular pods (`26.dp` backdrop blur, `1.2x` saturation boost, `surface.floatingGlass`, `border.glassSpecular`, `elevation.level2`).
+  - **`FloatingHidden` (`Y >= 160dp`, `ΔY > +24dp`, jitter `< 12dp` ignored)**: Floating button pods slide upward off-screen (`180ms`, `CubicBezierEasing(0.4f, 0.0f, 1.0f, 1f)`) and reappear (`250ms`, `CubicBezierEasing(0.22f, 1.0f, 0.36f, 1f)`) in the same frame as `FloatingBottomIsland` when coordinated via `FloatingGlassScaffold`.
+  - **`CompactDocked` (`IME Visible` or `heightDp < 480dp`)**: Restores a compact `48.dp` docked bar with visible title and flat actions (`0.dp` floating margins).
 
 ## 3. Semantic Token Bindings
 

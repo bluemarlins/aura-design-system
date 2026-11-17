@@ -64,12 +64,12 @@ When the top bar and bottom island each listen to scroll on their own, they hide
 
 | Phase | Entry Condition | Visual Result |
 |---|---|---|
-| `DockedExpanded` | `Y == 0` or content not scrollable (`maxScrollOffset < collapseThreshold`) | Full-width flat header, no blur |
-| `CollapsingTransition` | `0 < Y < 160px` | Margin and radius interpolate toward the pill (`morphFraction = collapseProgress`) |
-| `FloatingVisible` | `Y >= 160px` and scrolling up (`ΔY < -12px`) or settled | Floating glass pill |
+| `DockedExpanded` | `Y == 0` or content not scrollable (`maxScrollOffset < collapseThreshold`) | Full-width flat header with expanded title, no blur |
+| `CollapsingTransition` | `0 < Y < 160px` | Title fades out and collapses; left/right action buttons morph into individual circular pills (`morphFraction = collapseProgress`) |
+| `FloatingVisible` | `Y >= 160px` and scrolling up (`ΔY < -12px`) or settled | Title hidden, open center, individual floating glass icon pills |
 | `FloatingHidden` | `Y >= 160px` and scrolling down (`ΔY > +24px`) | Top bar and bottom island slide out (`hideFraction → 1`) |
-| `FloatingPinned` | `Y >= 160px` and (`isFocused || isMenuOpen`) | Locked visible pill |
-| `CompactDocked` | `isImeVisible || windowHeightDp < 480` | Compact docked bar, no floating margin |
+| `FloatingPinned` | `Y >= 160px` and (`isFocused || isMenuOpen`) | Locked visible individual floating pills |
+| `CompactDocked` | `isImeVisible || windowHeightDp < 480` | Compact docked bar with compact title, no floating margin |
 
 The phase enum is declared with the top bar API ([aura-top-app-bar.md](aura-top-app-bar.md) §8).
 
