@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -33,6 +34,7 @@ import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.LocalBar
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.CalendarMonth
@@ -78,12 +80,17 @@ import com.example.ds.component.AuraSegmentedVariant
 import com.example.ds.component.AuraSwitch
 import com.example.ds.component.AuraSwitchSize
 import com.example.ds.component.AuraText
+import com.example.ds.component.AuraTopAppBar
+import com.example.ds.component.AuraTopAppBarScrollBehavior
+import com.example.ds.component.AuraTopAppBarSurface
+import com.example.ds.component.BindAdaptiveBarToLazyListState
 import com.example.ds.component.FloatingBottomIsland
 import com.example.ds.component.FloatingGlassScaffold
 import com.example.ds.component.FloatingTopPillBar
 import com.example.ds.component.GlassStyle
 import com.example.ds.component.GlassSurface
 import com.example.ds.component.MorphingMorePopover
+import com.example.ds.component.rememberAuraAdaptiveBarState
 import com.example.ds.foundation.theme.AuraColorMode
 import com.example.ds.foundation.theme.AuraTheme
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -111,6 +118,9 @@ fun FloatingNavigationPreviewScreen(
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
 
+    var useAdaptiveOneUiBar by remember { mutableStateOf(true) }
+    var searchFocusedPin by remember { mutableStateOf(false) }
+    var shortContentMode by remember { mutableStateOf(false) }
     var glassStyle by remember { mutableStateOf(GlassStyle.LIQUID) }
     var metaballSplitProgress by remember { mutableFloatStateOf(0f) }
     var autoMergeMetaballOnScroll by remember { mutableStateOf(false) }
@@ -123,6 +133,17 @@ fun FloatingNavigationPreviewScreen(
     var selectedTab by remember { mutableIntStateOf(initialTabIndex) }
     var isScrollingDown by remember { mutableStateOf(false) }
     var lastEventBanner by remember { mutableStateOf("Ready · Scroll canvas behind pills & test Liquid/Frosted") }
+
+    val adaptiveBarState = rememberAuraAdaptiveBarState()
+    BindAdaptiveBarToLazyListState(
+        listState = listState,
+        adaptiveState = if (useAdaptiveOneUiBar) adaptiveBarState else null,
+    )
+    LaunchedEffect(searchFocusedPin, useAdaptiveOneUiBar) {
+        if (useAdaptiveOneUiBar) {
+            adaptiveBarState.updatePinnedFlags(focused = searchFocusedPin)
+        }
+    }
 
     val thresholdPx = remember(density) { with(density) { 64.dp.toPx().coerceAtLeast(1f) } }
     val scrollProgress by remember(thresholdPx) {
@@ -269,6 +290,7 @@ fun FloatingNavigationPreviewScreen(
     FloatingGlassScaffold(
         overlayVisible = moreMenuExpanded,
         onDismissOverlay = { moreMenuExpanded = false },
+        adaptiveBarState = if (useAdaptiveOneUiBar) adaptiveBarState else null,
         topBar = { backdropState ->
             LaunchedEffect(listState, backdropState, glassStyle, isDarkTheme, isActionSplit, selectedTab) {
                 backdropState.invalidateBackdrop()
@@ -282,26 +304,75 @@ fun FloatingNavigationPreviewScreen(
             }
 
             Column(modifier = Modifier.fillMaxWidth()) {
-                FloatingTopPillBar(
-                    title = navItems[selectedTab].label,
-                    subtitle = glassStyle.name,
-                    scrollProgress = scrollProgress,
-                    glassStyle = glassStyle,
-                    isScrollingDown = isScrollingDown,
-                    hideTitleOnScrollDown = hideTitleOnScrollDown,
-                    metaballSplitProgress = effectiveMetaballSplit,
-                    onBackClick = onBack,
-                    onSearchClick = {
-                        lastEventBanner = "Search tapped on ${navItems[selectedTab].label} (${glassStyle.name})"
-                    },
-                    isBookmarked = isBookmarked,
-                    onBookmarkClick = {
-                        isBookmarked = !isBookmarked
-                        lastEventBanner = if (isBookmarked) "Bookmarked Spatial View" else "Removed Bookmark"
-                    },
-                    moreMenuExpanded = moreMenuExpanded,
-                    onMoreMenuExpandedChange = { moreMenuExpanded = it },
-                )
+                if (useAdaptiveOneUiBar) {
+                    AuraTopAppBar(
+                        title = navItems[selectedTab].label,
+                        subtitle = "${adaptiveBarState.phase.name} · ${(adaptiveBarState.morphFraction * 100).toInt()}%",
+                        expandedTitle = "One UI ${navItems[selectedTab].label}",
+                        expandedSubtitle = "Phase: ${adaptiveBarState.phase.name} (Y=${adaptiveBarState.scrollOffsetPx.toInt()}px)",
+                        surface = AuraTopAppBarSurface.TranslucentGlass,
+                        scrollBehavior = AuraTopAppBarScrollBehavior.AdaptiveFloating,
+                        adaptiveState = adaptiveBarState,
+                        navigationIcon = {
+                            AuraIconButton(
+                                onClick = onBack,
+                                contentDescription = "Back",
+                                variant = AuraIconButtonVariant.Ghost,
+                            ) {
+                                AuraIcon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = null,
+                                )
+                            }
+                        },
+                        actions = {
+                            AuraIconButton(
+                                onClick = {
+                                    searchFocusedPin = !searchFocusedPin
+                                    lastEventBanner = if (searchFocusedPin) "Search Pin Active (FAB-08)" else "Search Pin Cleared"
+                                },
+                                contentDescription = "Search",
+                                variant = AuraIconButtonVariant.Ghost,
+                            ) {
+                                AuraIcon(
+                                    imageVector = Icons.Filled.Search,
+                                    contentDescription = null,
+                                )
+                            }
+                            AuraIconButton(
+                                onClick = { moreMenuExpanded = !moreMenuExpanded },
+                                contentDescription = "More options",
+                                variant = AuraIconButtonVariant.Ghost,
+                            ) {
+                                AuraIcon(
+                                    imageVector = Icons.Filled.MoreVert,
+                                    contentDescription = null,
+                                )
+                            }
+                        },
+                    )
+                } else {
+                    FloatingTopPillBar(
+                        title = navItems[selectedTab].label,
+                        subtitle = glassStyle.name,
+                        scrollProgress = scrollProgress,
+                        glassStyle = glassStyle,
+                        isScrollingDown = isScrollingDown,
+                        hideTitleOnScrollDown = hideTitleOnScrollDown,
+                        metaballSplitProgress = effectiveMetaballSplit,
+                        onBackClick = onBack,
+                        onSearchClick = {
+                            lastEventBanner = "Search tapped on ${navItems[selectedTab].label} (${glassStyle.name})"
+                        },
+                        isBookmarked = isBookmarked,
+                        onBookmarkClick = {
+                            isBookmarked = !isBookmarked
+                            lastEventBanner = if (isBookmarked) "Bookmarked Spatial View" else "Removed Bookmark"
+                        },
+                        moreMenuExpanded = moreMenuExpanded,
+                        onMoreMenuExpandedChange = { moreMenuExpanded = it },
+                    )
+                }
 
                 AnimatedVisibility(
                     visible = showQuickHud && !moreMenuExpanded,
@@ -491,6 +562,43 @@ fun FloatingNavigationPreviewScreen(
                             color = c.content.secondary,
                         )
 
+                        AuraSegmentedButton(
+                            options = listOf("One UI Adaptive", "Legacy Pill Bar"),
+                            selectedIndex = if (useAdaptiveOneUiBar) 0 else 1,
+                            onOptionSelected = { idx ->
+                                useAdaptiveOneUiBar = idx == 0
+                                lastEventBanner = if (useAdaptiveOneUiBar) {
+                                    "One UI Adaptive Floating App Bar active (160dp morph)"
+                                } else {
+                                    "Legacy FloatingTopPillBar active"
+                                }
+                            },
+                            variant = AuraSegmentedVariant.Surface,
+                            size = AuraSegmentedSize.Small,
+                            fullWidth = true,
+                        )
+
+                        if (useAdaptiveOneUiBar) {
+                            AuraSwitch(
+                                checked = searchFocusedPin,
+                                onCheckedChange = {
+                                    searchFocusedPin = it
+                                    lastEventBanner = if (it) "FAB-08 Focus Pin active" else "Focus Pin released"
+                                },
+                                label = "Pin Floating Bar (FAB-08 Focus)",
+                                size = AuraSwitchSize.Small,
+                            )
+                            AuraSwitch(
+                                checked = shortContentMode,
+                                onCheckedChange = {
+                                    shortContentMode = it
+                                    lastEventBanner = if (it) "Edge Case 1: Short Non-Scrollable Content" else "Full Scrollable Feed"
+                                },
+                                label = "Short Non-Scrollable Screen (Edge Case 1)",
+                                size = AuraSwitchSize.Small,
+                            )
+                        }
+
                         // Real-time Mode Toggle: FROSTED vs LIQUID
                         val modeIndex = if (glassStyle == GlassStyle.FROSTED) 0 else 1
                         AuraSegmentedButton(
@@ -604,7 +712,8 @@ fun FloatingNavigationPreviewScreen(
             }
 
             // Vivid Chromatic Pass-Through Cards so Top Bar & Bottom Island refract rich real colors beneath
-            itemsIndexed(sampleFeed) { index, item ->
+            val displayedFeed = if (shortContentMode) emptyList() else sampleFeed
+            itemsIndexed(displayedFeed) { index, item ->
                 SpatialFeedItemCard(
                     item = item,
                     index = index,
