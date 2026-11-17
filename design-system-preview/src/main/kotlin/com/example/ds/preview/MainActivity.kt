@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
             val systemDark = isSystemInDarkTheme()
             var isDarkTheme by rememberSaveable { mutableStateOf(systemDark) }
             var motionProfile by rememberSaveable { mutableStateOf(AuraMotionProfile.Standard) }
-            var material by rememberSaveable { mutableStateOf(AuraMaterial.Solid) }
+            var material by rememberSaveable { mutableStateOf(AuraMaterial.LiquidGlass) }
             var reduceMotion by rememberSaveable { mutableStateOf(false) }
             var reduceTransparency by rememberSaveable { mutableStateOf(false) }
 
