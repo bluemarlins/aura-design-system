@@ -26,6 +26,7 @@ object ComponentCatalog {
     const val COLOR_SCHEME_ID = "color-scheme"
     const val TYPOGRAPHY_LAYOUT_ID = "typography-layout"
     const val INTERACTION_PRINCIPLES_ID = "interaction-principles"
+    const val MATERIAL_COMPARISON_ID = "material-comparison"
     const val BUTTON_ID = "button"
     const val ICON_BUTTON_ID = "icon-button"
     const val FAB_ID = "fab"
@@ -69,6 +70,13 @@ object ComponentCatalog {
             name = "Motion & Visual Interaction",
             category = CatalogCategory.Foundation,
             description = "Dual-track spring physics (Standard / Expressive), Solid/Glass/LiquidGlass materiality, and Z-axis elevation ladder.",
+            status = CatalogStatus.Ready,
+        ),
+        CatalogItem(
+            id = MATERIAL_COMPARISON_ID,
+            name = "Material Comparison",
+            category = CatalogCategory.Foundation,
+            description = "Side-by-side Light / Dark specimens of Solid, Glass Morphism, and Liquid Glass with principles and fallbacks.",
             status = CatalogStatus.Ready,
         ),
         CatalogItem(

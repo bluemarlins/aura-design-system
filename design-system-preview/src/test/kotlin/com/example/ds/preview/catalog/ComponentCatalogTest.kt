@@ -26,6 +26,10 @@ class ComponentCatalogTest {
         assertNotNull(interactionPrinciples)
         assertEquals(CatalogStatus.Ready, interactionPrinciples?.status)
 
+        val materialComparison = ComponentCatalog.findById(ComponentCatalog.MATERIAL_COMPARISON_ID)
+        assertNotNull(materialComparison)
+        assertEquals(CatalogStatus.Ready, materialComparison?.status)
+
         val button = ComponentCatalog.findById(ComponentCatalog.BUTTON_ID)
         assertNotNull(button)
         assertEquals(CatalogStatus.Ready, button?.status)
@@ -117,7 +121,7 @@ class ComponentCatalogTest {
 
     @Test
     fun `every registered catalog item has Ready status`() {
-        assertEquals(25, ComponentCatalog.items.size)
+        assertEquals(26, ComponentCatalog.items.size)
         assertEquals(
             setOf(CatalogStatus.Ready),
             ComponentCatalog.items.map { it.status }.toSet(),

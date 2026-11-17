@@ -23,6 +23,7 @@ import com.example.ds.preview.ui.FeedbackProgressSnackbarPreviewScreen
 import com.example.ds.preview.ui.FloatingNavigationPreviewScreen
 import com.example.ds.preview.ui.IconButtonPreviewScreen
 import com.example.ds.preview.ui.InteractionPrinciplesPreviewScreen
+import com.example.ds.preview.ui.MaterialComparisonPreviewScreen
 import com.example.ds.preview.ui.NumberFieldPreviewScreen
 import com.example.ds.preview.ui.PlannedComponentScreen
 import com.example.ds.preview.ui.RadioPreviewScreen
@@ -38,6 +39,7 @@ private object PreviewRoutes {
     const val COLOR_SCHEME = "foundation/${ComponentCatalog.COLOR_SCHEME_ID}"
     const val TYPOGRAPHY_LAYOUT = "foundation/${ComponentCatalog.TYPOGRAPHY_LAYOUT_ID}"
     const val INTERACTION_PRINCIPLES = "foundation/${ComponentCatalog.INTERACTION_PRINCIPLES_ID}"
+    const val MATERIAL_COMPARISON = "foundation/${ComponentCatalog.MATERIAL_COMPARISON_ID}"
     const val BUTTON = "component/${ComponentCatalog.BUTTON_ID}"
     const val ICON_BUTTON = "component/${ComponentCatalog.ICON_BUTTON_ID}"
     const val FAB = "component/${ComponentCatalog.FAB_ID}"
@@ -101,6 +103,7 @@ fun PreviewNavGraph(
                         ComponentCatalog.COLOR_SCHEME_ID -> navController.navigate(PreviewRoutes.COLOR_SCHEME)
                         ComponentCatalog.TYPOGRAPHY_LAYOUT_ID -> navController.navigate(PreviewRoutes.TYPOGRAPHY_LAYOUT)
                         ComponentCatalog.INTERACTION_PRINCIPLES_ID -> navController.navigate(PreviewRoutes.INTERACTION_PRINCIPLES)
+                        ComponentCatalog.MATERIAL_COMPARISON_ID -> navController.navigate(PreviewRoutes.MATERIAL_COMPARISON)
                         ComponentCatalog.BUTTON_ID -> navController.navigate(PreviewRoutes.BUTTON)
                         ComponentCatalog.ICON_BUTTON_ID -> navController.navigate(PreviewRoutes.ICON_BUTTON)
                         ComponentCatalog.FAB_ID -> navController.navigate(PreviewRoutes.FAB)
@@ -153,6 +156,11 @@ fun PreviewNavGraph(
                 onReduceMotionChange = onToggleReduceMotion,
                 initialReduceTransparency = reduceTransparency,
                 onReduceTransparencyChange = onToggleReduceTransparency,
+            )
+        }
+        composable(PreviewRoutes.MATERIAL_COMPARISON) {
+            MaterialComparisonPreviewScreen(
+                onBack = { navController.popBackStack() },
             )
         }
         composable(PreviewRoutes.BUTTON) {
