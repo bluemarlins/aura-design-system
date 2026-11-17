@@ -1,5 +1,6 @@
 package com.example.ds.foundation.motion
 
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.SpringSpec
@@ -61,6 +62,10 @@ data class AuraMotion(
     val staggerDelayMillis: Int = 40,
     val staggerBudgetMillis: Int = 400,
     val scrimFadeDurationMillis: Int = 180,
+    val adaptiveBarDampingRatio: Float = 0.85f,
+    val adaptiveBarStiffness: Float = 380f,
+    val floatingBarAppearDurationMillis: Int = 250,
+    val floatingBarDisappearDurationMillis: Int = 180,
     val reduceMotion: Boolean = false,
 ) {
     fun <T> pressInSpring(): SpringSpec<T> = spring(
@@ -98,6 +103,36 @@ data class AuraMotion(
         snap()
     } else {
         tween(durationMillis = exitDurationMillis, easing = FastOutSlowInEasing)
+    }
+
+    /** Non-overshooting damped spring for Docked <-> Floating adaptive app bar morphing. */
+    fun <T> adaptiveBarMorphSpring(): FiniteAnimationSpec<T> = if (reduceMotion) {
+        snap()
+    } else {
+        spring(
+            dampingRatio = adaptiveBarDampingRatio,
+            stiffness = adaptiveBarStiffness,
+        )
+    }
+
+    /** Fast-entry smooth-settle curve for floating bar appearance (`250ms`, ease-out cubic). */
+    fun <T> floatingBarAppearSpec(): FiniteAnimationSpec<T> = if (reduceMotion) {
+        snap()
+    } else {
+        tween(
+            durationMillis = floatingBarAppearDurationMillis,
+            easing = CubicBezierEasing(0.22f, 1.0f, 0.36f, 1.0f),
+        )
+    }
+
+    /** Quick-exit curve for floating bar dismissal (`180ms`, ease-in cubic). */
+    fun <T> floatingBarDisappearSpec(): FiniteAnimationSpec<T> = if (reduceMotion) {
+        snap()
+    } else {
+        tween(
+            durationMillis = floatingBarDisappearDurationMillis,
+            easing = CubicBezierEasing(0.4f, 0.0f, 1.0f, 1.0f),
+        )
     }
 
     fun staggerDelay(index: Int): Int =

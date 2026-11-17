@@ -199,12 +199,25 @@ fun AuraBottomIsland(
 
     val travelDelta = abs(indicatorAnimatable.value - clampedSelected.toFloat())
     val dispersionBoost = 1f + (travelDelta.coerceIn(0f, 1.4f) * 0.65f) + (islandElasticStretch * 4f)
+    val adaptiveState = LocalAuraAdaptiveBarState.current
+    val scaffoldHandlesHide = LocalScaffoldHandlesBottomHide.current
+    val standaloneHide = if (!scaffoldHandlesHide && adaptiveState != null) {
+        adaptiveState.hideFraction
+    } else {
+        0f
+    }
 
     Box(
         modifier = modifier
             .semantics {
                 this[AuraMotionProgressKey] = indicatorAnimatable.value
                 this[AuraMotionScaleKey] = 1f + islandElasticStretch
+            }
+            .graphicsLayer {
+                if (standaloneHide > 0.001f) {
+                    translationY = (IslandHeight + 32.dp).toPx() * standaloneHide
+                    alpha = (1f - standaloneHide).coerceIn(0f, 1f)
+                }
             }
             .fillMaxWidth()
             .padding(start = 20.dp, end = 20.dp, bottom = 16.dp),

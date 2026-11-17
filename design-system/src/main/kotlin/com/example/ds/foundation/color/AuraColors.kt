@@ -35,6 +35,8 @@ data class AuraColors(
         /** Elevated overlay layer (bottom bars, sheets, popovers). Primary target for future Glass / LiquidGlass materials. */
         val floating: Color,
         val inverse: Color,
+        /** Translucent backdrop-blurred glass surface tint (80% opacity). */
+        val floatingGlass: Color = floating,
     )
 
     @Immutable
@@ -61,6 +63,8 @@ data class AuraColors(
         val default: Color,
         val strong: Color,
         val focus: Color,
+        /** Translucent specular rim border for floating glass surfaces. */
+        val glassSpecular: Color = subtle,
     )
 
     @Immutable

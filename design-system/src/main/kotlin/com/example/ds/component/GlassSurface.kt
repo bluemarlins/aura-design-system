@@ -243,6 +243,12 @@ fun GlassSurface(
     dispersionBoost: Float = 1f,
     surfaceAlphaMultiplier: Float = 1f,
     showShadow: Boolean = true,
+    blurRadius: Dp = 26.dp,
+    saturationBoost: Float = 1.2f,
+    tintColorOverride: Color? = null,
+    borderColorOverride: Color? = null,
+    borderWidth: Dp = 1.dp,
+    elevationAlphaMultiplier: Float = 1f,
     content: @Composable BoxScope.() -> Unit,
 ) {
     val colors = AuraTheme.colors
@@ -261,13 +267,14 @@ fun GlassSurface(
         if (reducedMotion) snap<Color>() else tween(durationMillis = motion.stateChangeDurationMillis)
     }
 
-    // Mode A (Frosted): Light White 72% / Dark #1E1E22 68%
+    // Mode A (Frosted): Adaptive floating glass tint (Light #CCF7F7F9 / Dark #CC1C1C1E) or white/charcoal wash
     // Mode B (Liquid): Lower base opacity in crystal lens with safe-zone protection
     val darkFrostedTint = Color(red = 30f / 255f, green = 30f / 255f, blue = 34f / 255f, alpha = 0.68f)
     val darkLiquidTint = Color(red = 30f / 255f, green = 30f / 255f, blue = 34f / 255f, alpha = 0.54f)
 
     val rawTint = when {
-        isSolidFallback -> colors.surface.floating
+        isSolidFallback -> colors.surface.floating.copy(alpha = 0.98f)
+        tintColorOverride != null -> tintColorOverride
         glassStyle == GlassStyle.FROSTED -> if (isDark) darkFrostedTint else Color.White.copy(alpha = 0.72f)
         else -> if (isDark) darkLiquidTint else Color.White.copy(alpha = 0.54f)
     }
@@ -282,7 +289,7 @@ fun GlassSurface(
         label = "GlassSurfaceTint",
     )
 
-    val blurPx = remember(density) { with(density) { 26.dp.toPx().coerceAtLeast(1f) } }
+    val blurPx = remember(density, blurRadius) { with(density) { blurRadius.toPx().coerceAtLeast(1f) } }
     val softLiquidBlurPx = remember(density) { with(density) { 10.dp.toPx().coerceAtLeast(1f) } }
     val bevelPx = remember(density) { with(density) { 8.dp.toPx().coerceAtLeast(1f) } }
     val cornerPx = remember(density, cornerRadiusHint, surfaceSizePx) {
@@ -306,6 +313,7 @@ fun GlassSurface(
     val backdropRenderEffect: RenderEffect? = remember(
         effectiveMaterial,
         blurPx,
+        saturationBoost,
         softLiquidBlurPx,
         surfaceSizePx,
         cornerPx,
@@ -322,7 +330,7 @@ fun GlassSurface(
                 AuraMaterial.Solid -> null
                 AuraMaterial.Glass -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        GlassRenderEffectCompat.createFrostedEffect(blurPx)
+                        GlassRenderEffectCompat.createFrostedEffect(blurPx, saturationBoost)
                     } else {
                         null
                     }
@@ -342,10 +350,10 @@ fun GlassSurface(
                                 dispersionPx = dispersionPx,
                                 refractionPx = refractionPx,
                                 softBlurPx = softLiquidBlurPx,
-                            ) ?: GlassRenderEffectCompat.createFrostedEffect(softLiquidBlurPx)
+                            ) ?: GlassRenderEffectCompat.createFrostedEffect(softLiquidBlurPx, saturationBoost)
                         }
                         Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-                            GlassRenderEffectCompat.createFrostedEffect(softLiquidBlurPx)
+                            GlassRenderEffectCompat.createFrostedEffect(softLiquidBlurPx, saturationBoost)
                         }
                         else -> null
                     }
@@ -384,7 +392,7 @@ fun GlassSurface(
             .dualGlassShadow(
                 shape = shape,
                 cornerRadiusHint = cornerRadiusHint,
-                alphaMultiplier = surfaceAlphaMultiplier,
+                alphaMultiplier = surfaceAlphaMultiplier * elevationAlphaMultiplier,
                 enabled = showShadow,
             )
             .clip(shape),
@@ -437,7 +445,7 @@ fun GlassSurface(
             }
         }
 
-        // Diagonal Linear Specular Stroke (1dp) or crisp opaque border on Solid fallback
+        // Diagonal Linear Specular Stroke (or custom specular border / crisp 1dp opaque border on Solid fallback)
         if (isSolidFallback) {
             Box(
                 modifier = Modifier
@@ -445,11 +453,23 @@ fun GlassSurface(
                     .border(width = 1.dp, color = colors.border.default, shape = shape),
             )
         } else if (surfaceAlphaMultiplier > 0.05f) {
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .border(width = 1.dp, brush = strokeBrush, shape = shape),
-            )
+            if (borderColorOverride != null) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .border(
+                            width = borderWidth,
+                            color = borderColorOverride.copy(alpha = borderColorOverride.alpha * surfaceAlphaMultiplier),
+                            shape = shape,
+                        ),
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .border(width = borderWidth, brush = strokeBrush, shape = shape),
+                )
+            }
         }
 
         // Crisp Foreground Content
@@ -533,6 +553,7 @@ private fun Modifier.dualGlassShadow(
     this
 } else {
     composed {
+        val level2Elevation = AuraTheme.elevation.level2
         val ambientPaint = remember { android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG) }
         val keyPaint = remember { android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG) }
         val genericShadowPath = remember { Path() }
@@ -543,13 +564,13 @@ private fun Modifier.dualGlassShadow(
             val cornerPx = minOf(cornerRadiusHint.toPx(), minOf(size.width, size.height) * 0.5f)
             val clampedAlpha = alphaMultiplier.coerceIn(0f, 1f)
 
-            val ambientBlurPx = 24.dp.toPx().coerceAtLeast(1f)
-            val ambientOffsetYPx = 10.dp.toPx()
-            val ambientColor = Color.Black.copy(alpha = 0.15f * clampedAlpha)
+            val ambientBlurPx = (level2Elevation.elevation * 3f).toPx().coerceAtLeast(1f)
+            val ambientOffsetYPx = level2Elevation.elevation.toPx()
+            val ambientColor = Color.Black.copy(alpha = level2Elevation.ambientShadowAlpha * clampedAlpha)
 
-            val keyBlurPx = 6.dp.toPx().coerceAtLeast(1f)
-            val keyOffsetYPx = 3.dp.toPx()
-            val keyColor = Color.Black.copy(alpha = 0.10f * clampedAlpha)
+            val keyBlurPx = level2Elevation.elevation.toPx().coerceAtLeast(1f)
+            val keyOffsetYPx = (level2Elevation.elevation * 0.4f).toPx()
+            val keyColor = Color.Black.copy(alpha = level2Elevation.keyShadowAlpha * clampedAlpha)
 
             drawIntoCanvas { canvas ->
                 val nativeCanvas = canvas.nativeCanvas
@@ -784,8 +805,8 @@ fun LiquidMetaballBridge(
 
 private object GlassRenderEffectCompat {
     @RequiresApi(Build.VERSION_CODES.S)
-    fun createFrostedEffect(blurRadiusPx: Float): RenderEffect? = runCatching {
-        val satMatrix = ColorMatrix().apply { setSaturation(1.3f) }
+    fun createFrostedEffect(blurRadiusPx: Float, saturationBoost: Float = 1.2f): RenderEffect? = runCatching {
+        val satMatrix = ColorMatrix().apply { setSaturation(saturationBoost) }
         val satFilter = AndroidRenderEffect.createColorFilterEffect(ColorMatrixColorFilter(satMatrix))
         val blur = AndroidRenderEffect.createBlurEffect(
             blurRadiusPx.coerceAtLeast(1f),

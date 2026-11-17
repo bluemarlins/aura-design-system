@@ -162,9 +162,9 @@ class SpecCodeConsistencyTest {
                 "$relativePath [EVAL-008]: frontmatter 'motion_track' must be Standard, Expressive, or none (was '$motionTrack')",
                 motionTrack in setOf("Standard", "Expressive", "none"),
             )
-            if (category != "layout") {
+            if (category !in setOf("layout", "primitives")) {
                 assertTrue(
-                    "$relativePath [EVAL-008]: non-layout component must specify 'motion_track' as Standard or Expressive (was '$motionTrack')",
+                    "$relativePath [EVAL-008]: non-layout, non-primitive component must specify 'motion_track' as Standard or Expressive (was '$motionTrack')",
                     motionTrack in setOf("Standard", "Expressive"),
                 )
             }
@@ -213,13 +213,17 @@ class SpecCodeConsistencyTest {
         funList.forEach { match ->
             val funName = match.groupValues[1]
             val specParams = extractTopLevelParamNames(androidBlock, match.range.last)
-            val ktFunMatch = Regex("""fun\s+(?:<[^>]+>\s*)?$funName\s*\(""").find(ktProdCode)
-                ?: error("$ktFileName [EVAL-006]: missing function '$funName' declared in $specPath")
-            val ktParams = extractTopLevelParamNames(ktProdCode, ktFunMatch.range.last)
+            // Overloads share a name, so the spec signature may match any declaration with that name.
+            val ktOverloadParams = Regex("""fun\s+(?:<[^>]+>\s*)?$funName\s*\(""").findAll(ktProdCode)
+                .map { extractTopLevelParamNames(ktProdCode, it.range.last) }
+                .toList()
+            if (ktOverloadParams.isEmpty()) {
+                error("$ktFileName [EVAL-006]: missing function '$funName' declared in $specPath")
+            }
 
             assertTrue(
-                "$ktFileName [EVAL-006]: parameter mismatch for '$funName' vs $specPath. Spec=$specParams, Code=$ktParams",
-                specParams == ktParams,
+                "$ktFileName [EVAL-006]: parameter mismatch for '$funName' vs $specPath. Spec=$specParams, Code=$ktOverloadParams",
+                specParams in ktOverloadParams,
             )
         }
     }

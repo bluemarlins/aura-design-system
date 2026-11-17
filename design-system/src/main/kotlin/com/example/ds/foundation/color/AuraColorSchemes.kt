@@ -22,6 +22,7 @@ object AuraColorSchemes {
                 sunken = Neutral100,
                 floating = Neutral0,
                 inverse = Neutral900,
+                floatingGlass = GlassLightSurface,
             ),
             content = AuraColors.Content(
                 primary = Neutral900,
@@ -42,6 +43,7 @@ object AuraColorSchemes {
                 default = Neutral200,
                 strong = Neutral400,
                 focus = Blue500,
+                glassSpecular = GlassLightSpecular,
             ),
             status = AuraColors.Status(
                 error = AuraColors.StatusRole(
@@ -92,6 +94,7 @@ object AuraColorSchemes {
                 sunken = Neutral950,
                 floating = Neutral800,
                 inverse = Neutral50,
+                floatingGlass = GlassDarkSurface,
             ),
             content = AuraColors.Content(
                 primary = Neutral50,
@@ -112,6 +115,7 @@ object AuraColorSchemes {
                 default = Neutral700,
                 strong = Neutral500,
                 focus = Blue400,
+                glassSpecular = GlassDarkSpecular,
             ),
             status = AuraColors.Status(
                 error = AuraColors.StatusRole(

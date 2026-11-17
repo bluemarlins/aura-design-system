@@ -39,8 +39,8 @@ data class AuraElevation(
     ),
     val level2: AuraElevationLevel = AuraElevationLevel(
         elevation = 6.dp,
-        keyShadowAlpha = 0.10f,
-        ambientShadowAlpha = 0.06f,
+        keyShadowAlpha = 0.14f,
+        ambientShadowAlpha = 0.08f,
         scrimAlpha = 0.28f,
     ),
     val level3: AuraElevationLevel = AuraElevationLevel(

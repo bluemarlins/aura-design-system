@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -28,10 +29,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.ds.foundation.layout.AuraHeightClass
 import com.example.ds.foundation.theme.AuraTheme
 import kotlinx.coroutines.flow.distinctUntilChanged
 
@@ -116,12 +120,15 @@ fun rememberFloatingScrollProgress(
     return progress
 }
 
+internal val LocalScaffoldHandlesBottomHide = compositionLocalOf { false }
+
 /**
  * Spatial 4-Layer Edge-to-Edge Scaffold:
  * - **Layer 0 (Base Canvas):** 100% full-bleed scrollable canvas recorded via [rememberGlassBackdropState]
  *   so floating bars see real scrolled content passing behind them.
  * - **Layer 1 (Edge Scrim):** Progressive protective top and bottom gradient scrims without opaque cutouts.
- * - **Layer 2 (Floating Chrome):** [topBar] and [bottomBar] floating cleanly above Layer 0/1.
+ * - **Layer 2 (Floating Chrome):** [topBar] and [bottomBar] floating cleanly above Layer 0/1, with
+ *   optional synchronized show/hide via [adaptiveBarState].
  * - **Layer 3 (Transient Overlay):** Full-screen tap-to-dismiss + Morphing [overlay] slot.
  *
  * Automatically computes bottom safe `contentPadding` (`islandHeight + navigationBars + bottomMargin + breathing`)
@@ -141,16 +148,27 @@ fun FloatingGlassScaffold(
     snackbarHost: @Composable () -> Unit = {},
     containerColor: Color = AuraTheme.colors.background.primary,
     contentColor: Color = AuraTheme.colors.content.primary,
+    adaptiveBarState: AuraAdaptiveBarState? = null,
+    topBarClearance: Dp = if (adaptiveBarState != null) {
+        if (AuraTheme.window.heightClass == AuraHeightClass.Compact) 48.dp else 112.dp
+    } else {
+        64.dp
+    },
     content: @Composable (PaddingValues) -> Unit,
 ) {
     val colors = AuraTheme.colors
+    val density = LocalDensity.current
     val backdropState = rememberGlassBackdropState()
+
+    LaunchedEffect(overlayVisible, adaptiveBarState) {
+        adaptiveBarState?.updatePinnedFlags(menuOpen = overlayVisible)
+    }
 
     val statusTopPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
     val navBottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
     val contentPadding = PaddingValues(
-        top = statusTopPadding + 10.dp + 54.dp,
+        top = statusTopPadding + topBarClearance,
         bottom = if (hasBottomIsland) {
             calculateBottomIslandContentPadding(
                 navBarBottomInset = navBottomPadding,
@@ -169,15 +187,34 @@ fun FloatingGlassScaffold(
         fraction = 0.22f,
     )
 
+    val topScrimAlphaScale = adaptiveBarState?.let {
+        (it.morphFraction * (1f - it.hideFraction)).coerceIn(0f, 1f)
+    } ?: 1f
+    val bottomHideFraction = adaptiveBarState?.hideFraction?.coerceIn(0f, 1f) ?: 0f
+    val bottomHideTravelPx = remember(density, navBottomPadding, bottomIslandHeight, bottomIslandMargin) {
+        with(density) { (navBottomPadding + bottomIslandHeight + bottomIslandMargin + 24.dp).toPx() }
+    }
+
     ProvideAuraContentColorTextStyle(
         contentColor = contentColor,
         textStyle = AuraTheme.typography.bodyMedium,
     ) {
-        CompositionLocalProvider(LocalGlassBackdropState provides backdropState) {
+        CompositionLocalProvider(
+            LocalGlassBackdropState provides backdropState,
+            LocalAuraAdaptiveBarState provides adaptiveBarState,
+            LocalScaffoldHandlesBottomHide provides (adaptiveBarState != null),
+        ) {
             Box(
                 modifier = modifier
                     .fillMaxSize()
-                    .background(containerColor),
+                    .background(containerColor)
+                    .then(
+                        if (adaptiveBarState != null) {
+                            Modifier.nestedScroll(adaptiveBarState.nestedScrollConnection)
+                        } else {
+                            Modifier
+                        },
+                    ),
             ) {
                 // Layer 0: Base Edge-to-Edge Scrollable Canvas (captured for real blur/refraction)
                 Box(
@@ -189,28 +226,32 @@ fun FloatingGlassScaffold(
                 }
 
                 // Layer 1: Progressive Edge Scrims (protects contrast without cutting opaque slabs)
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .fillMaxWidth()
-                        .height(statusTopPadding + 76.dp)
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(
-                                    edgeScrimBase.copy(alpha = AuraTheme.elevation.level3.scrimAlpha),
-                                    edgeScrimBase.copy(alpha = AuraTheme.elevation.level1.scrimAlpha),
-                                    Color.Transparent,
+                if (topScrimAlphaScale > 0.01f) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .fillMaxWidth()
+                            .height(statusTopPadding + 76.dp)
+                            .graphicsLayer { alpha = topScrimAlphaScale }
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(
+                                        edgeScrimBase.copy(alpha = AuraTheme.elevation.level3.scrimAlpha),
+                                        edgeScrimBase.copy(alpha = AuraTheme.elevation.level1.scrimAlpha),
+                                        Color.Transparent,
+                                    ),
                                 ),
                             ),
-                        ),
-                )
+                    )
+                }
 
-                if (hasBottomIsland) {
+                if (hasBottomIsland && (1f - bottomHideFraction) > 0.01f) {
                     Box(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .fillMaxWidth()
                             .height(navBottomPadding + bottomIslandHeight + bottomIslandMargin + 32.dp)
+                            .graphicsLayer { alpha = (1f - bottomHideFraction).coerceIn(0f, 1f) }
                             .background(
                                 Brush.verticalGradient(
                                     colors = listOf(
@@ -223,23 +264,30 @@ fun FloatingGlassScaffold(
                     )
                 }
 
-                // Layer 2: Floating Chrome (Top Pill Bar & Bottom Island)
+                // Layer 2: Floating Chrome (Top Pill Bar & Bottom Island synchronized in same frame)
                 topBar(backdropState)
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth()
+                        .graphicsLayer {
+                            if (adaptiveBarState != null) {
+                                translationY = bottomHideTravelPx * bottomHideFraction
+                                alpha = (1f - bottomHideFraction).coerceIn(0f, 1f)
+                            }
+                        }
                         .navigationBarsPadding(),
                 ) {
                     bottomBar(backdropState)
                 }
 
                 // Layer 2/3: Snackbar host clearing bottom navigation chrome and insets
-                val snackbarBottomOffset = if (hasBottomIsland) {
-                    navBottomPadding + bottomIslandHeight + bottomIslandMargin
+                val visibleBottomHeight = if (hasBottomIsland) {
+                    (bottomIslandHeight + bottomIslandMargin) * (1f - bottomHideFraction)
                 } else {
-                    navBottomPadding
+                    0.dp
                 }
+                val snackbarBottomOffset = navBottomPadding + visibleBottomHeight
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)

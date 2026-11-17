@@ -27,6 +27,12 @@ object AuraPalette {
     val Neutral950 = Color(0xFF0E1014)
     val Neutral1000 = Color(0xFF000000)
 
+    // Floating Glassmorphism Surfaces & Specular Borders (One UI Adaptive Glass)
+    val GlassLightSurface = Color(0xCCF7F7F9)
+    val GlassDarkSurface = Color(0xCC1C1C1E)
+    val GlassLightSpecular = Color(0x33FFFFFF)
+    val GlassDarkSpecular = Color(0x26FFFFFF)
+
     // Brand Blue (One UI Blue aligned)
     val Blue50 = Color(0xFFEDF5FF)
     val Blue100 = Color(0xFFD6E9FF)

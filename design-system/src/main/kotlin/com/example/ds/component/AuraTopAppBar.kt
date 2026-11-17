@@ -13,17 +13,21 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -32,7 +36,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -46,6 +52,9 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -55,7 +64,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
-import com.example.ds.foundation.elevation.AuraElevation
+import com.example.ds.foundation.layout.AuraDisplayRatio
+import com.example.ds.foundation.layout.AuraHeightClass
+import com.example.ds.foundation.layout.AuraWidthClass
+import com.example.ds.foundation.motion.AuraMotionProgressKey
 import com.example.ds.foundation.theme.AuraTheme
 import kotlin.math.abs
 import kotlin.math.max
@@ -76,6 +88,30 @@ enum class AuraTopAppBarScrollBehavior {
     Pinned,
     EnterAlways,
     CompactOnScroll,
+    AdaptiveFloating,
+}
+
+/**
+ * Scroll-driven phases for the One UI Adaptive Floating App Bar (`FAB-01`–`FAB-09`).
+ */
+enum class AdaptiveFloatingBarPhase {
+    /** `Y == 0dp` (or non-scrollable content): full-width flat expanded header, no blur or elevation. */
+    DockedExpanded,
+
+    /** `0dp < Y < 160dp`: title fades while horizontal margin and corner radius interpolate into a pill. */
+    CollapsingTransition,
+
+    /** `Y >= 160dp` and scrolling up (`ΔY < -12dp`) or settled: floating glass pill above content. */
+    FloatingVisible,
+
+    /** `Y >= 160dp` and scrolling down (`ΔY > +24dp`): slid off-screen above top edge. */
+    FloatingHidden,
+
+    /** `isFocused || isMenuOpen`: locked visible in floating pill form regardless of scroll events. */
+    FloatingPinned,
+
+    /** `isImeVisible || heightDp < 480dp`: compact docked bar with zero floating margin. */
+    CompactDocked,
 }
 
 data class AuraMoreMenuAction(
@@ -618,7 +654,8 @@ fun MorphingMorePopover(
 /**
  * Standard Aura Top App Bar implementing [AuraTopAppBarStyle.FloatingCapsule],
  * [AuraTopAppBarStyle.FloatingSplit], and [AuraTopAppBarStyle.SurfaceDocked] with
- * [AuraTheme.motion] transitions and semantic tokens.
+ * [AuraTheme.motion] transitions, semantic tokens, and One UI [AuraTopAppBarScrollBehavior.AdaptiveFloating]
+ * scroll-state morphing.
  */
 @Suppress("DEPRECATION")
 @Composable
@@ -634,7 +671,28 @@ fun AuraTopAppBar(
     navigationIcon: (@Composable () -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
     subContent: (@Composable () -> Unit)? = null,
+    adaptiveState: AuraAdaptiveBarState? = LocalAuraAdaptiveBarState.current,
+    expandedTitle: String? = null,
+    expandedSubtitle: String? = null,
 ) {
+    if (scrollBehavior == AuraTopAppBarScrollBehavior.AdaptiveFloating) {
+        AdaptiveFloatingTopAppBar(
+            title = title,
+            subtitle = subtitle,
+            surface = surface,
+            scrollFraction = scrollFraction,
+            centerTitle = centerTitle,
+            navigationIcon = navigationIcon,
+            actions = actions,
+            subContent = subContent,
+            adaptiveState = adaptiveState,
+            expandedTitle = expandedTitle,
+            expandedSubtitle = expandedSubtitle,
+            modifier = modifier,
+        )
+        return
+    }
+
     val colors = AuraTheme.colors
     val typography = AuraTheme.typography
     val motion = AuraTheme.motion
@@ -839,6 +897,240 @@ fun AuraTopAppBar(
     }
 }
 
+@Suppress("DEPRECATION")
+@Composable
+private fun AdaptiveFloatingTopAppBar(
+    title: String,
+    subtitle: String?,
+    surface: AuraTopAppBarSurface,
+    scrollFraction: Float,
+    centerTitle: Boolean,
+    navigationIcon: (@Composable () -> Unit)?,
+    actions: @Composable RowScope.() -> Unit,
+    subContent: (@Composable () -> Unit)?,
+    adaptiveState: AuraAdaptiveBarState?,
+    expandedTitle: String?,
+    expandedSubtitle: String?,
+    modifier: Modifier = Modifier,
+) {
+    val colors = AuraTheme.colors
+    val typography = AuraTheme.typography
+    val motion = AuraTheme.motion
+    val window = AuraTheme.window
+    val reducedMotion = rememberAuraReducedMotion()
+    val density = LocalDensity.current
+
+    val isCompactDocked = adaptiveState?.phase == AdaptiveFloatingBarPhase.CompactDocked ||
+        window.heightClass == AuraHeightClass.Compact
+    val targetMorph = when {
+        isCompactDocked -> 0f
+        adaptiveState != null -> adaptiveState.morphFraction
+        else -> scrollFraction.coerceIn(0f, 1f)
+    }
+    val smoothMorph by animateFloatAsState(
+        targetValue = targetMorph.coerceIn(0f, 1f),
+        animationSpec = if (reducedMotion) snap() else motion.adaptiveBarMorphSpring(),
+        label = "AdaptiveTopBarMorph",
+    )
+    val visualMorph = if (isCompactDocked) 0f else smoothMorph.coerceIn(0f, 1f)
+    val hideFraction = if (isCompactDocked) 0f else (adaptiveState?.hideFraction ?: 0f).coerceIn(0f, 1f)
+
+    val useExpandedArea = expandedTitle?.isNotEmpty() ?: true
+    val resolvedExpandedTitle = expandedTitle ?: title
+    val resolvedExpandedSubtitle = expandedSubtitle ?: subtitle
+
+    val horizontalMargin = lerp(0.dp, AdaptiveBarThresholds.FloatingHorizontalMargin, visualMorph)
+    val topOffset = lerp(0.dp, AdaptiveBarThresholds.FloatingTopOffset, visualMorph)
+    val targetCornerRadius = if (subContent != null) {
+        AdaptiveBarThresholds.FloatingTwoTierCornerRadius
+    } else {
+        AdaptiveBarThresholds.FloatingCornerRadius
+    }
+    val cornerRadius = lerp(0.dp, targetCornerRadius, visualMorph)
+    val rowHeight = if (isCompactDocked) {
+        AdaptiveBarThresholds.CompactDockedHeight
+    } else {
+        AdaptiveBarThresholds.CollapsedSingleLineHeight
+    }
+    val expandedExtraHeight = if (!isCompactDocked && useExpandedArea) {
+        lerp(AdaptiveBarThresholds.ExpandedExtraHeight, 0.dp, visualMorph)
+    } else {
+        0.dp
+    }
+
+    val expandedTitleAlpha = if (isCompactDocked || !useExpandedArea) {
+        0f
+    } else {
+        (1f - (visualMorph / 0.55f)).coerceIn(0f, 1f)
+    }
+    val compactTitleAlpha = if (isCompactDocked || !useExpandedArea) {
+        1f
+    } else {
+        ((visualMorph - 0.35f) / 0.65f).coerceIn(0f, 1f)
+    }
+
+    val statusTopPx = with(density) {
+        WindowInsets.statusBars.asPaddingValues().calculateTopPadding().toPx()
+    }
+    var measuredBarHeightPx by remember { mutableIntStateOf(0) }
+    val hideTravelPx = (measuredBarHeightPx.toFloat() + statusTopPx).coerceAtLeast(1f)
+
+    BoxWithConstraints(
+        modifier = modifier
+            .fillMaxWidth()
+            .testTag("aura_adaptive_top_app_bar")
+            .semantics {
+                this[AuraMotionProgressKey] = 1f - hideFraction
+            }
+            .onSizeChanged { measuredBarHeightPx = it.height }
+            .graphicsLayer {
+                translationY = -(hideTravelPx * hideFraction)
+                alpha = (1f - hideFraction).coerceIn(0f, 1f)
+            }
+            .statusBarsPadding()
+            .padding(top = topOffset),
+        contentAlignment = Alignment.TopCenter,
+    ) {
+        val availableWidth = (maxWidth - horizontalMargin * 2).coerceAtLeast(0.dp)
+        val floatingMaxWidth = minOf(availableWidth, AdaptiveBarThresholds.TabletMaxFloatingWidth)
+        val targetContainerWidth = lerp(availableWidth, floatingMaxWidth, visualMorph)
+        val pillShape = RoundedCornerShape(cornerRadius)
+        val barHorizontalPadding = lerp(12.dp, 8.dp, visualMorph)
+
+        val innerContent: @Composable () -> Unit = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = barHorizontalPadding),
+            ) {
+                TopBarSlotRow(
+                    title = if (compactTitleAlpha > 0.02f) title else "",
+                    subtitle = if (compactTitleAlpha > 0.02f) subtitle else null,
+                    height = rowHeight,
+                    centerTitle = centerTitle,
+                    compactTitle = visualMorph > 0.5f || isCompactDocked,
+                    navigationIcon = navigationIcon,
+                    actions = actions,
+                )
+
+                if (expandedExtraHeight > 1.dp && expandedTitleAlpha > 0.02f) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = expandedExtraHeight)
+                            .padding(horizontal = 8.dp)
+                            .alpha(expandedTitleAlpha),
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        AuraText(
+                            text = resolvedExpandedTitle,
+                            style = typography.headlineMedium,
+                            color = colors.content.primary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.semantics { heading() },
+                        )
+                        if (resolvedExpandedSubtitle != null) {
+                            AuraText(
+                                text = resolvedExpandedSubtitle,
+                                style = typography.bodySmall,
+                                color = colors.content.secondary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                }
+
+                if (subContent != null) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 40.dp, max = 48.dp)
+                            .padding(bottom = 8.dp),
+                        contentAlignment = Alignment.CenterStart,
+                    ) {
+                        subContent()
+                    }
+                }
+            }
+        }
+
+        when {
+            isCompactDocked -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(colors.surface.default),
+                ) {
+                    innerContent()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(1.dp)
+                            .background(colors.border.subtle),
+                    )
+                }
+            }
+
+            visualMorph <= 0.02f -> {
+                val dockedBackground = if (surface == AuraTopAppBarSurface.TranslucentGlass) {
+                    Color.Transparent
+                } else {
+                    colors.background.primary
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(dockedBackground),
+                ) {
+                    innerContent()
+                }
+            }
+
+            surface == AuraTopAppBarSurface.TranslucentGlass -> {
+                GlassSurface(
+                    modifier = Modifier.width(targetContainerWidth),
+                    glassStyle = GlassStyle.FROSTED,
+                    shape = pillShape,
+                    cornerRadiusHint = cornerRadius,
+                    surfaceAlphaMultiplier = visualMorph,
+                    elevationAlphaMultiplier = visualMorph,
+                    blurRadius = AdaptiveBarThresholds.FloatingBlurRadius,
+                    saturationBoost = 1.2f,
+                    tintColorOverride = colors.surface.floatingGlass,
+                    borderColorOverride = colors.border.glassSpecular,
+                    borderWidth = 0.75.dp,
+                    showShadow = visualMorph > 0.05f,
+                ) {
+                    innerContent()
+                }
+            }
+
+            else -> {
+                val solidAlpha = (1f - (0.02f * visualMorph)).coerceIn(0.98f, 1f)
+                Box(
+                    modifier = Modifier
+                        .width(targetContainerWidth)
+                        .shadow(
+                            elevation = AuraTheme.elevation.level2.elevation * visualMorph,
+                            shape = pillShape,
+                        )
+                        .clip(pillShape)
+                        .background(colors.surface.floating.copy(alpha = solidAlpha), pillShape)
+                        .border(
+                            width = 1.dp,
+                            color = colors.border.default.copy(alpha = visualMorph),
+                            shape = pillShape,
+                        ),
+                ) {
+                    innerContent()
+                }
+            }
+        }
+    }
+}
+
 @Composable
 private fun TopBarSlotRow(
     title: String,
@@ -871,13 +1163,15 @@ private fun TopBarSlotRow(
             horizontalAlignment = if (centerTitle) Alignment.CenterHorizontally else Alignment.Start,
             verticalArrangement = Arrangement.Center,
         ) {
-            AuraText(
-                text = title,
-                style = if (compactTitle) typography.titleMedium else typography.titleLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.semantics { heading() },
-            )
+            if (title.isNotBlank()) {
+                AuraText(
+                    text = title,
+                    style = if (compactTitle) typography.titleMedium else typography.titleLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.semantics { heading() },
+                )
+            }
             if (subtitle != null && !compactTitle) {
                 AuraText(
                     text = subtitle,

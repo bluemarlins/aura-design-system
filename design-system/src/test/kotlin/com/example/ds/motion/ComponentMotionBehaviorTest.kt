@@ -1,5 +1,7 @@
 package com.example.ds.motion
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -20,13 +22,22 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
+import com.example.ds.component.AdaptiveFloatingBarPhase
+import com.example.ds.component.AuraAdaptiveBarState
 import com.example.ds.component.AuraBottomIsland
 import com.example.ds.component.AuraBottomIslandItem
 import com.example.ds.component.AuraButton
 import com.example.ds.component.AuraDialog
 import com.example.ds.component.AuraFab
 import com.example.ds.component.AuraSwitch
+import com.example.ds.component.AuraText
+import com.example.ds.component.AuraTopAppBar
+import com.example.ds.component.AuraTopAppBarScrollBehavior
+import com.example.ds.component.AuraTopAppBarSurface
+import com.example.ds.component.FloatingGlassScaffold
 import com.example.ds.component.GlassSurface
+import com.example.ds.component.rememberAuraAdaptiveBarState
+import com.example.ds.foundation.layout.AuraWindowInfo
 import com.example.ds.foundation.motion.AuraMotionDefaults
 import com.example.ds.foundation.motion.AuraMotionProfile
 import com.example.ds.foundation.motion.AuraMotionProgressKey
@@ -339,5 +350,84 @@ class ComponentMotionBehaviorTest {
 
         composeTestRule.onAllNodesWithTag("aura_glass_surface_solid_fallback", useUnmergedTree = true)
             .assertCountEquals(1)
+    }
+
+    @Test
+    fun auraTopAppBar_adaptiveFloating_animatesHideRevealAndReducesTransparencyCleanly() {
+        composeTestRule.mainClock.autoAdvance = false
+        var reduceTransparency by mutableStateOf(false)
+        lateinit var adaptiveState: AuraAdaptiveBarState
+
+        composeTestRule.setContent {
+            AuraTheme(
+                reduceTransparency = reduceTransparency,
+                windowInfo = AuraWindowInfo.fromDimensions(720, 900, 900),
+            ) {
+                adaptiveState = rememberAuraAdaptiveBarState()
+                FloatingGlassScaffold(
+                    adaptiveBarState = adaptiveState,
+                    topBar = {
+                        AuraTopAppBar(
+                            title = "Adaptive Archive",
+                            surface = AuraTopAppBarSurface.TranslucentGlass,
+                            scrollBehavior = AuraTopAppBarScrollBehavior.AdaptiveFloating,
+                            adaptiveState = adaptiveState,
+                        )
+                    },
+                ) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        AuraText("Body")
+                    }
+                }
+            }
+        }
+        composeTestRule.mainClock.advanceTimeByFrame()
+
+        // Initially DockedExpanded -> visible (progress = 1f) and no GlassSurface fallback
+        assertEquals(AdaptiveFloatingBarPhase.DockedExpanded, adaptiveState.phase)
+        val initialVisibility = composeTestRule.onNodeWithTag("aura_adaptive_top_app_bar")
+            .fetchSemanticsNode().config[AuraMotionProgressKey]
+        assertEquals(1f, initialVisibility, 0.001f)
+
+        // Scroll past collapse threshold into FloatingVisible -> GlassSurface mounts
+        composeTestRule.runOnIdle {
+            adaptiveState.updateScrollBounds(scrollOffsetPx = 600f, maxScrollOffsetPx = 3000f)
+        }
+        composeTestRule.mainClock.advanceTimeByFrame()
+        composeTestRule.mainClock.advanceTimeBy(400L)
+        assertEquals(AdaptiveFloatingBarPhase.FloatingVisible, adaptiveState.phase)
+
+        // Enable reduceTransparency -> GlassSurface switches to Solid 98% fallback tag
+        composeTestRule.runOnIdle { reduceTransparency = true }
+        composeTestRule.mainClock.advanceTimeByFrame()
+        composeTestRule.onAllNodesWithTag("aura_glass_surface_solid_fallback", useUnmergedTree = true)
+            .assertCountEquals(1)
+
+        // Scroll down past +24dp -> animates smoothly toward FloatingHidden (180ms)
+        composeTestRule.runOnIdle {
+            adaptiveState.onScrollDelta(deltaYPx = 120f, isFromUserDrag = false)
+        }
+        composeTestRule.mainClock.advanceTimeByFrame()
+        composeTestRule.mainClock.advanceTimeBy(90L)
+        val midHideVisibility = composeTestRule.onNodeWithTag("aura_adaptive_top_app_bar")
+            .fetchSemanticsNode().config[AuraMotionProgressKey]
+        assertTrue(
+            "Expected continuous hide transition between 0f and 1f, was $midHideVisibility",
+            midHideVisibility in 0.05f..0.95f,
+        )
+
+        composeTestRule.mainClock.advanceTimeBy(250L)
+        val hiddenVisibility = composeTestRule.onNodeWithTag("aura_adaptive_top_app_bar")
+            .fetchSemanticsNode().config[AuraMotionProgressKey]
+        assertEquals(0f, hiddenVisibility, 0.02f)
+
+        // Reverse upward scroll past -12dp -> re-appears (250ms)
+        composeTestRule.runOnIdle {
+            adaptiveState.onScrollDelta(deltaYPx = -80f, isFromUserDrag = false)
+        }
+        composeTestRule.mainClock.advanceTimeBy(400L)
+        val revealedVisibility = composeTestRule.onNodeWithTag("aura_adaptive_top_app_bar")
+            .fetchSemanticsNode().config[AuraMotionProgressKey]
+        assertEquals(1f, revealedVisibility, 0.02f)
     }
 }

@@ -91,7 +91,11 @@ fun rememberAuraReduceTransparency(): Boolean {
         val highContrast = runCatching {
             Settings.Secure.getInt(context.contentResolver, "high_text_contrast_enabled", 0) == 1
         }.getOrDefault(false)
-        powerSave || highContrast
+        val systemReduceTransparency = runCatching {
+            Settings.System.getInt(context.contentResolver, "accessibility_reduce_transparency", 0) == 1 ||
+                Settings.Global.getInt(context.contentResolver, "reduce_transparency", 0) == 1
+        }.getOrDefault(false)
+        powerSave || highContrast || systemReduceTransparency
     }
 }
 
