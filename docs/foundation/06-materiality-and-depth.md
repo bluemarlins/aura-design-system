@@ -71,7 +71,7 @@ All components resolve effective materiality via `resolveEffectiveMaterial(reque
 |---|---|---|---|---|---|
 | `level0` | `0.dp` | `0.00f` | `0.00f` | `0.00f` | Canvas, inline inputs, outlined/filled cards |
 | `level1` | `2.dp` | `0.06f` | `0.04f` | `0.16f` | Elevated/glass cards, segmented thumb, glass chips, circular action pods, edge scrim tail / popover scrim |
-| `level2` | `6.dp` | `0.10f` | `0.06f` | `0.28f` | Scrolled `AuraTopAppBar`, `Floating` icon button, `Secondary`/`Glass` `AuraFab` |
+| `level2` | `6.dp` | `0.14f` | `0.08f` | `0.28f` | Scrolled `AuraTopAppBar`, `Floating` icon button, `Secondary`/`Glass` `AuraFab` |
 | `level3` | `12.dp` | `0.14f` | `0.08f` | `0.40f` | `Primary`/`Surface` `AuraFab`, protective top/bottom edge scrim peaks in `FloatingGlassScaffold` |
 | `level4` | `24.dp` | `0.20f` | `0.12f` | `0.56f` | Modal spatial overlays (`AuraDialog`, future `AuraBottomSheet`) |
 
