@@ -337,10 +337,14 @@ powershell -ExecutionPolicy Bypass -File skills/aura-design-system/scripts/verif
 - **`AuraTopAppBar` / `FloatingTopPillBar`**: Supports `FloatingCapsule`, `FloatingSplit`, and `SurfaceDocked` modes, scroll-reactive opacity/pill transitions (`rememberFloatingScrollProgress`), `MorphingMorePopover`, and Metaball action splitting.
 - **`AuraBottomIsland` / `FloatingBottomIsland`**: Stadium capsule navigation bar with spring-driven sliding active indicator pill, velocity-coupled **Elastic Squish & Stretch**, and `LiquidMetaballBridge` split auxiliary FAB.
 
-### 3. Complete Component Catalog (21 Ready Items)
+### 3. Complete Component Catalog (30 Ready Specs)
+
+The full Foundation → Primitives → Components → Patterns tree is in [`02-component-hierarchy.md`](docs/components/02-component-hierarchy.md).
 
 | Category | Component | Description | Spec |
 |---|---|---|---|
+| **Primitives** | `AuraText` / `AuraIcon` | Token-bound text and icon primitives that inherit content color and text style | [`aura-text.md`](docs/components/primitives/aura-text.md) · [`aura-icon.md`](docs/components/primitives/aura-icon.md) |
+| **Primitives** | `GlassSurface` | Single `Glass` / `LiquidGlass` rendering pipeline with `Solid` fallback, backdrop sampling, and `LiquidMetaballBridge` | [`glass-surface.md`](docs/components/primitives/glass-surface.md) |
 | **Foundation** | `AuraColors` / `AuraPalette` | One UI-inspired Light & OLED Dark semantic color system | [`02-color.md`](docs/foundation/02-color.md) |
 | **Foundation** | `AuraTypography` & `AuraLayout` | 16-role typography scale & 2-axis `Smallest Width × Display Ratio` layout | [`04-typography.md`](docs/foundation/04-typography.md) · [`05-responsive-layout.md`](docs/foundation/05-responsive-layout.md) |
 | **Actions** | `AuraButton` | 5 variants (`Primary`, `Secondary`, `Outline`, `Ghost`, `Destructive`), 3 sizes, loading spinner, click debounce | [`aura-button.md`](docs/components/actions/aura-button.md) |
@@ -359,13 +363,15 @@ powershell -ExecutionPolicy Bypass -File skills/aura-design-system/scripts/verif
 | **Inputs** | `AuraRatingBar` | Interactive tap/scrub or read-only star & half-star rating bar | [`aura-rating-bar.md`](docs/components/inputs/aura-rating-bar.md) |
 | **Navigation** | `AuraTopAppBar` / `FloatingTopPillBar` | Scroll-adaptive top pill bar with Dual Glass & Morphing Popover | [`aura-top-app-bar.md`](docs/components/navigation/aura-top-app-bar.md) |
 | **Navigation** | `AuraBottomIsland` / `FloatingBottomIsland` | Detached floating bottom island with Metaball split action & elastic pill | [`aura-bottom-island.md`](docs/components/navigation/aura-bottom-island.md) |
+| **Navigation** | `AuraAdaptiveBarState` | Scroll-linked phase state that syncs the top bar and bottom island (`BindAdaptiveBarTo*`) | [`aura-adaptive-bar-state.md`](docs/components/navigation/aura-adaptive-bar-state.md) |
 | **Containment** | `AuraCard` | `Elevated`, `Filled`, `Outlined`, and `Glass` containers with tactile press response | [`aura-card.md`](docs/components/containment/aura-card.md) |
 | **Containment** | `AuraDialog` | `Standard`, `Destructive`, and `Glass` modal confirmation surfaces with adaptive button stacking | [`aura-dialog.md`](docs/components/containment/aura-dialog.md) |
 | **Containment** | `AuraDivider` | `Horizontal` / `Vertical` hairline separators with `Subtle`, `Default`, and `Strong` tones | [`aura-divider.md`](docs/components/containment/aura-divider.md) |
 | **Feedback** | `AuraBadge` / `AuraBadgedBox` | `Dot`, `Small`, and `Medium` semantic pills and `"99+"` count badges | [`aura-badge.md`](docs/components/feedback/aura-badge.md) |
 | **Feedback** | `AuraProgressBar` (`Linear` / `Step`) | Continuous & segmented step progress bars with semantic status variants | [`aura-progress-bar.md`](docs/components/feedback/aura-progress-bar.md) |
 | **Feedback** | `AuraSnackbar` / `AuraSnackbarHost` | Queued transient feedback banners with `Solid` / `Glass` materiality and scaffold clearance | [`aura-snackbar.md`](docs/components/feedback/aura-snackbar.md) |
-| **Layout** | `AuraScaffold` & `AuraAdaptiveTwoPane` & `AuraAdaptiveGrid` | Zero-M3 screen scaffolds and adaptive split/grid containers | [`aura-scaffold.md`](docs/components/layout/aura-scaffold.md) · [`aura-adaptive-two-pane.md`](docs/components/layout/aura-adaptive-two-pane.md) |
+| **Layout** | `AuraScaffold` & `AuraAdaptiveTwoPane` & `AuraAdaptiveGrid` | Zero-M3 screen scaffolds and adaptive split/grid containers | [`aura-scaffold.md`](docs/components/layout/aura-scaffold.md) · [`aura-adaptive-two-pane.md`](docs/components/layout/aura-adaptive-two-pane.md) · [`aura-adaptive-grid.md`](docs/components/layout/aura-adaptive-grid.md) |
+| **Layout** | `FloatingGlassScaffold` | 4-layer edge-to-edge canvas for floating glass chrome | [`floating-glass-scaffold.md`](docs/components/layout/floating-glass-scaffold.md) |
 
 ### 4. Automated `Specs ↔ Code` Quality Gate (`EVAL-001` – `EVAL-008`)
 

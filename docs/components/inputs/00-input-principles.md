@@ -25,6 +25,8 @@ Defines the **Data Input & Selection Component Taxonomy** and the **Usage Princi
 | `AuraSlider` | Continuous or stepped range value adjustment | Blur & 3D depth (**Launcher**), Tasting profile `Body / Tannin / Acidity / Peat` (**Drink Diary**), Target allocation % (**Finance**) |
 | `AuraRatingBar` | Discrete star / half-star sensory satisfaction rating | Wine & whiskey enjoyment score (**Drink Diary**) |
 
+> **Selection outside `inputs/`:** `AuraSegmentedButton` and `AuraChipButton` (`Filter` / `Tag`) also select, but they live in [actions/](../actions/00-button-principles.md) as **Selection Actions**: they switch the current view immediately and are never saved as form values (`BTN-RULE-007`). Use the controls in this category when the selection is part of the data the user commits.
+
 ---
 
 ## 3. Principle 1: Intent Decision Tree

@@ -95,6 +95,12 @@ Traditional Material top bars span edge-to-edge as opaque rectangles, cutting of
 - **`Pinned`**: Stays anchored at top while content scrolls underneath; transitions resting separation (`SolidElevated` border/shadow opacity and blur intensity) smoothly as `firstVisibleItemScrollOffset > 0`.
 - **`EnterAlways`**: Translates upward smoothly into negative offset (clipped safely below system status bar region or faded cleanly) on upward scroll, snapping right back into view on downward scroll.
 - **`CompactOnScroll`**: Starts expanded (`titleLarge`, optional rich subtitle or attached `subContent` `AuraChipButton` ribbon) and compresses smoothly toward a compact `48.dp` capsule (`titleMedium`, condensed actions) as scroll progresses.
+- **`AdaptiveFloating`** *(One UI State-Driven Morphing)*:
+  - **`DockedExpanded` (`Y == 0dp` or `maxScrollOffset < 160dp`)**: Full-width (`0.dp` margin, `0.dp` radius), flat background, expanded Viewing Area header (`headlineMedium`), blur off, elevation `0.dp`.
+  - **`CollapsingTransition` (`0dp < Y < 160dp`)**: Crossfades expanded title out while interpolating horizontal margin (`0dp -> 16dp`), corner radius (`0dp -> 28dp`, or `24dp` continuous squircle with `subContent`), top offset (`0dp -> 8dp`), and glass/shadow intensity (`0 -> 1`), snapping at `50%` on release (`FAB-06`).
+  - **`FloatingVisible` / `FloatingPinned` (`Y >= 160dp`, `ΔY < -12dp` or `isFocused || isMenuOpen`)**: Centered Floating Pill (`maxWidth = 640.dp` on tablets/foldables) with `26.dp` backdrop blur, `1.2x` saturation boost, `surface.floatingGlass` (`#CCF7F7F9` / `#CC1C1C1E`), `border.glassSpecular` (`0.75.dp`), and `elevation.level2` (`6.dp`) shadow (`8%` ambient / `14%` spot).
+  - **`FloatingHidden` (`Y >= 160dp`, `ΔY > +24dp`, jitter `< 12dp` ignored)**: Slides upward off-screen (`180ms`, `CubicBezierEasing(0.4f, 0.0f, 1.0f, 1f)`) and reappears (`250ms`, `CubicBezierEasing(0.22f, 1.0f, 0.36f, 1f)`) in the same frame as `FloatingBottomIsland` when coordinated via `FloatingGlassScaffold`.
+  - **`CompactDocked` (`IME Visible` or `heightDp < 480dp`)**: Drops floating margins/radius and stays docked at `48.dp` height.
 
 ## 3. Semantic Token Bindings
 
@@ -157,7 +163,20 @@ enum class AuraTopAppBarScrollBehavior {
     Pinned,
     EnterAlways,
     CompactOnScroll,
+    AdaptiveFloating,
 }
+
+enum class AdaptiveFloatingBarPhase {
+    DockedExpanded,
+    CollapsingTransition,
+    FloatingVisible,
+    FloatingHidden,
+    FloatingPinned,
+    CompactDocked,
+}
+
+// rememberAuraAdaptiveBarState(), AuraAdaptiveBarState, and BindAdaptiveBarTo*():
+// see aura-adaptive-bar-state.md
 
 @Composable
 fun FloatingTopPillBar(
@@ -190,6 +209,9 @@ fun AuraTopAppBar(
     navigationIcon: (@Composable () -> Unit)? = null,
     actions: @Composable RowScope.() -> Unit = {},
     subContent: (@Composable () -> Unit)? = null,
+    adaptiveState: AuraAdaptiveBarState? = LocalAuraAdaptiveBarState.current,
+    expandedTitle: String? = null,
+    expandedSubtitle: String? = null,
 )
 ```
 <!-- API:ANDROID:END -->

@@ -16,4 +16,5 @@ Aura Design System shifts top-level chrome from rigid full-bleed slabs to a **Ca
 |---|---|---|---|
 | `AuraTopAppBar` | Navigation | Floating Pill / Capsule / Split / Docked top bar with Morphing Popover & Dual Glass (`chrome` layer) | `ready` |
 | `AuraBottomIsland` | Navigation | Floating Bottom Island with Split Action, Metaball Merge, & Elastic Sliding Pill (`chrome` layer, `Expressive` track) | `ready` |
+| `AuraAdaptiveBarState` | Navigation (state) | Scroll-linked phase coordinator syncing `AuraTopAppBar` (`AdaptiveFloating`) and `FloatingBottomIsland` hide/reveal | `ready` |
 | `AuraBottomSheet` | Navigation / Overlays | Floating modal & standard sheet surfaces (`spatial` layer, `level4` elevation, `Expressive` default, gesture-continuous drag/dismiss; principles only) | `planned` |

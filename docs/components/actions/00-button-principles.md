@@ -13,13 +13,21 @@ Defines the **5-type Action Component Taxonomy** and the **Usage & Selection Pri
 
 ## 2. Action Component Taxonomy
 
-| Component | Role | Representative Usage Across Target Apps |
-|---|---|---|
-| `AuraButton` | Explicit action with a clear verb label (+ optional leading/trailing icons) | Save schedule (**Planner**), Record buy/sell (**Finance**), Save tasting note (**Drink Diary**), Apply launcher layout (**Launcher**) |
-| `AuraIconButton` | Compact icon-only action with mandatory accessible description | Search/Today jump in top bar (**Planner**), Favorite/Share over bottle photo (**Drink Diary**), Edit widget/effect controls (**Launcher**) |
-| `AuraFab` | Persistent floating entry point for the single primary creation task on a screen | `+ New Event/Diary` (**Planner**), `+ Add Asset/Transaction` (**Finance**), `+ Log Bottle/Note` (**Drink Diary**) |
-| `AuraSegmentedButton` | Immediate, mutually exclusive view mode or unit switcher (2–5 options) | `Day \| Week \| Month` (**Planner**), `1W \| 1M \| 1Y` or `KRW \| USD` (**Finance**), `All \| Wine \| Whiskey` (**Drink Diary**), `Icons \| Widgets \| 3D` (**Launcher**) |
-| `AuraChipButton` | Lightweight capsule toggle or inline contextual filter/attribute action | Tasting aroma/flavor tags (**Drink Diary**), Asset class filters (**Finance**), Calendar category tags (**Planner**) |
+Actions split into two **intent groups**. Both live in `actions/` because they share the button anatomy, press motion, and `BTN-RULE-*` ergonomics, but they answer different user intents:
+
+- **Command Actions** run a verb once (`Save`, `Share`, `+ New`). They hold no selected state.
+- **Selection Actions** change *how the current screen is shown* (view mode, unit, filter, tag) and keep a visible selected state. They take effect immediately, with no Save step. This is what separates them from form selection controls in [inputs/](../inputs/00-input-principles.md) (`AuraCheckbox`, `AuraRadio`, `AuraSwitch`), which record a value the user commits.
+
+| Intent Group | Component | Role | Representative Usage Across Target Apps |
+|---|---|---|---|
+| Command | `AuraButton` | Explicit action with a clear verb label (+ optional leading/trailing icons) | Save schedule (**Planner**), Record buy/sell (**Finance**), Save tasting note (**Drink Diary**), Apply launcher layout (**Launcher**) |
+| Command | `AuraIconButton` | Compact icon-only action with mandatory accessible description | Search/Today jump in top bar (**Planner**), Favorite/Share over bottle photo (**Drink Diary**), Edit widget/effect controls (**Launcher**) |
+| Command | `AuraFab` | Persistent floating entry point for the single primary creation task on a screen | `+ New Event/Diary` (**Planner**), `+ Add Asset/Transaction` (**Finance**), `+ Log Bottle/Note` (**Drink Diary**) |
+| Selection | `AuraSegmentedButton` | Immediate, mutually exclusive view mode or unit switcher (2–5 options) | `Day \| Week \| Month` (**Planner**), `1W \| 1M \| 1Y` or `KRW \| USD` (**Finance**), `All \| Wine \| Whiskey` (**Drink Diary**), `Icons \| Widgets \| 3D` (**Launcher**) |
+| Selection (`Filter`, `Tag`, `Glass`) · Command (`Assist`) | `AuraChipButton` | Lightweight capsule toggle or inline contextual filter/attribute action | Tasting aroma/flavor tags (**Drink Diary**), Asset class filters (**Finance**), Calendar category tags (**Planner**) |
+
+- **`BTN-RULE-007` (Selection Actions Are Not Form Values):** Use `AuraSegmentedButton` and `AuraChipButton` (`Filter` / `Tag`) only when the selection changes the current view immediately. When the selection is a value saved with a form (preferred currency in settings, a record's category on submit), use `AuraRadio` (single choice) or `AuraCheckbox` (multi-choice) from `inputs/`.
+- **`BTN-RULE-008` (Chip Variant Declares Intent):** `AuraChipButton` `Assist` is a Command Action: callers keep `selected = false`. `Filter` and `Tag` are Selection Actions whose `selected` state is exposed to accessibility services (`Filter` as a checkbox-role toggle, `Tag` as a selected button) (`CHIP-RULE-002`).
 
 ---
 

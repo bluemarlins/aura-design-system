@@ -69,7 +69,7 @@ Every Aura component must satisfy all eight rules before reaching `status: "read
 | Dimension | Requirement |
 |---|---|
 | **Spec Check** | Must include cross-platform signature blocks (`<!-- API:ANDROID:BEGIN / END -->`, `<!-- API:IOS:BEGIN / END -->`, `<!-- API:WEB:BEGIN / END -->`) so contracts remain portable to iOS SwiftUI and Web React/TS. |
-| **Code Check** | Every public `@Composable fun Aura*` signature and parameter name inside `<!-- API:ANDROID:BEGIN --> ... <!-- API:ANDROID:END -->` must match the live Kotlin declaration in `design-system/src/main/kotlin/com/example/ds/component/`. |
+| **Code Check** | Every public `@Composable fun Aura*` signature and parameter name inside `<!-- API:ANDROID:BEGIN --> ... <!-- API:ANDROID:END -->` must match the live Kotlin declaration in `design-system/src/main/kotlin/com/example/ds/component/`. Overloads (e.g., `AuraIcon(imageVector)` / `AuraIcon(painter)`) are matched against any declaration of the same name. |
 | **Automated Gate** | `SpecCodeConsistencyTest` parses Android signature names and parameter lists from Markdown and verifies their presence in Kotlin source files. |
 
 ---
@@ -88,7 +88,7 @@ Every Aura component must satisfy all eight rules before reaching `status: "read
 
 | Dimension | Requirement |
 |---|---|
-| **Spec Check** | Ready specs must declare `motion_track` (`Standard` \| `Expressive` \| `none`) in YAML frontmatter. Interactive components must specify `Standard` or `Expressive`; passive containers specify `none`. |
+| **Spec Check** | Ready specs must declare `motion_track` (`Standard` \| `Expressive` \| `none`) in YAML frontmatter. Interactive components must specify `Standard` or `Expressive`; passive containers (`layout`) and passive primitives (`primitives`, e.g. `AuraText`, `AuraIcon`) may specify `none`. |
 | **Code Check** | Components with spatial transitions use `AuraTheme.motion` spatial tokens; components listed in [`07-interaction-verification.md`](../foundation/07-interaction-verification.md) §3 (`AuraButton`, `AuraSwitch`, `AuraFab`, `AuraBottomIsland`, `AuraDialog`, `GlassSurface`) have deterministic Robolectric + Compose `mainClock` assertions under `design-system/src/test/kotlin/com/example/ds/motion/`. |
 | **Automated Gate** | `SpecCodeConsistencyTest` validates `motion_track` and `ComponentMotionBehaviorTest.kt` coverage; `MotionTokenInvariantTest` and `ComponentMotionBehaviorTest` execute on JVM + Robolectric. |
 
@@ -98,6 +98,9 @@ Every Aura component must satisfy all eight rules before reaching `status: "read
 
 | Component | Spec Path | `EVAL-001` Do/Don't | `EVAL-002` Color/Type | `EVAL-003` Responsive | `EVAL-004` Motion | `EVAL-005` State/A11y | `EVAL-006` API Sync | `EVAL-007` Material/Layer | `EVAL-008` Track/Test | Status |
 |---|---|---|---|---|---|---|---|---|---|---|
+| `AuraText` | [aura-text.md](primitives/aura-text.md) | Pass | Pass | Pass | Pass (Passive primitive) | Pass | Pass | Pass (`content`, `Solid`) | Pass (`none` · Spec) | Ready |
+| `AuraIcon` | [aura-icon.md](primitives/aura-icon.md) | Pass | Pass | Pass | Pass (Passive primitive) | Pass | Pass | Pass (`content`, `Solid`) | Pass (`none` · Spec) | Ready |
+| `GlassSurface` | [glass-surface.md](primitives/glass-surface.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Pass (`chrome`, `Solid\|Glass\|LiquidGlass`) | Pass (`Standard` · `mainClock`) | Ready |
 | `AuraButton` | [aura-button.md](actions/aura-button.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Pass (`content`, `Solid\|Glass`) | Pass (`Standard` · `mainClock`) | Ready |
 | `AuraIconButton` | [aura-icon-button.md](actions/aura-icon-button.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Pass (`chrome`, `Solid\|Glass`) | Pass (`Standard` · Unit) | Ready |
 | `AuraFab` | [aura-fab.md](actions/aura-fab.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Pass (`chrome`, `Solid\|Glass`) | Pass (`Expressive` · `mainClock`) | Ready |
@@ -120,8 +123,11 @@ Every Aura component must satisfy all eight rules before reaching `status: "read
 | `AuraSnackbar` | [aura-snackbar.md](feedback/aura-snackbar.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Pass (`chrome`, `Solid\|Glass`) | Pass (`Standard` · Unit) | Ready |
 | `AuraScaffold` | [aura-scaffold.md](layout/aura-scaffold.md) | Pass | Pass | Pass | Pass (Passive container) | Pass | Pass | Pass (`canvas`, `Solid`) | Pass (`none` · Spec) | Ready |
 | `AuraAdaptiveTwoPane` | [aura-adaptive-two-pane.md](layout/aura-adaptive-two-pane.md) | Pass | Pass | Pass (`AuraTheme.layout`) | Pass (Passive container) | Pass | Pass | Pass (`canvas`, `Solid`) | Pass (`none` · Spec) | Ready |
+| `AuraAdaptiveGrid` | [aura-adaptive-grid.md](layout/aura-adaptive-grid.md) | Pass | Pass | Pass (`AuraTheme.layout`) | Pass (Passive container) | Pass | Pass | Pass (`canvas`, `Solid`) | Pass (`none` · Spec) | Ready |
+| `FloatingGlassScaffold` | [floating-glass-scaffold.md](layout/floating-glass-scaffold.md) | Pass | Pass | Pass | Pass (Passive container) | Pass | Pass | Pass (`canvas`, `Solid`) | Pass (`none` · Spec) | Ready |
 | `AuraTopAppBar` | [aura-top-app-bar.md](navigation/aura-top-app-bar.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion` + Spring Physics) | Pass | Pass | Pass (`chrome`, `Solid\|Glass\|LiquidGlass`) | Pass (`Standard` · Unit) | Ready |
 | `AuraBottomIsland` | [aura-bottom-island.md](navigation/aura-bottom-island.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion` + Squish/Stretch) | Pass | Pass | Pass (`chrome`, `Solid\|Glass\|LiquidGlass`) | Pass (`Expressive` · `mainClock`) | Ready |
+| `AuraAdaptiveBarState` | [aura-adaptive-bar-state.md](navigation/aura-adaptive-bar-state.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Pass (`chrome`, `Solid\|Glass\|LiquidGlass`) | Pass (`Standard` · Unit) | Ready |
 
 ---
 

@@ -79,3 +79,4 @@ Layer A specs express dimensions in **logical units (`px`)** and **semantic toke
 - **Rule IDs:** `<CAT>-RULE-<NNN>` for category principles (e.g., `BTN-RULE-001`) and `<COMP>-<NNN>` for component validation rules (e.g., `BTN-001`)
 - **Spec File Location:** `docs/components/<category>/<kebab-case-name>.md`
 - **Category Principles:** `docs/components/<category>/00-<category>-principles.md`
+- **Categories:** `primitives` (building blocks composed by other components), `actions`, `inputs`, `feedback`, `containment`, `navigation`, `layout`. The full tree and dependency direction are in [02-component-hierarchy.md](02-component-hierarchy.md).
