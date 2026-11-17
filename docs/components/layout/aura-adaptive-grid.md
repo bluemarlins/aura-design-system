@@ -30,7 +30,7 @@ Collections of equal-priority cards (portfolio tiles, bottle cards, widget prese
 
 ### When to Use
 
-- Homogeneous, equal-priority items: **My Finance** asset tiles, **My Drink Diary** bottle cards, **Home Launcher** widget presets, `:design-system-preview` catalog cards.
+- Homogeneous, equal-priority items: **My Finance** asset tiles, **My Drink Diary** bottle cards, **Home Launcher** widget presets, `:design-system-preview` catalog cards and Showcase comparison cards.
 - Short-to-medium collections placed inside an existing scroll container (e.g., a section of a scrolling detail screen).
 
 ### When NOT to Use & Alternatives

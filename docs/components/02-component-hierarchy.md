@@ -162,3 +162,18 @@ Glass rendering is concentrated in five `chrome` / `spatial` components, all thr
 | Layout | — | [aura-scaffold](layout/aura-scaffold.md) · [floating-glass-scaffold](layout/floating-glass-scaffold.md) · [aura-adaptive-two-pane](layout/aura-adaptive-two-pane.md) · [aura-adaptive-grid](layout/aura-adaptive-grid.md) |
 
 Every public component file in `:design-system` now has a spec. When adding a component, add its spec and a leaf in §3 in the same change.
+
+## 6. Showcase Groups (Preview)
+
+The `:design-system-preview` app has a **Showcase** category. Each group is one screen with a grid of "A vs B" comparison cards that show live specimens and a one-line guide for when to use each. Groups are organized by **intent** (what the user needs to do), not by component name, so components from different categories can be compared side by side. Components that do not exist yet appear as `Planned` cards.
+
+| Group | Question it answers | Comparison cards (✅ implemented · ⏳ planned) |
+|---|---|---|
+| Notify | How do I tell the user something? | ✅ Snackbar vs Dialog · ✅ Snackbar variants · ✅ Dot vs Count badge · ⏳ Toast vs Snackbar · ⏳ Modal vs Bottom sheet · ⏳ Banner vs Snackbar · ⏳ Tooltip vs Popover · ⏳ Inline error vs Dialog · ⏳ Coachmark vs Tooltip |
+| Select | How do I let the user choose? | ✅ Switch vs Checkbox · ✅ Radio vs Checkbox · ✅ Segmented vs Filter chip · ⏳ Tabs vs Segmented · ⏳ Dropdown vs Radio |
+| Input | How do I take a value? | ✅ TextField variants · ✅ NumberField vs Slider · ✅ SearchBar vs TextField · ⏳ Stepper vs Slider |
+| Action | How do I invite an action? | ✅ Button emphasis · ✅ Button vs IconButton vs FAB · ✅ Assist chip vs Button |
+| Progress | How do I show waiting and status? | ✅ Linear vs Step progress · ✅ Badge vs Chip · ⏳ Spinner vs Skeleton |
+| Contain | How do I group and separate content? | ✅ Card variants · ✅ Divider vs spacing · ✅ Card vs Dialog |
+
+Candidate follow-up groups: Navigation (top bar styles, bottom island vs tabs, scaffold choice) and Material (Solid vs Glass vs LiquidGlass). Groups are data in `design-system-preview/.../ui/showcase/`; add a new `ShowcaseGroup` and its catalog item to extend.
