@@ -215,10 +215,14 @@ fun FloatingGlassScaffold(
                     ),
             ) {
                 // Layer 0: Base Edge-to-Edge Scrollable Canvas (captured for real blur/refraction)
+                // The container colour is painted inside the captured layer. Painted only on the outer
+                // Box, the sampled copy had a transparent base, so a blurred copy could not cover the
+                // sharp original and content behind the chrome stayed readable through the glass.
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .glassBackdropSource(backdropState),
+                        .glassBackdropSource(backdropState)
+                        .background(containerColor),
                 ) {
                     content(contentPadding)
                 }
