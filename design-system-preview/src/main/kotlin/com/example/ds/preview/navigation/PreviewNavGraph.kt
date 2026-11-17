@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.ds.foundation.motion.AuraMotionProfile
 import com.example.ds.foundation.theme.AuraMaterial
+import com.example.ds.preview.catalog.CatalogCategory
 import com.example.ds.preview.catalog.ComponentCatalog
 import com.example.ds.preview.ui.ButtonPreviewScreen
 import com.example.ds.preview.ui.CardPreviewScreen
@@ -33,6 +34,8 @@ import com.example.ds.preview.ui.SliderRatingPreviewScreen
 import com.example.ds.preview.ui.SwitchPreviewScreen
 import com.example.ds.preview.ui.TextFieldPreviewScreen
 import com.example.ds.preview.ui.TypographyLayoutPreviewScreen
+import com.example.ds.preview.ui.showcase.ShowcaseGroupScreen
+import com.example.ds.preview.ui.showcase.ShowcaseGroups
 
 private object PreviewRoutes {
     const val HOME = "home"
@@ -63,8 +66,41 @@ private object PreviewRoutes {
     const val PROGRESS_BAR = "component/${ComponentCatalog.PROGRESS_BAR_ID}"
     const val SNACKBAR = "component/${ComponentCatalog.SNACKBAR_ID}"
     const val PLANNED = "planned/{itemId}"
+    const val SHOWCASE = "showcase/{groupId}"
 
     fun planned(itemId: String): String = "planned/$itemId"
+    fun showcase(groupId: String): String = "showcase/$groupId"
+
+    /** Routes for catalog ids that open a component or foundation screen directly. */
+    fun forCatalogId(id: String): String? = when (id) {
+        ComponentCatalog.COLOR_SCHEME_ID -> COLOR_SCHEME
+        ComponentCatalog.TYPOGRAPHY_LAYOUT_ID -> TYPOGRAPHY_LAYOUT
+        ComponentCatalog.INTERACTION_PRINCIPLES_ID -> INTERACTION_PRINCIPLES
+        ComponentCatalog.MATERIAL_COMPARISON_ID -> MATERIAL_COMPARISON
+        ComponentCatalog.BUTTON_ID -> BUTTON
+        ComponentCatalog.ICON_BUTTON_ID -> ICON_BUTTON
+        ComponentCatalog.FAB_ID -> FAB
+        ComponentCatalog.SEGMENTED_BUTTON_ID -> SEGMENTED_BUTTON
+        ComponentCatalog.CHIP_BUTTON_ID -> CHIP_BUTTON
+        ComponentCatalog.TEXT_FIELD_ID -> TEXT_FIELD
+        ComponentCatalog.NUMBER_FIELD_ID -> NUMBER_FIELD
+        ComponentCatalog.SEARCH_BAR_ID -> SEARCH_BAR
+        ComponentCatalog.DATE_TIME_PICKER_ID -> DATE_TIME_PICKER
+        ComponentCatalog.CHECKBOX_ID -> CHECKBOX
+        ComponentCatalog.SWITCH_ID -> SWITCH
+        ComponentCatalog.RADIO_ID -> RADIO
+        ComponentCatalog.SLIDER_ID -> SLIDER
+        ComponentCatalog.RATING_BAR_ID -> RATING_BAR
+        ComponentCatalog.TOP_APP_BAR_ID -> TOP_APP_BAR
+        ComponentCatalog.BOTTOM_ISLAND_ID -> BOTTOM_ISLAND
+        ComponentCatalog.CARD_ID -> CARD
+        ComponentCatalog.DIALOG_ID -> DIALOG
+        ComponentCatalog.DIVIDER_ID -> DIVIDER
+        ComponentCatalog.BADGE_ID -> BADGE
+        ComponentCatalog.PROGRESS_BAR_ID -> PROGRESS_BAR
+        ComponentCatalog.SNACKBAR_ID -> SNACKBAR
+        else -> null
+    }
 }
 
 @Composable
@@ -99,35 +135,12 @@ fun PreviewNavGraph(
                 reduceTransparency = reduceTransparency,
                 onToggleReduceTransparency = onToggleReduceTransparency,
                 onSelectItem = { item ->
-                    when (item.id) {
-                        ComponentCatalog.COLOR_SCHEME_ID -> navController.navigate(PreviewRoutes.COLOR_SCHEME)
-                        ComponentCatalog.TYPOGRAPHY_LAYOUT_ID -> navController.navigate(PreviewRoutes.TYPOGRAPHY_LAYOUT)
-                        ComponentCatalog.INTERACTION_PRINCIPLES_ID -> navController.navigate(PreviewRoutes.INTERACTION_PRINCIPLES)
-                        ComponentCatalog.MATERIAL_COMPARISON_ID -> navController.navigate(PreviewRoutes.MATERIAL_COMPARISON)
-                        ComponentCatalog.BUTTON_ID -> navController.navigate(PreviewRoutes.BUTTON)
-                        ComponentCatalog.ICON_BUTTON_ID -> navController.navigate(PreviewRoutes.ICON_BUTTON)
-                        ComponentCatalog.FAB_ID -> navController.navigate(PreviewRoutes.FAB)
-                        ComponentCatalog.SEGMENTED_BUTTON_ID -> navController.navigate(PreviewRoutes.SEGMENTED_BUTTON)
-                        ComponentCatalog.CHIP_BUTTON_ID -> navController.navigate(PreviewRoutes.CHIP_BUTTON)
-                        ComponentCatalog.TEXT_FIELD_ID -> navController.navigate(PreviewRoutes.TEXT_FIELD)
-                        ComponentCatalog.NUMBER_FIELD_ID -> navController.navigate(PreviewRoutes.NUMBER_FIELD)
-                        ComponentCatalog.SEARCH_BAR_ID -> navController.navigate(PreviewRoutes.SEARCH_BAR)
-                        ComponentCatalog.DATE_TIME_PICKER_ID -> navController.navigate(PreviewRoutes.DATE_TIME_PICKER)
-                        ComponentCatalog.CHECKBOX_ID -> navController.navigate(PreviewRoutes.CHECKBOX)
-                        ComponentCatalog.SWITCH_ID -> navController.navigate(PreviewRoutes.SWITCH)
-                        ComponentCatalog.RADIO_ID -> navController.navigate(PreviewRoutes.RADIO)
-                        ComponentCatalog.SLIDER_ID -> navController.navigate(PreviewRoutes.SLIDER)
-                        ComponentCatalog.RATING_BAR_ID -> navController.navigate(PreviewRoutes.RATING_BAR)
-                        ComponentCatalog.TOP_APP_BAR_ID -> navController.navigate(PreviewRoutes.TOP_APP_BAR)
-                        ComponentCatalog.BOTTOM_ISLAND_ID -> navController.navigate(PreviewRoutes.BOTTOM_ISLAND)
-                        ComponentCatalog.CARD_ID -> navController.navigate(PreviewRoutes.CARD)
-                        ComponentCatalog.DIALOG_ID -> navController.navigate(PreviewRoutes.DIALOG)
-                        ComponentCatalog.DIVIDER_ID -> navController.navigate(PreviewRoutes.DIVIDER)
-                        ComponentCatalog.BADGE_ID -> navController.navigate(PreviewRoutes.BADGE)
-                        ComponentCatalog.PROGRESS_BAR_ID -> navController.navigate(PreviewRoutes.PROGRESS_BAR)
-                        ComponentCatalog.SNACKBAR_ID -> navController.navigate(PreviewRoutes.SNACKBAR)
-                        else -> navController.navigate(PreviewRoutes.planned(item.id))
+                    val route = if (item.category == CatalogCategory.Showcase) {
+                        PreviewRoutes.showcase(item.id)
+                    } else {
+                        PreviewRoutes.forCatalogId(item.id) ?: PreviewRoutes.planned(item.id)
                     }
+                    navController.navigate(route)
                 },
             )
         }
@@ -284,6 +297,27 @@ fun PreviewNavGraph(
                 onBack = { navController.popBackStack() },
                 initialTabIndex = 1,
             )
+        }
+        composable(
+            route = PreviewRoutes.SHOWCASE,
+            arguments = listOf(navArgument("groupId") { type = NavType.StringType }),
+        ) { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getString("groupId").orEmpty()
+            val group = ShowcaseGroups.byId(groupId)
+            if (group == null) {
+                PlannedComponentScreen(
+                    item = ComponentCatalog.findById(groupId),
+                    onBack = { navController.popBackStack() },
+                )
+            } else {
+                ShowcaseGroupScreen(
+                    group = group,
+                    onBack = { navController.popBackStack() },
+                    onOpenComponent = { catalogId ->
+                        PreviewRoutes.forCatalogId(catalogId)?.let { navController.navigate(it) }
+                    },
+                )
+            }
         }
         composable(
             route = PreviewRoutes.PLANNED,

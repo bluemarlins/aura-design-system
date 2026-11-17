@@ -7,6 +7,7 @@ enum class CatalogCategory(val label: String) {
     Navigation("Navigation & Hierarchy"),
     Containment("Containment & Surfaces"),
     Feedback("Feedback & Progress"),
+    Showcase("Showcase & Guides"),
 }
 
 enum class CatalogStatus(val label: String) {
@@ -49,6 +50,12 @@ object ComponentCatalog {
     const val BADGE_ID = "badge"
     const val PROGRESS_BAR_ID = "progress-bar"
     const val SNACKBAR_ID = "snackbar"
+    const val SHOWCASE_NOTIFY_ID = "showcase-notify"
+    const val SHOWCASE_SELECT_ID = "showcase-select"
+    const val SHOWCASE_INPUT_ID = "showcase-input"
+    const val SHOWCASE_ACTION_ID = "showcase-action"
+    const val SHOWCASE_PROGRESS_ID = "showcase-progress"
+    const val SHOWCASE_CONTAIN_ID = "showcase-contain"
 
     val items: List<CatalogItem> = listOf(
         CatalogItem(
@@ -231,6 +238,48 @@ object ComponentCatalog {
             name = "AuraSnackbar",
             category = CatalogCategory.Feedback,
             description = "Queued transient feedback banner with Solid/Glass materiality and scaffold integration.",
+            status = CatalogStatus.Ready,
+        ),
+        CatalogItem(
+            id = SHOWCASE_NOTIFY_ID,
+            name = "사용자에게 알리기",
+            category = CatalogCategory.Showcase,
+            description = "Snackbar, Dialog, Badge, and planned Toast / Banner / Tooltip compared by how much they interrupt.",
+            status = CatalogStatus.Ready,
+        ),
+        CatalogItem(
+            id = SHOWCASE_SELECT_ID,
+            name = "사용자가 고르게 하기",
+            category = CatalogCategory.Showcase,
+            description = "Switch vs Checkbox, Radio vs Checkbox, Segmented vs Chip, and which one fits the choice.",
+            status = CatalogStatus.Ready,
+        ),
+        CatalogItem(
+            id = SHOWCASE_INPUT_ID,
+            name = "값을 입력받기",
+            category = CatalogCategory.Showcase,
+            description = "Text field variants, Number field vs Slider, and Search bar vs Text field.",
+            status = CatalogStatus.Ready,
+        ),
+        CatalogItem(
+            id = SHOWCASE_ACTION_ID,
+            name = "행동 유도하기",
+            category = CatalogCategory.Showcase,
+            description = "Button emphasis ladder, Button vs Icon button vs FAB, and Assist chip vs Button.",
+            status = CatalogStatus.Ready,
+        ),
+        CatalogItem(
+            id = SHOWCASE_PROGRESS_ID,
+            name = "기다림·진행 보여주기",
+            category = CatalogCategory.Showcase,
+            description = "Linear vs Step progress, Badge vs Chip, and planned Spinner vs Skeleton.",
+            status = CatalogStatus.Ready,
+        ),
+        CatalogItem(
+            id = SHOWCASE_CONTAIN_ID,
+            name = "묶고 구분하기",
+            category = CatalogCategory.Showcase,
+            description = "Card variants, Divider vs spacing, and Card vs Dialog.",
             status = CatalogStatus.Ready,
         ),
     )
