@@ -71,4 +71,5 @@ Before finishing any vibe-coded screen, verify:
 - [ ] Long forms/feeds constrain width with `Modifier.widthIn(max = AuraTheme.layout.maxContentWidth)` or adapt via `AuraAdaptiveGrid` / `AuraAdaptiveTwoPane` (`EVAL-003`).
 - [ ] Zero numeric `tween(...)` / `spring(...)` literals; custom motion uses `AuraTheme.motion.*` and honors `reduceMotion` (`EVAL-004`, `EVAL-008`).
 - [ ] Floating glass is limited to Layer 2 chrome & Layer 3 modals (`<= 3` blur surfaces, `<= 1` `LiquidGlass` hero), leaving Layer 1 lists/forms `Solid` (`EVAL-007`).
-- [ ] Run `scripts/verify-aura-app.ps1 -TargetAppDir <path> -FailOnViolation`.
+- [ ] Root `AuraTheme` does not pass `material = AuraMaterial.Solid` unless glass is meant to be disabled app-wide (the theme material is a ceiling).
+- [ ] Run `scripts/verify-aura-app.ps1 -TargetAppDir <path> -FailOnViolation` (path relative to this skill's directory).

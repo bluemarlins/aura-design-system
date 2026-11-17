@@ -36,6 +36,10 @@ if (-not (Test-Path $ResolvedTarget)) {
     throw "Target app directory does not exist: $TargetAppDir"
 }
 
+if (-not $SkipAar -and -not (Test-Path (Join-Path $AuraRepoRoot "design-system"))) {
+    throw "This script builds the AAR from a clone of the aura-design-system repository, but '$AuraRepoRoot' is not one. Run it from <aura-repo>\skills\aura-design-system\scripts\, or add the JitPack dependency instead (see SKILL.md, Consumer Setup)."
+}
+
 Write-Host "Aura repo root : $AuraRepoRoot"
 Write-Host "Target app dir : $ResolvedTarget"
 

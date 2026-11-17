@@ -2,7 +2,7 @@
 
 All components live in `package com.example.ds.component`. Call these composables directly—do **not** fall back to Material 3 equivalents.
 
-> **Note on `GlassStyle`:** `GlassStyle` (`FROSTED`, `LIQUID`) is `@Deprecated` in favor of `AuraTheme(material = AuraMaterial.Glass / LiquidGlass)` and `GlassStyle.toMaterial()`, though `GlassSurface`, `FloatingBottomIsland`, `AuraBottomIsland`, `FloatingTopPillBar`, `MorphingMorePopover`, `AuraDialog`, and `AuraSearchBar` keep `glassStyle` parameters for compatibility and resolve final rendering through `AuraTheme.effectiveMaterial(...)`.
+> **Note on `GlassStyle`:** `GlassStyle` (`FROSTED` = `AuraMaterial.Glass`, `LIQUID` = `AuraMaterial.LiquidGlass`) is `@Deprecated` in favor of `AuraMaterial` and `GlassStyle.toMaterial()`. `GlassSurface` and `LiquidMetaballBridge` take `material: AuraMaterial` (their `glassStyle` overloads are deprecated), though `FloatingBottomIsland`, `AuraBottomIsland`, `FloatingTopPillBar`, `MorphingMorePopover`, `AuraDialog`, and `AuraSearchBar` keep `glassStyle` parameters for compatibility (expect a deprecation warning when passing one). Every surface resolves its final rendering through `AuraTheme.effectiveMaterial(...)`, which never exceeds the `AuraTheme(material = ...)` ceiling.
 
 ---
 
@@ -114,7 +114,7 @@ fun FloatingGlassScaffold(
     containerColor: Color = AuraTheme.colors.background.primary,
     contentColor: Color = AuraTheme.colors.content.primary,
     adaptiveBarState: AuraAdaptiveBarState? = null,
-    topBarClearance: Dp = 64.dp,
+    topBarClearance: Dp = ..., // 64.dp; with adaptiveBarState: 112.dp (48.dp on Compact height)
     content: @Composable (PaddingValues) -> Unit,
 )
 
@@ -146,13 +146,20 @@ fun Modifier.fluidPressScale(
 @Composable
 fun GlassSurface(
     modifier: Modifier = Modifier,
-    glassStyle: GlassStyle = GlassStyle.LIQUID,
+    material: AuraMaterial = AuraTheme.material,
     shape: Shape = RoundedCornerShape(50),
     cornerRadiusHint: Dp = 28.dp,
     backdropState: GlassBackdropState? = LocalGlassBackdropState.current,
     dispersionBoost: Float = 1f,
     surfaceAlphaMultiplier: Float = 1f,
     showShadow: Boolean = true,
+    elevation: AuraElevationLevel = AuraTheme.elevation.level2,
+    blurRadius: Dp = AuraTheme.glass.blurRadius,
+    saturationBoost: Float = AuraTheme.glass.saturation,
+    tintColorOverride: Color? = null,
+    borderColorOverride: Color? = null,
+    borderWidth: Dp = 1.dp,
+    elevationAlphaMultiplier: Float = 1f,
     content: @Composable BoxScope.() -> Unit,
 )
 
@@ -160,7 +167,7 @@ fun GlassSurface(
 fun LiquidMetaballBridge(
     gapWidthDp: Dp,
     heightDp: Dp,
-    glassStyle: GlassStyle,
+    material: AuraMaterial,
     mergeProgress: Float,
     modifier: Modifier = Modifier,
 )

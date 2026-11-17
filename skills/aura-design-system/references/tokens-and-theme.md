@@ -20,11 +20,12 @@ enum class AuraMaterial {
 @Composable
 fun AuraTheme(
     colorMode: AuraColorMode = if (isSystemInDarkTheme()) AuraColorMode.Dark else AuraColorMode.Light,
-    material: AuraMaterial = AuraMaterial.Solid,
+    material: AuraMaterial = AuraMaterial.LiquidGlass, // Ceiling: the richest material any surface below may render
     motionProfile: AuraMotionProfile = AuraMotionProfile.Standard,
     reduceTransparency: Boolean = rememberAuraReduceTransparency(),
     motion: AuraMotion = AuraMotionDefaults.forProfile(motionProfile),
     elevation: AuraElevation = AuraElevationDefaults.Standard,
+    glass: AuraGlass = AuraGlassDefaults.forColorMode(colorMode),
     windowInfo: AuraWindowInfo = rememberAuraWindowInfo(),
     layout: AuraLayout = AuraLayoutDefaults.fromWindowInfo(windowInfo),
     typography: AuraTypography = AuraTypographyDefaults.scaled(layout.typographyScale),
@@ -39,6 +40,7 @@ fun AuraTheme(
 - `AuraTheme.shapes: AuraShapes` (`extraSmall = 4.dp`, `small = 8.dp`, `medium = 12.dp`, `large = 16.dp`, `extraLarge = 24.dp`, `full = CircleShape`)
 - `AuraTheme.motion: AuraMotion`
 - `AuraTheme.elevation: AuraElevation`
+- `AuraTheme.glass: AuraGlass` (`com.example.ds.foundation.glass`) — optical tokens read by `GlassSurface`: `frostedTint`, `liquidTint`, `liquidBridgeTint`, `strokeStartAlpha`, `strokeEndAlpha`, `solidFallbackAlpha`, `blurRadius` (`26.dp`), `liquidBlurRadius` (`10.dp`), `saturation` (`1.2f`), `liquidSaturation` (`1.25f`), `bevelWidth`, `refraction`, `dispersion`. Apps rarely need to read or override these.
 - `AuraTheme.window: AuraWindowInfo`
 - `AuraTheme.layout: AuraLayout`
 - `AuraTheme.colorMode: AuraColorMode`
@@ -52,6 +54,7 @@ fun resolveEffectiveMaterial(
     requested: AuraMaterial,
     sdkInt: Int = Build.VERSION.SDK_INT,
     reduceTransparency: Boolean = false,
+    ceiling: AuraMaterial = AuraMaterial.LiquidGlass,
 ): AuraMaterial
 
 @Composable
@@ -59,7 +62,9 @@ fun rememberAuraReduceTransparency(): Boolean
 // Returns true if PowerManager.isPowerSaveMode == true OR system high_text_contrast_enabled == 1
 ```
 
-| Requested | `reduceTransparency = true` | API 33+ | API 31–32 | API 26–30 |
+**Theme ceiling:** the requested material is first capped to `AuraTheme.material` (`minOf(requested, ceiling)`), then degraded by the table below. A `Glass` root lowers every `LiquidGlass` request to `Glass`; a `Solid` root forces every surface to `Solid`. Keep the root at its `LiquidGlass` default unless the app should cap or disable glass everywhere.
+
+| Requested (after ceiling) | `reduceTransparency = true` | API 33+ | API 31–32 | API 26–30 |
 |---|---|---|---|---|
 | `Solid` | `Solid` | `Solid` | `Solid` | `Solid` |
 | `Glass` | `Solid` | `Glass` | `Glass` | `Solid` |
@@ -88,7 +93,7 @@ fun rememberAuraReduceTransparency(): Boolean
 
 ## 3. Typography Tokens (`AuraTheme.typography`)
 
-`AuraTypography` (`com.example.ds.foundation.typography`) provides **16 semantic roles**. `display*`, `headline*`, and `title*` scale dynamically via `AuraTheme.layout.typographyScale` (`0.85f..1.25f`). `body*`, `label*`, and `mono*` hold fixed baseline readability across breakpoints.
+`AuraTypography` (`com.example.ds.foundation.typography`) provides **16 semantic roles**. `display*`, `headline*`, and `title*` scale dynamically via `AuraTheme.layout.typographyScale` (`0.92f`–`1.08f`). `body*`, `label*`, and `mono*` hold fixed baseline readability across breakpoints.
 
 | Role | Baseline Size / LineHeight | Weight | Notes |
 |---|---|---|---|
