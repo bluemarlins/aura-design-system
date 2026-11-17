@@ -1,7 +1,10 @@
 package com.example.ds.preview.catalog
 
+import com.example.ds.preview.ui.showcase.ShowcaseGroups
+import com.example.ds.preview.ui.showcase.ShowcaseStatus
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ComponentCatalogTest {
@@ -121,7 +124,7 @@ class ComponentCatalogTest {
 
     @Test
     fun `every registered catalog item has Ready status`() {
-        assertEquals(26, ComponentCatalog.items.size)
+        assertEquals(26 + ShowcaseGroups.all.size, ComponentCatalog.items.size)
         assertEquals(
             setOf(CatalogStatus.Ready),
             ComponentCatalog.items.map { it.status }.toSet(),
@@ -141,5 +144,32 @@ class ComponentCatalogTest {
             setOf(CatalogStatus.Ready),
             actionItems.map { it.status }.toSet(),
         )
+    }
+
+    @Test
+    fun `showcase catalog items match the showcase groups one to one`() {
+        val catalogIds = ComponentCatalog.items
+            .filter { it.category == CatalogCategory.Showcase }
+            .map { it.id }
+            .toSet()
+
+        assertEquals(ShowcaseGroups.all.map { it.id }.toSet(), catalogIds)
+        assertEquals(ShowcaseGroups.all.size, ShowcaseGroups.all.map { it.id }.distinct().size)
+    }
+
+    @Test
+    fun `showcase comparisons are well formed`() {
+        ShowcaseGroups.all.forEach { group ->
+            assertTrue("${group.id} has comparisons", group.comparisons.isNotEmpty())
+            group.comparisons.forEach { comparison ->
+                assertEquals(comparison.ko.size, comparison.en.size)
+                assertTrue(comparison.useWhen.isNotBlank() && comparison.avoidWhen.isNotBlank())
+                when (comparison.status) {
+                    ShowcaseStatus.Ready -> assertNotNull(comparison.specimen)
+                    ShowcaseStatus.Planned -> assertEquals(null, comparison.specimen)
+                }
+                comparison.targetCatalogId?.let { assertNotNull(ComponentCatalog.findById(it)) }
+            }
+        }
     }
 }
