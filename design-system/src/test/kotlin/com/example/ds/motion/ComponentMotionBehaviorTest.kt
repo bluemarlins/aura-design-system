@@ -17,9 +17,12 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import com.example.ds.component.AdaptiveFloatingBarPhase
@@ -29,6 +32,9 @@ import com.example.ds.component.AuraBottomIslandItem
 import com.example.ds.component.AuraButton
 import com.example.ds.component.AuraDialog
 import com.example.ds.component.AuraFab
+import com.example.ds.component.AuraIcon
+import com.example.ds.component.AuraIconButton
+import com.example.ds.component.AuraIconButtonVariant
 import com.example.ds.component.AuraSwitch
 import com.example.ds.component.AuraText
 import com.example.ds.component.AuraTopAppBar
@@ -372,6 +378,24 @@ class ComponentMotionBehaviorTest {
                             surface = AuraTopAppBarSurface.TranslucentGlass,
                             scrollBehavior = AuraTopAppBarScrollBehavior.AdaptiveFloating,
                             adaptiveState = adaptiveState,
+                            navigationIcon = {
+                                AuraIconButton(
+                                    onClick = {},
+                                    variant = AuraIconButtonVariant.Ghost,
+                                    contentDescription = "Back",
+                                ) {
+                                    AuraIcon(imageVector = testVector("Back"), contentDescription = null)
+                                }
+                            },
+                            actions = {
+                                AuraIconButton(
+                                    onClick = {},
+                                    variant = AuraIconButtonVariant.Ghost,
+                                    contentDescription = "More",
+                                ) {
+                                    AuraIcon(imageVector = testVector("More"), contentDescription = null)
+                                }
+                            },
                         )
                     },
                 ) {
@@ -383,25 +407,27 @@ class ComponentMotionBehaviorTest {
         }
         composeTestRule.mainClock.advanceTimeByFrame()
 
-        // Initially DockedExpanded -> visible (progress = 1f) and no GlassSurface fallback
+        // Initially DockedExpanded -> expanded title visible, visible (progress = 1f), no GlassSurface pills yet
         assertEquals(AdaptiveFloatingBarPhase.DockedExpanded, adaptiveState.phase)
+        composeTestRule.onNodeWithText("Adaptive Archive").assertIsDisplayed()
         val initialVisibility = composeTestRule.onNodeWithTag("aura_adaptive_top_app_bar")
             .fetchSemanticsNode().config[AuraMotionProgressKey]
         assertEquals(1f, initialVisibility, 0.001f)
 
-        // Scroll past collapse threshold into FloatingVisible -> GlassSurface mounts
+        // Scroll past collapse threshold into FloatingVisible -> title disappears & individual button GlassSurface pills mount
         composeTestRule.runOnIdle {
             adaptiveState.updateScrollBounds(scrollOffsetPx = 600f, maxScrollOffsetPx = 3000f)
         }
         composeTestRule.mainClock.advanceTimeByFrame()
         composeTestRule.mainClock.advanceTimeBy(400L)
         assertEquals(AdaptiveFloatingBarPhase.FloatingVisible, adaptiveState.phase)
+        assertEquals(0, composeTestRule.onAllNodesWithText("Adaptive Archive").fetchSemanticsNodes().size)
 
-        // Enable reduceTransparency -> GlassSurface switches to Solid 98% fallback tag
+        // Enable reduceTransparency -> individual Back & More GlassSurface pills switch to Solid 98% fallback tag
         composeTestRule.runOnIdle { reduceTransparency = true }
         composeTestRule.mainClock.advanceTimeByFrame()
         composeTestRule.onAllNodesWithTag("aura_glass_surface_solid_fallback", useUnmergedTree = true)
-            .assertCountEquals(1)
+            .assertCountEquals(2)
 
         // Scroll down past +24dp -> animates smoothly toward FloatingHidden (180ms)
         composeTestRule.runOnIdle {

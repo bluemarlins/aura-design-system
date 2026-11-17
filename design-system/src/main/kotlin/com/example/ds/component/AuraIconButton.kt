@@ -201,6 +201,11 @@ fun AuraIconButton(
         onClick = onClick,
         debounceIntervalMs = debounceIntervalMs,
     )
+    val adaptivePodStyle = if (variant == AuraIconButtonVariant.Ghost) {
+        LocalAdaptiveTopBarPodStyle.current
+    } else {
+        null
+    }
 
     val overlayColor = when {
         !isInteractive -> Color.Transparent
@@ -232,74 +237,97 @@ fun AuraIconButton(
             ),
         contentAlignment = Alignment.Center,
     ) {
-        Box(
-            modifier = Modifier
-                .size(visualSize)
-                .graphicsLayer {
-                    scaleX = containerScale
-                    scaleY = containerScale
-                }
-                .then(
-                    if (palette.elevation > 0.dp) {
-                        Modifier.shadow(
-                            elevation = palette.elevation,
-                            shape = containerShape,
-                            clip = false,
-                        )
-                    } else {
-                        Modifier
-                    },
+        val visualButtonContent: @Composable () -> Unit = {
+            val borderModifier = if (animatedBorderColor.alpha > 0f && adaptivePodStyle == null) {
+                Modifier.border(
+                    width = borderWidth,
+                    color = animatedBorderColor,
+                    shape = containerShape,
                 )
-                .clip(containerShape)
-                .background(animatedContainerColor, containerShape)
-                .background(overlayColor, containerShape)
-                .then(
-                    if (animatedBorderColor.alpha > 0f) {
-                        Modifier.border(
-                            width = borderWidth,
-                            color = animatedBorderColor,
-                            shape = containerShape,
+            } else {
+                Modifier
+            }
+            Box(
+                modifier = Modifier
+                    .size(visualSize)
+                    .then(
+                        if (adaptivePodStyle == null) {
+                            Modifier.graphicsLayer {
+                                scaleX = containerScale
+                                scaleY = containerScale
+                            }
+                        } else {
+                            Modifier
+                        },
+                    )
+                    .then(
+                        if (palette.elevation > 0.dp && adaptivePodStyle == null) {
+                            Modifier.shadow(
+                                elevation = palette.elevation,
+                                shape = containerShape,
+                                clip = false,
+                            )
+                        } else {
+                            Modifier
+                        },
+                    )
+                    .clip(containerShape)
+                    .background(animatedContainerColor, containerShape)
+                    .background(overlayColor, containerShape)
+                    .then(borderModifier),
+                contentAlignment = Alignment.Center,
+            ) {
+                AnimatedContent(
+                    targetState = loading,
+                    transitionSpec = {
+                        val anim = if (reducedMotion) {
+                            snap<Float>()
+                        } else {
+                            tween(durationMillis = motion.loadingCrossfadeDurationMillis)
+                        }
+                        fadeIn(animationSpec = anim) togetherWith fadeOut(animationSpec = anim)
+                    },
+                    label = "AuraIconButtonLoadingCrossfade",
+                ) { isLoadingState ->
+                    if (isLoadingState) {
+                        AuraCompactSpinner(
+                            color = animatedContentColor,
+                            size = iconSize,
+                            reducedMotion = reducedMotion,
                         )
                     } else {
-                        Modifier
-                    },
-                ),
-            contentAlignment = Alignment.Center,
-        ) {
-            AnimatedContent(
-                targetState = loading,
-                transitionSpec = {
-                    val anim = if (reducedMotion) {
-                        snap<Float>()
-                    } else {
-                        tween(durationMillis = motion.loadingCrossfadeDurationMillis)
-                    }
-                    fadeIn(animationSpec = anim) togetherWith fadeOut(animationSpec = anim)
-                },
-                label = "AuraIconButtonLoadingCrossfade",
-            ) { isLoadingState ->
-                if (isLoadingState) {
-                    AuraCompactSpinner(
-                        color = animatedContentColor,
-                        size = iconSize,
-                        reducedMotion = reducedMotion,
-                    )
-                } else {
-                    CompositionLocalProvider(LocalAuraContentColor provides animatedContentColor) {
-                        Box(
-                            modifier = Modifier
-                                .size(iconSize)
-                                .graphicsLayer {
-                                    scaleX = iconScale
-                                    scaleY = iconScale
-                                },
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            icon()
+                        CompositionLocalProvider(LocalAuraContentColor provides animatedContentColor) {
+                            Box(
+                                modifier = Modifier
+                                    .size(iconSize)
+                                    .graphicsLayer {
+                                        scaleX = iconScale
+                                        scaleY = iconScale
+                                    },
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                icon()
+                            }
                         }
                     }
                 }
             }
+        }
+
+        if (adaptivePodStyle != null) {
+            Box(
+                modifier = Modifier.graphicsLayer {
+                    scaleX = containerScale
+                    scaleY = containerScale
+                },
+                contentAlignment = Alignment.Center,
+            ) {
+                adaptivePodStyle.renderPod(containerShape, visualSize / 2f) {
+                    visualButtonContent()
+                }
+            }
+        } else {
+            visualButtonContent()
         }
     }
 }

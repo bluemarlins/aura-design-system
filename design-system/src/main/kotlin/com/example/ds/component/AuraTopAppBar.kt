@@ -35,6 +35,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +48,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -897,6 +899,13 @@ fun AuraTopAppBar(
     }
 }
 
+internal data class AdaptiveTopBarPodStyle(
+    val morph: Float,
+    val renderPod: @Composable (shape: Shape, cornerRadius: Dp, content: @Composable () -> Unit) -> Unit,
+)
+
+internal val LocalAdaptiveTopBarPodStyle = compositionLocalOf<AdaptiveTopBarPodStyle?> { null }
+
 @Suppress("DEPRECATION")
 @Composable
 private fun AdaptiveFloatingTopAppBar(
@@ -939,14 +948,7 @@ private fun AdaptiveFloatingTopAppBar(
     val resolvedExpandedTitle = expandedTitle ?: title
     val resolvedExpandedSubtitle = expandedSubtitle ?: subtitle
 
-    val horizontalMargin = lerp(0.dp, AdaptiveBarThresholds.FloatingHorizontalMargin, visualMorph)
     val topOffset = lerp(0.dp, AdaptiveBarThresholds.FloatingTopOffset, visualMorph)
-    val targetCornerRadius = if (subContent != null) {
-        AdaptiveBarThresholds.FloatingTwoTierCornerRadius
-    } else {
-        AdaptiveBarThresholds.FloatingCornerRadius
-    }
-    val cornerRadius = lerp(0.dp, targetCornerRadius, visualMorph)
     val rowHeight = if (isCompactDocked) {
         AdaptiveBarThresholds.CompactDockedHeight
     } else {
@@ -958,16 +960,14 @@ private fun AdaptiveFloatingTopAppBar(
         0.dp
     }
 
+    // In AdaptiveFloating mode, Title fades out completely on scroll so center viewport stays unobstructed.
+    // Only CompactDocked (IME / H < 480dp) or DockedExpanded (Y == 0) displays title text.
     val expandedTitleAlpha = if (isCompactDocked || !useExpandedArea) {
         0f
     } else {
         (1f - (visualMorph / 0.55f)).coerceIn(0f, 1f)
     }
-    val compactTitleAlpha = if (isCompactDocked || !useExpandedArea) {
-        1f
-    } else {
-        ((visualMorph - 0.35f) / 0.65f).coerceIn(0f, 1f)
-    }
+    val showCompactTitle = isCompactDocked || (!useExpandedArea && visualMorph <= 0.02f)
 
     val statusTopPx = with(density) {
         WindowInsets.statusBars.asPaddingValues().calculateTopPadding().toPx()
@@ -975,7 +975,59 @@ private fun AdaptiveFloatingTopAppBar(
     var measuredBarHeightPx by remember { mutableIntStateOf(0) }
     val hideTravelPx = (measuredBarHeightPx.toFloat() + statusTopPx).coerceAtLeast(1f)
 
-    BoxWithConstraints(
+    val podStyle: AdaptiveTopBarPodStyle? = if (!isCompactDocked && visualMorph > 0.02f) {
+        AdaptiveTopBarPodStyle(
+            morph = visualMorph,
+            renderPod = { podShape, podCornerRadius, podContent ->
+                if (surface == AuraTopAppBarSurface.TranslucentGlass) {
+                    GlassSurface(
+                        glassStyle = GlassStyle.FROSTED,
+                        shape = podShape,
+                        cornerRadiusHint = podCornerRadius,
+                        surfaceAlphaMultiplier = visualMorph,
+                        elevationAlphaMultiplier = visualMorph,
+                        blurRadius = AdaptiveBarThresholds.FloatingBlurRadius,
+                        saturationBoost = 1.2f,
+                        tintColorOverride = colors.surface.floatingGlass,
+                        borderColorOverride = colors.border.glassSpecular,
+                        borderWidth = 0.75.dp,
+                        showShadow = visualMorph > 0.05f,
+                    ) {
+                        podContent()
+                    }
+                } else {
+                    val solidAlpha = (1f - (0.02f * visualMorph)).coerceIn(0.98f, 1f)
+                    Box(
+                        modifier = Modifier
+                            .shadow(
+                                elevation = AuraTheme.elevation.level2.elevation * visualMorph,
+                                shape = podShape,
+                            )
+                            .clip(podShape)
+                            .background(colors.surface.floating.copy(alpha = solidAlpha), podShape)
+                            .border(
+                                width = 1.dp,
+                                color = colors.border.default.copy(alpha = visualMorph),
+                                shape = podShape,
+                            ),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        podContent()
+                    }
+                }
+            },
+        )
+    } else {
+        null
+    }
+
+    val containerBackground = when {
+        isCompactDocked -> colors.surface.default
+        surface == AuraTopAppBarSurface.TranslucentGlass -> Color.Transparent
+        else -> colors.background.primary.copy(alpha = (1f - visualMorph).coerceIn(0f, 1f))
+    }
+
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .testTag("aura_adaptive_top_app_bar")
@@ -987,28 +1039,25 @@ private fun AdaptiveFloatingTopAppBar(
                 translationY = -(hideTravelPx * hideFraction)
                 alpha = (1f - hideFraction).coerceIn(0f, 1f)
             }
+            .background(containerBackground)
             .statusBarsPadding()
             .padding(top = topOffset),
         contentAlignment = Alignment.TopCenter,
     ) {
-        val availableWidth = (maxWidth - horizontalMargin * 2).coerceAtLeast(0.dp)
-        val floatingMaxWidth = minOf(availableWidth, AdaptiveBarThresholds.TabletMaxFloatingWidth)
-        val targetContainerWidth = lerp(availableWidth, floatingMaxWidth, visualMorph)
-        val pillShape = RoundedCornerShape(cornerRadius)
-        val barHorizontalPadding = lerp(12.dp, 8.dp, visualMorph)
+        val barHorizontalPadding = lerp(12.dp, AdaptiveBarThresholds.FloatingHorizontalMargin, visualMorph)
 
-        val innerContent: @Composable () -> Unit = {
+        CompositionLocalProvider(LocalAdaptiveTopBarPodStyle provides podStyle) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = barHorizontalPadding),
             ) {
                 TopBarSlotRow(
-                    title = if (compactTitleAlpha > 0.02f) title else "",
-                    subtitle = if (compactTitleAlpha > 0.02f) subtitle else null,
+                    title = if (showCompactTitle) title else "",
+                    subtitle = if (showCompactTitle) subtitle else null,
                     height = rowHeight,
                     centerTitle = centerTitle,
-                    compactTitle = visualMorph > 0.5f || isCompactDocked,
+                    compactTitle = isCompactDocked,
                     navigationIcon = navigationIcon,
                     actions = actions,
                 )
@@ -1042,89 +1091,26 @@ private fun AdaptiveFloatingTopAppBar(
                     }
                 }
 
-                if (subContent != null) {
+                if (subContent != null && !isCompactDocked && expandedTitleAlpha > 0.02f) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .heightIn(min = 40.dp, max = 48.dp)
-                            .padding(bottom = 8.dp),
+                            .padding(bottom = 8.dp)
+                            .alpha(expandedTitleAlpha),
                         contentAlignment = Alignment.CenterStart,
                     ) {
                         subContent()
                     }
                 }
-            }
-        }
 
-        when {
-            isCompactDocked -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(colors.surface.default),
-                ) {
-                    innerContent()
+                if (isCompactDocked) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(1.dp)
                             .background(colors.border.subtle),
                     )
-                }
-            }
-
-            visualMorph <= 0.02f -> {
-                val dockedBackground = if (surface == AuraTopAppBarSurface.TranslucentGlass) {
-                    Color.Transparent
-                } else {
-                    colors.background.primary
-                }
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(dockedBackground),
-                ) {
-                    innerContent()
-                }
-            }
-
-            surface == AuraTopAppBarSurface.TranslucentGlass -> {
-                GlassSurface(
-                    modifier = Modifier.width(targetContainerWidth),
-                    glassStyle = GlassStyle.FROSTED,
-                    shape = pillShape,
-                    cornerRadiusHint = cornerRadius,
-                    surfaceAlphaMultiplier = visualMorph,
-                    elevationAlphaMultiplier = visualMorph,
-                    blurRadius = AdaptiveBarThresholds.FloatingBlurRadius,
-                    saturationBoost = 1.2f,
-                    tintColorOverride = colors.surface.floatingGlass,
-                    borderColorOverride = colors.border.glassSpecular,
-                    borderWidth = 0.75.dp,
-                    showShadow = visualMorph > 0.05f,
-                ) {
-                    innerContent()
-                }
-            }
-
-            else -> {
-                val solidAlpha = (1f - (0.02f * visualMorph)).coerceIn(0.98f, 1f)
-                Box(
-                    modifier = Modifier
-                        .width(targetContainerWidth)
-                        .shadow(
-                            elevation = AuraTheme.elevation.level2.elevation * visualMorph,
-                            shape = pillShape,
-                        )
-                        .clip(pillShape)
-                        .background(colors.surface.floating.copy(alpha = solidAlpha), pillShape)
-                        .border(
-                            width = 1.dp,
-                            color = colors.border.default.copy(alpha = visualMorph),
-                            shape = pillShape,
-                        ),
-                ) {
-                    innerContent()
                 }
             }
         }

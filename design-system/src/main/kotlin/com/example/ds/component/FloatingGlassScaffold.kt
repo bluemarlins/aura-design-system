@@ -187,9 +187,7 @@ fun FloatingGlassScaffold(
         fraction = 0.22f,
     )
 
-    val topScrimAlphaScale = adaptiveBarState?.let {
-        (it.morphFraction * (1f - it.hideFraction)).coerceIn(0f, 1f)
-    } ?: 1f
+    val topScrimAlphaScale = if (adaptiveBarState != null) 0f else 1f
     val bottomHideFraction = adaptiveBarState?.hideFraction?.coerceIn(0f, 1f) ?: 0f
     val bottomHideTravelPx = remember(density, navBottomPadding, bottomIslandHeight, bottomIslandMargin) {
         with(density) { (navBottomPadding + bottomIslandHeight + bottomIslandMargin + 24.dp).toPx() }
