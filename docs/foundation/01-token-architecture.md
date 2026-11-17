@@ -35,7 +35,7 @@ Since Kotlin is the source of truth, Figma Variables mirror Kotlin 1:1:
 | `AuraColors` | `Color` | `Light`, `Dark` | `surface/floating`, `brand/primary` |
 | `AuraTypography` | `Typography` (Text Styles) | `Scale` (`Compact`, `Square`, `Expanded`) | `title/medium`, `mono/small` |
 | `AuraLayout` | `Layout` | `ExtraSmall`, `Compact`, `Landscape`, `Square`, `Expanded` | `margin/horizontal`, `grid/columns` |
-| Future `AuraMaterial` tokens | `Material` | `Solid`, `Glass`, `LiquidGlass` | `floating/blurRadius` |
+| `AuraGlass` | `Glass` | `Light`, `Dark` | `tint/frosted`, `blur/radius` |
 
 ## 5. Open Questions
 

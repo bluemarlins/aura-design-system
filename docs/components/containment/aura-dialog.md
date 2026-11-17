@@ -22,6 +22,7 @@ tokens:
   - "color.status.error.onSubtle"
   - "color.border.subtle"
   - "color.interaction.scrim"
+  - "elevation.level4"
   - "typography.headlineSmall"
   - "typography.bodyMedium"
   - "motion.pressInSpring"
@@ -90,7 +91,7 @@ Focused modal confirmation, alert, and high-consequence action dialog (`Standard
 | Element | Variant / State | Light / Dark Semantic Token |
 |---|---|---|
 | Scrim Overlay | `Visible` | `AuraTheme.colors.interaction.scrim` |
-| Modal Surface | `Standard` / `Destructive` / `Glass` | `surface.floating` (`border.subtle`) / `GlassSurface(glassStyle)` |
+| Modal Surface | `Standard` / `Destructive` / `Glass` | `surface.floating` (`border.subtle`) / `GlassSurface(glassStyle)` with `elevation.level4` shadow |
 | Destructive Emblem | `Destructive` | `status.error.subtle` container + `status.error.solid` glyph |
 | Title Text | `All` | `AuraTheme.colors.content.primary` (`typography.headlineSmall`) |
 | Message Body | `All` | `AuraTheme.colors.content.secondary` (`typography.bodyMedium`) |

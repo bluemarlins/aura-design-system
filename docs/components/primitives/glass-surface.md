@@ -14,6 +14,9 @@ platforms:
 tokens:
   - "color.surface.floating"
   - "elevation.level2"
+  - "glass.frostedTint"
+  - "glass.liquidTint"
+  - "glass.blurRadius"
   - "motion.stateChangeDurationMillis"
   - "motion.pressInSpring"
   - "motion.spatialSpring"
@@ -50,7 +53,7 @@ Floating chrome (top pill bar, bottom island, dialogs, snackbars) needs real tra
 - **`GLS-RULE-001` (Chrome & Spatial Only):** Invoke `GlassSurface` only from `chrome` / `spatial` layer components (`PRM-RULE-004`, `VIS-RULE-001`).
 - **`GLS-RULE-002` (One Liquid Hero):** At most one `LiquidGlass` surface per screen (`VIS-RULE-002`, `VIS-RULE-006`).
 - **`GLS-RULE-003` (Backdrop Source Required for Real Blur):** Place the scrolling canvas under `Modifier.glassBackdropSource(state)` (done automatically by `FloatingGlassScaffold`). Without a recorded backdrop, `GlassSurface` renders tint and stroke only.
-- **`GLS-RULE-004` (Material via Theme):** `glassStyle` is a compatibility hint; the rendered material is always `AuraTheme.effectiveMaterial(glassStyle.toMaterial())`.
+- **`GLS-RULE-004` (Material via Theme):** `material` is a request capped by the theme-level `AuraTheme.material`; the rendered material is always `AuraTheme.effectiveMaterial(material)`. A request or cap of `Solid` renders the opaque fallback. The `glassStyle` overloads are deprecated and delegate through `GlassStyle.toMaterial()`.
 
 ### Do / Don't
 
@@ -74,7 +77,7 @@ root (Box: dual shadow → clip(shape))
 
 | Part ID | Responsibility | Required |
 |---|---|---|
-| `root` | Shape, clip, two-layer shadow from `AuraTheme.elevation.level2` | Yes |
+| `root` | Shape, clip, two-layer shadow from the `elevation` rung (default `AuraTheme.elevation.level2`) | Yes |
 | `backdrop` | Samples `GlassBackdropState` and applies the material `RenderEffect` | No (skipped in `Solid` fallback) |
 | `tint` | Translucent wash keeping foreground legible | Yes |
 | `stroke` | Specular edge highlight (`borderWidth`) | Yes |
@@ -84,18 +87,18 @@ root (Box: dual shadow → clip(shape))
 
 ## 3. Material Matrix & Fallbacks
 
-| Requested (`glassStyle`) | API 33+ | API 31–32 | API 26–30 | Reduced Transparency |
+| Requested (`material`, after theme cap) | API 33+ | API 31–32 | API 26–30 | Reduced Transparency |
 |---|---|---|---|---|
-| `LIQUID` → `LiquidGlass` | AGSL bevel refraction + dispersion | Frosted soft blur | `Solid` effect: tint over unblurred backdrop | `Solid` (`surface.floating` 98%, no backdrop) |
-| `FROSTED` → `Glass` | Blur `26px` + saturation boost | Blur + saturation | `Solid` effect: tint over unblurred backdrop | `Solid` (`surface.floating` 98%, no backdrop) |
+| `LiquidGlass` | AGSL bevel refraction + dispersion | Frosted soft blur | `Solid` (`surface.floating` 98%, no backdrop) | `Solid` (`surface.floating` 98%, no backdrop) |
+| `Glass` | Blur `26.dp` + saturation boost | Blur + saturation | `Solid` (`surface.floating` 98%, no backdrop) | `Solid` (`surface.floating` 98%, no backdrop) |
 
-`GlassStyle` is `@Deprecated` in favor of `AuraMaterial`; it remains as the parameter type for compatibility and maps through `GlassStyle.toMaterial()`.
+`GlassStyle` is `@Deprecated` in favor of `AuraMaterial`; the `glassStyle` overloads remain for compatibility and map through `GlassStyle.toMaterial()`.
 
 ---
 
 ## 4. State Precedence
 
-$$\text{Reduced Transparency (Solid fallback)} \succ \text{SDK capability downgrade} \succ \text{requested material} $$
+$$\text{Reduced Transparency (Solid fallback)} \succ \text{theme ceiling (AuraTheme.material)} \succ \text{SDK capability downgrade} \succ \text{requested material} $$
 
 Tint color changes animate with `motion.stateChangeDurationMillis` (snap under Reduced Motion). Press feedback is opt-in through `Modifier.fluidPressScale`.
 
@@ -105,9 +108,13 @@ Tint color changes animate with `motion.stateChangeDurationMillis` (snap under R
 
 | Part | Property | Token Binding |
 |---|---|---|
-| `tint` | Solid fallback fill | `AuraTheme.colors.surface.floating` |
+| `tint` | Solid fallback fill | `AuraTheme.colors.surface.floating` at `AuraTheme.glass.solidFallbackAlpha` |
+| `tint` | Glass wash | `AuraTheme.glass.frostedTint` / `liquidTint` (`liquidBridgeTint` for `LiquidMetaballBridge`) |
+| `backdrop` | Blur & saturation | `AuraTheme.glass.blurRadius`, `liquidBlurRadius`, `saturation`, `liquidSaturation` |
+| `backdrop` | Liquid lens | `AuraTheme.glass.bevelWidth`, `refraction`, `dispersion` |
+| `stroke` | Specular gradient | `AuraTheme.glass.strokeStartAlpha`, `strokeEndAlpha` |
 | `tint` | Override | `tintColorOverride` (callers pass semantic colors only) |
-| `root` | Shadow ladder | `AuraTheme.elevation.level2` (ambient + key) |
+| `root` | Shadow ladder | `elevation` parameter, default `AuraTheme.elevation.level2` (ambient + key). Composing components pass their layer's rung: `AuraDialog` `level4`, `AuraSnackbar` `level3` |
 | `tint` | Color transition | `AuraTheme.motion.stateChangeDurationMillis` |
 | `fluidPressScale` | Press in / release | `AuraTheme.motion.pressInSpring`, `spatialSpring`, `minPressDurationMillis` |
 
@@ -138,8 +145,8 @@ Tint color changes animate with `motion.stateChangeDurationMillis` (snap under R
 
 ## 8. Accessibility
 
-- **Reduced Transparency:** When `AuraTheme.reduceTransparency` is active (or Battery Saver / High-Contrast Text), the surface renders `Solid` (`surface.floating` at 98%) with no backdrop sampling (`VIS-RULE-004`).
-- **Contrast:** Foreground text on `Glass` / `LiquidGlass` must keep `>= 4.5:1` contrast; icons and hairline borders `>= 3:1` (`VIS-RULE-003`). Composing components raise `surfaceAlphaMultiplier` or rely on `FloatingGlassScaffold` edge scrims when backdrops are busy.
+- **Reduced Transparency:** When `AuraTheme.reduceTransparency` is active (or Battery Saver / High-Contrast Text), the surface renders `Solid` (`surface.floating` at 98%) with no backdrop sampling (`VIS-RULE-004`). The setting is observed live, so the switch happens while the app is running.
+- **Contrast:** Foreground text on `Glass` / `LiquidGlass` must keep `>= 4.5:1` contrast; icons and hairline borders `>= 3:1` (`VIS-RULE-003`). The default tints guarantee this for `content.primary` over any backdrop (`AuraGlassTest`); `content.secondary` and `tintColorOverride` are the caller's responsibility. Composing components raise `surfaceAlphaMultiplier` or rely on `FloatingGlassScaffold` edge scrims when backdrops are busy.
 - The effect layer is isolated from `content`, so text and icons are never blurred or refracted.
 - `GlassSurface` adds no semantics; roles and labels belong to the composing component.
 
@@ -177,15 +184,16 @@ fun Modifier.fluidPressScale(
 @Composable
 fun GlassSurface(
     modifier: Modifier = Modifier,
-    glassStyle: GlassStyle = GlassStyle.LIQUID,
+    material: AuraMaterial = AuraTheme.material,
     shape: Shape = RoundedCornerShape(50),
     cornerRadiusHint: Dp = 28.dp,
     backdropState: GlassBackdropState? = LocalGlassBackdropState.current,
     dispersionBoost: Float = 1f,
     surfaceAlphaMultiplier: Float = 1f,
     showShadow: Boolean = true,
-    blurRadius: Dp = 26.dp,
-    saturationBoost: Float = 1.2f,
+    elevation: AuraElevationLevel = AuraTheme.elevation.level2,
+    blurRadius: Dp = AuraTheme.glass.blurRadius,
+    saturationBoost: Float = AuraTheme.glass.saturation,
     tintColorOverride: Color? = null,
     borderColorOverride: Color? = null,
     borderWidth: Dp = 1.dp,
@@ -197,7 +205,7 @@ fun GlassSurface(
 fun LiquidMetaballBridge(
     gapWidthDp: Dp,
     heightDp: Dp,
-    glassStyle: GlassStyle,
+    material: AuraMaterial,
     mergeProgress: Float,
     modifier: Modifier = Modifier,
 )

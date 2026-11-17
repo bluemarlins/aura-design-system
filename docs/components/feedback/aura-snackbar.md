@@ -90,7 +90,7 @@ Transient, non-blocking feedback banner (`AuraSnackbar`) with serialized queue m
 | Element | Variant / Material | Light / Dark Semantic Token |
 |---|---|---|
 | Surface Container | `Solid` (`Neutral` / Status) | `surface.inverse` / `status.{success,warning,error}.solid` + `elevation.level3` |
-| Surface Container | `Glass` | `GlassSurface(FROSTED)` |
+| Surface Container | `Glass` | `GlassSurface(FROSTED)` + `elevation.level3` |
 | Message Text | `Solid` / `Glass` | `content.inverse` (`onSolid`) / `content.primary` + `typography.bodyMedium` |
 | Action Button | `Solid` / `Glass` | `content.inverse` (`onSolid`) / `brand.primary` + `typography.labelMedium` |
 | Corner Shape | `All` | `AuraTheme.shapes.medium` (`12.dp`) |

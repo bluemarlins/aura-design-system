@@ -19,7 +19,7 @@ Aura Design System verifies Motion Interaction (`MOT-RULE-001`–`MOT-RULE-007`)
 To keep verification deterministic and free of pixel-rendering flakiness while preserving clean public APIs:
 
 1. **`AuraMotionSemantics.kt` (`internal`):** Defines `AuraMotionScaleKey` and `AuraMotionProgressKey` (`SemanticsPropertyKey<Float>`) attached directly to root semantics modifiers of instrumented components.
-2. **Solid Fallback Probe (`GlassSurface.kt`):** When `AuraTheme.reduceTransparency == true`, the opaque fallback box exposes `Modifier.testTag("aura_glass_surface_solid_fallback")`.
+2. **Solid Fallback Probe (`GlassSurface.kt`):** When the effective material resolves to `Solid` (`AuraTheme.reduceTransparency == true`, a `Solid` theme ceiling, or API 26–30), the opaque fallback box exposes `Modifier.testTag("aura_glass_surface_solid_fallback")`.
 3. **`reduceMotion` Injection:** Because Robolectric defaults `Settings.Global.ANIMATOR_DURATION_SCALE` to `1f`, tests inject `AuraTheme(motion = AuraMotionDefaults.Standard.copy(reduceMotion = true))` to deterministically assert Reduced Motion behavior.
 
 ---
