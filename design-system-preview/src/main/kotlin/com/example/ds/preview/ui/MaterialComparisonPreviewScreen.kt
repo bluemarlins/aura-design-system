@@ -52,8 +52,6 @@ import com.example.ds.component.AuraIcon
 import com.example.ds.component.AuraIconButton
 import com.example.ds.component.AuraIconButtonVariant
 import com.example.ds.component.AuraScaffold
-import com.example.ds.component.AuraSegmentedButton
-import com.example.ds.component.AuraSegmentedSize
 import com.example.ds.component.AuraSwitch
 import com.example.ds.component.AuraText
 import com.example.ds.component.GlassBackdropState
@@ -107,6 +105,7 @@ private val MaterialPrinciples = listOf(
 /**
  * Side-by-side comparison of the two theme axes: color mode (Light / Dark) and
  * surface material (Solid / Glass / LiquidGlass), over the same moving backdrop.
+ * Three materials in two color modes give the six specimens shown.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -114,8 +113,6 @@ fun MaterialComparisonPreviewScreen(onBack: () -> Unit) {
     val c = AuraTheme.colors
     val t = AuraTheme.typography
 
-    val ceilingOptions = listOf(AuraMaterial.LiquidGlass, AuraMaterial.Glass, AuraMaterial.Solid)
-    var ceiling by remember { mutableStateOf(AuraMaterial.LiquidGlass) }
     var reduceTransparency by remember { mutableStateOf(false) }
     var animateBackdrop by remember { mutableStateOf(true) }
 
@@ -173,22 +170,9 @@ fun MaterialComparisonPreviewScreen(onBack: () -> Unit) {
                 AuraText(text = "Conditions", style = t.titleMedium)
                 Spacer(modifier = Modifier.height(4.dp))
                 AuraText(
-                    text = "Every specimen below shares these conditions. Tap a surface to feel the press spring.",
+                    text = "Three materials in Light and Dark: six specimens over the same backdrop. Tap a surface to feel the press spring.",
                     style = t.bodySmall,
                     color = c.content.secondary,
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                AuraText(
-                    text = "Theme ceiling (AuraTheme material)",
-                    style = t.labelMedium,
-                    color = c.content.secondary,
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                AuraSegmentedButton(
-                    options = ceilingOptions.map { it.name },
-                    selectedIndex = ceilingOptions.indexOf(ceiling),
-                    onOptionSelected = { index -> ceiling = ceilingOptions[index] },
-                    size = AuraSegmentedSize.Small,
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 AuraSwitch(
@@ -208,7 +192,6 @@ fun MaterialComparisonPreviewScreen(onBack: () -> Unit) {
             MaterialPrinciples.forEach { principle ->
                 MaterialComparisonRow(
                     principle = principle,
-                    ceiling = ceiling,
                     reduceTransparency = reduceTransparency,
                     phase = phase,
                 )
@@ -222,7 +205,6 @@ fun MaterialComparisonPreviewScreen(onBack: () -> Unit) {
 @Composable
 private fun MaterialComparisonRow(
     principle: MaterialPrinciple,
-    ceiling: AuraMaterial,
     reduceTransparency: Boolean,
     phase: () -> Float,
 ) {
@@ -231,7 +213,6 @@ private fun MaterialComparisonRow(
     val effective = resolveEffectiveMaterial(
         requested = principle.material,
         reduceTransparency = reduceTransparency,
-        ceiling = ceiling,
     )
 
     AuraCard(
@@ -269,7 +250,6 @@ private fun MaterialComparisonRow(
                     MaterialSpecimen(
                         colorMode = colorMode,
                         material = principle.material,
-                        ceiling = ceiling,
                         reduceTransparency = reduceTransparency,
                         phase = phase,
                     )
@@ -319,13 +299,11 @@ private fun PrincipleLine(label: String, value: String) {
 private fun MaterialSpecimen(
     colorMode: AuraColorMode,
     material: AuraMaterial,
-    ceiling: AuraMaterial,
     reduceTransparency: Boolean,
     phase: () -> Float,
 ) {
     AuraTheme(
         colorMode = colorMode,
-        material = ceiling,
         reduceTransparency = reduceTransparency,
     ) {
         val c = AuraTheme.colors
