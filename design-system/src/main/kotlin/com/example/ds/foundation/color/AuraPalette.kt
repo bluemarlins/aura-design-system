@@ -32,6 +32,8 @@ object AuraPalette {
     val GlassDarkSurface = Color(0xCC1C1C1E)
     val GlassLightSpecular = Color(0x33FFFFFF)
     val GlassDarkSpecular = Color(0x26FFFFFF)
+    val GlassDarkTintBase = Color(0xFF1E1E22)
+    val GlassDarkBridgeBase = Color(0xFF22242A)
 
     // Brand Blue (One UI Blue aligned)
     val Blue50 = Color(0xFFEDF5FF)

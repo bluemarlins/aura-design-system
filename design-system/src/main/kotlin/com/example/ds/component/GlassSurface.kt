@@ -70,6 +70,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.ds.foundation.elevation.AuraElevationLevel
 import com.example.ds.foundation.theme.AuraColorMode
 import com.example.ds.foundation.theme.AuraMaterial
 import com.example.ds.foundation.theme.AuraTheme
@@ -226,25 +227,32 @@ half4 main(float2 fragCoord) {
 """
 
 /**
- * Reusable Dual-Materiality Floating Glass Container ([GlassStyle.FROSTED] & [GlassStyle.LIQUID]).
+ * Reusable Dual-Materiality Floating Glass Container ([AuraMaterial.Glass] & [AuraMaterial.LiquidGlass]).
  *
  * Samples the live Layer 0 [LocalGlassBackdropState] directly behind its screen bounds so real
  * scrolling cards, photography gradients, and typography blur or optically refract beneath without
  * affecting foreground chrome crispness.
+ *
+ * [material] is capped by the theme-level `AuraTheme.material`. Whenever the effective material
+ * resolves to [AuraMaterial.Solid] (Reduced Transparency, theme cap, or API 26–30), the surface
+ * renders the opaque fallback and skips backdrop sampling.
+ *
+ * [elevation] selects the `AuraTheme.elevation` rung for the two-layer shadow; pass the rung of the
+ * composing component's layer (e.g. `level4` for modal `spatial` surfaces).
  */
-@Suppress("DEPRECATION")
 @Composable
 fun GlassSurface(
     modifier: Modifier = Modifier,
-    glassStyle: GlassStyle = GlassStyle.LIQUID,
+    material: AuraMaterial = AuraTheme.material,
     shape: Shape = RoundedCornerShape(50),
     cornerRadiusHint: Dp = 28.dp,
     backdropState: GlassBackdropState? = LocalGlassBackdropState.current,
     dispersionBoost: Float = 1f,
     surfaceAlphaMultiplier: Float = 1f,
     showShadow: Boolean = true,
-    blurRadius: Dp = 26.dp,
-    saturationBoost: Float = 1.2f,
+    elevation: AuraElevationLevel = AuraTheme.elevation.level2,
+    blurRadius: Dp = AuraTheme.glass.blurRadius,
+    saturationBoost: Float = AuraTheme.glass.saturation,
     tintColorOverride: Color? = null,
     borderColorOverride: Color? = null,
     borderWidth: Dp = 1.dp,
@@ -252,11 +260,12 @@ fun GlassSurface(
     content: @Composable BoxScope.() -> Unit,
 ) {
     val colors = AuraTheme.colors
+    val glass = AuraTheme.glass
     val motion = AuraTheme.motion
     val reducedMotion = rememberAuraReducedMotion()
-    val reduceTransparency = AuraTheme.reduceTransparency
-    val effectiveMaterial = AuraTheme.effectiveMaterial(glassStyle.toMaterial())
-    val isSolidFallback = reduceTransparency
+    val requestedMaterial = minOf(material, AuraTheme.material)
+    val effectiveMaterial = AuraTheme.effectiveMaterial(material)
+    val isSolidFallback = effectiveMaterial == AuraMaterial.Solid
     val density = LocalDensity.current
     val isDark = colors.isDark
 
@@ -267,16 +276,13 @@ fun GlassSurface(
         if (reducedMotion) snap<Color>() else tween(durationMillis = motion.stateChangeDurationMillis)
     }
 
-    // Mode A (Frosted): Adaptive floating glass tint (Light #CCF7F7F9 / Dark #CC1C1C1E) or white/charcoal wash
+    // Mode A (Frosted): white/charcoal wash over the blurred backdrop
     // Mode B (Liquid): Lower base opacity in crystal lens with safe-zone protection
-    val darkFrostedTint = Color(red = 30f / 255f, green = 30f / 255f, blue = 34f / 255f, alpha = 0.68f)
-    val darkLiquidTint = Color(red = 30f / 255f, green = 30f / 255f, blue = 34f / 255f, alpha = 0.54f)
-
     val rawTint = when {
-        isSolidFallback -> colors.surface.floating.copy(alpha = 0.98f)
+        isSolidFallback -> colors.surface.floating.copy(alpha = glass.solidFallbackAlpha)
         tintColorOverride != null -> tintColorOverride
-        glassStyle == GlassStyle.FROSTED -> if (isDark) darkFrostedTint else Color.White.copy(alpha = 0.72f)
-        else -> if (isDark) darkLiquidTint else Color.White.copy(alpha = 0.54f)
+        requestedMaterial == AuraMaterial.Glass -> glass.frostedTint
+        else -> glass.liquidTint
     }
     val targetTint = if (isSolidFallback) {
         rawTint
@@ -290,17 +296,17 @@ fun GlassSurface(
     )
 
     val blurPx = remember(density, blurRadius) { with(density) { blurRadius.toPx().coerceAtLeast(1f) } }
-    val softLiquidBlurPx = remember(density) { with(density) { 10.dp.toPx().coerceAtLeast(1f) } }
-    val bevelPx = remember(density) { with(density) { 8.dp.toPx().coerceAtLeast(1f) } }
+    val softLiquidBlurPx = remember(density, glass) { with(density) { glass.liquidBlurRadius.toPx().coerceAtLeast(1f) } }
+    val bevelPx = remember(density, glass) { with(density) { glass.bevelWidth.toPx().coerceAtLeast(1f) } }
     val cornerPx = remember(density, cornerRadiusHint, surfaceSizePx) {
         val hintPx = with(density) { cornerRadiusHint.toPx() }
         val maxHalf = minOf(surfaceSizePx.width, surfaceSizePx.height) * 0.5f
         if (maxHalf > 0f) minOf(hintPx, maxHalf) else hintPx
     }
-    val dispersionPx = remember(density, dispersionBoost) {
-        with(density) { (1.15f * dispersionBoost.coerceIn(0.6f, 2.4f)).dp.toPx() }
+    val dispersionPx = remember(density, glass, dispersionBoost) {
+        with(density) { (glass.dispersion * dispersionBoost.coerceIn(0.6f, 2.4f)).toPx() }
     }
-    val refractionPx = remember(density) { with(density) { 5.5.dp.toPx() } }
+    val refractionPx = remember(density, glass) { with(density) { glass.refraction.toPx() } }
 
     val cachedRuntimeShader = remember {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -315,6 +321,7 @@ fun GlassSurface(
         blurPx,
         saturationBoost,
         softLiquidBlurPx,
+        glass.liquidSaturation,
         surfaceSizePx,
         cornerPx,
         bevelPx,
@@ -350,6 +357,7 @@ fun GlassSurface(
                                 dispersionPx = dispersionPx,
                                 refractionPx = refractionPx,
                                 softBlurPx = softLiquidBlurPx,
+                                saturation = glass.liquidSaturation,
                             ) ?: GlassRenderEffectCompat.createFrostedEffect(softLiquidBlurPx, saturationBoost)
                         }
                         Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -362,16 +370,14 @@ fun GlassSurface(
         }
     }
 
-    val strokeStartAlpha = if (isDark) 0.34f else 0.55f
-    val strokeEndAlpha = if (isDark) 0.06f else 0.08f
     val strokeEndOffset = Offset(
         x = surfaceSizePx.width.coerceAtLeast(1f),
         y = surfaceSizePx.height.coerceAtLeast(1f),
     )
     val strokeBrush = Brush.linearGradient(
         colors = listOf(
-            Color.White.copy(alpha = strokeStartAlpha * surfaceAlphaMultiplier),
-            Color.White.copy(alpha = strokeEndAlpha * surfaceAlphaMultiplier),
+            Color.White.copy(alpha = glass.strokeStartAlpha * surfaceAlphaMultiplier),
+            Color.White.copy(alpha = glass.strokeEndAlpha * surfaceAlphaMultiplier),
         ),
         start = Offset.Zero,
         end = strokeEndOffset,
@@ -392,6 +398,7 @@ fun GlassSurface(
             .dualGlassShadow(
                 shape = shape,
                 cornerRadiusHint = cornerRadiusHint,
+                elevation = elevation,
                 alphaMultiplier = surfaceAlphaMultiplier * elevationAlphaMultiplier,
                 enabled = showShadow,
             )
@@ -477,6 +484,45 @@ fun GlassSurface(
     }
 }
 
+@Deprecated("Use the GlassSurface overload taking material: AuraMaterial.")
+@Suppress("DEPRECATION")
+@Composable
+fun GlassSurface(
+    modifier: Modifier = Modifier,
+    glassStyle: GlassStyle,
+    shape: Shape = RoundedCornerShape(50),
+    cornerRadiusHint: Dp = 28.dp,
+    backdropState: GlassBackdropState? = LocalGlassBackdropState.current,
+    dispersionBoost: Float = 1f,
+    surfaceAlphaMultiplier: Float = 1f,
+    showShadow: Boolean = true,
+    elevation: AuraElevationLevel = AuraTheme.elevation.level2,
+    blurRadius: Dp = AuraTheme.glass.blurRadius,
+    saturationBoost: Float = AuraTheme.glass.saturation,
+    tintColorOverride: Color? = null,
+    borderColorOverride: Color? = null,
+    borderWidth: Dp = 1.dp,
+    elevationAlphaMultiplier: Float = 1f,
+    content: @Composable BoxScope.() -> Unit,
+) = GlassSurface(
+    modifier = modifier,
+    material = glassStyle.toMaterial(),
+    shape = shape,
+    cornerRadiusHint = cornerRadiusHint,
+    backdropState = backdropState,
+    dispersionBoost = dispersionBoost,
+    surfaceAlphaMultiplier = surfaceAlphaMultiplier,
+    showShadow = showShadow,
+    elevation = elevation,
+    blurRadius = blurRadius,
+    saturationBoost = saturationBoost,
+    tintColorOverride = tintColorOverride,
+    borderColorOverride = borderColorOverride,
+    borderWidth = borderWidth,
+    elevationAlphaMultiplier = elevationAlphaMultiplier,
+    content = content,
+)
+
 @Composable
 private fun LiquidOpticalOverlayCanvas(
     cornerRadiusHint: Dp,
@@ -547,13 +593,13 @@ private fun LiquidOpticalOverlayCanvas(
 private fun Modifier.dualGlassShadow(
     shape: Shape,
     cornerRadiusHint: Dp,
+    elevation: AuraElevationLevel,
     alphaMultiplier: Float,
     enabled: Boolean,
 ): Modifier = if (!enabled || alphaMultiplier <= 0.02f) {
     this
 } else {
     composed {
-        val level2Elevation = AuraTheme.elevation.level2
         val ambientPaint = remember { android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG) }
         val keyPaint = remember { android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG) }
         val genericShadowPath = remember { Path() }
@@ -564,13 +610,13 @@ private fun Modifier.dualGlassShadow(
             val cornerPx = minOf(cornerRadiusHint.toPx(), minOf(size.width, size.height) * 0.5f)
             val clampedAlpha = alphaMultiplier.coerceIn(0f, 1f)
 
-            val ambientBlurPx = (level2Elevation.elevation * 3f).toPx().coerceAtLeast(1f)
-            val ambientOffsetYPx = level2Elevation.elevation.toPx()
-            val ambientColor = Color.Black.copy(alpha = level2Elevation.ambientShadowAlpha * clampedAlpha)
+            val ambientBlurPx = (elevation.elevation * 3f).toPx().coerceAtLeast(1f)
+            val ambientOffsetYPx = elevation.elevation.toPx()
+            val ambientColor = Color.Black.copy(alpha = elevation.ambientShadowAlpha * clampedAlpha)
 
-            val keyBlurPx = level2Elevation.elevation.toPx().coerceAtLeast(1f)
-            val keyOffsetYPx = (level2Elevation.elevation * 0.4f).toPx()
-            val keyColor = Color.Black.copy(alpha = level2Elevation.keyShadowAlpha * clampedAlpha)
+            val keyBlurPx = elevation.elevation.toPx().coerceAtLeast(1f)
+            val keyOffsetYPx = (elevation.elevation * 0.4f).toPx()
+            val keyColor = Color.Black.copy(alpha = elevation.keyShadowAlpha * clampedAlpha)
 
             drawIntoCanvas { canvas ->
                 val nativeCanvas = canvas.nativeCanvas
@@ -663,40 +709,31 @@ internal fun calculateScrollProgress(
  * Combines an API 31+ Gaussian blur + Alpha Threshold (`18 * alpha - 7.5`) `RenderEffect` over
  * overlapping droplet anchors with a concave hourglass meniscus and specular rim highlight.
  */
-@Suppress("DEPRECATION")
 @Composable
 fun LiquidMetaballBridge(
     gapWidthDp: Dp,
     heightDp: Dp,
-    glassStyle: GlassStyle,
+    material: AuraMaterial,
     mergeProgress: Float,
     modifier: Modifier = Modifier,
 ) {
     val colors = AuraTheme.colors
-    val isDark = colors.isDark
-    val reduceTransparency = AuraTheme.reduceTransparency
-    val effectiveMaterial = AuraTheme.effectiveMaterial(glassStyle.toMaterial())
+    val glass = AuraTheme.glass
+    val requestedMaterial = minOf(material, AuraTheme.material)
+    val effectiveMaterial = AuraTheme.effectiveMaterial(material)
     val density = LocalDensity.current
     val effectiveMerge = mergeProgress.coerceIn(0f, 1f)
     if (effectiveMerge <= 0.02f || gapWidthDp <= 0.5.dp) return
 
     val fillColor = when {
-        reduceTransparency -> colors.surface.floating
-        glassStyle == GlassStyle.FROSTED -> if (isDark) {
-            Color(red = 30f / 255f, green = 30f / 255f, blue = 34f / 255f, alpha = 0.68f)
-        } else {
-            Color.White.copy(alpha = 0.72f)
-        }
-        else -> if (isDark) {
-            Color(red = 34f / 255f, green = 36f / 255f, blue = 42f / 255f, alpha = 0.62f)
-        } else {
-            Color.White.copy(alpha = 0.68f)
-        }
+        effectiveMaterial == AuraMaterial.Solid -> colors.surface.floating
+        requestedMaterial == AuraMaterial.Glass -> glass.frostedTint
+        else -> glass.liquidBridgeTint
     }
 
     val metaballBlurPx = remember(density) { with(density) { 4.5.dp.toPx().coerceAtLeast(1f) } }
-    val metaballThresholdEffect = remember(metaballBlurPx, effectiveMaterial, reduceTransparency) {
-        if (!reduceTransparency && effectiveMaterial == AuraMaterial.LiquidGlass && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    val metaballThresholdEffect = remember(metaballBlurPx, effectiveMaterial) {
+        if (effectiveMaterial == AuraMaterial.LiquidGlass && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             GlassRenderEffectCompat.createMetaballAlphaThresholdEffect(metaballBlurPx)
         } else {
             null
@@ -788,7 +825,7 @@ fun LiquidMetaballBridge(
             rimBottomPath.moveTo(0f, h - flareY)
             rimBottomPath.cubicTo(w * 0.35f, h - halfGapY, w * 0.65f, h - halfGapY, w, h - flareY)
 
-            val specularAlpha = (if (glassStyle == GlassStyle.LIQUID) 0.52f else 0.32f) * effectiveMerge
+            val specularAlpha = (if (requestedMaterial == AuraMaterial.LiquidGlass) 0.52f else 0.32f) * effectiveMerge
             drawPath(
                 path = rimTopPath,
                 color = Color.White.copy(alpha = specularAlpha),
@@ -803,9 +840,26 @@ fun LiquidMetaballBridge(
     }
 }
 
+@Deprecated("Use the LiquidMetaballBridge overload taking material: AuraMaterial.")
+@Suppress("DEPRECATION")
+@Composable
+fun LiquidMetaballBridge(
+    gapWidthDp: Dp,
+    heightDp: Dp,
+    glassStyle: GlassStyle,
+    mergeProgress: Float,
+    modifier: Modifier = Modifier,
+) = LiquidMetaballBridge(
+    gapWidthDp = gapWidthDp,
+    heightDp = heightDp,
+    material = glassStyle.toMaterial(),
+    mergeProgress = mergeProgress,
+    modifier = modifier,
+)
+
 private object GlassRenderEffectCompat {
     @RequiresApi(Build.VERSION_CODES.S)
-    fun createFrostedEffect(blurRadiusPx: Float, saturationBoost: Float = 1.2f): RenderEffect? = runCatching {
+    fun createFrostedEffect(blurRadiusPx: Float, saturationBoost: Float): RenderEffect? = runCatching {
         val satMatrix = ColorMatrix().apply { setSaturation(saturationBoost) }
         val satFilter = AndroidRenderEffect.createColorFilterEffect(ColorMatrixColorFilter(satMatrix))
         val blur = AndroidRenderEffect.createBlurEffect(
@@ -826,6 +880,7 @@ private object GlassRenderEffectCompat {
         dispersionPx: Float,
         refractionPx: Float,
         softBlurPx: Float,
+        saturation: Float,
     ): RenderEffect? = runCatching {
         shader.setFloatUniform("uSize", widthPx, heightPx)
         shader.setFloatUniform("uCornerRadius", cornerRadiusPx)
@@ -833,7 +888,7 @@ private object GlassRenderEffectCompat {
         shader.setFloatUniform("uDispersionPx", dispersionPx)
         shader.setFloatUniform("uRefractionPx", refractionPx)
 
-        val satMatrix = ColorMatrix().apply { setSaturation(1.25f) }
+        val satMatrix = ColorMatrix().apply { setSaturation(saturation) }
         val satFilter = AndroidRenderEffect.createColorFilterEffect(ColorMatrixColorFilter(satMatrix))
         val blur = AndroidRenderEffect.createBlurEffect(
             softBlurPx.coerceAtLeast(1f),
@@ -865,7 +920,6 @@ private object GlassRenderEffectCompat {
     }.getOrNull()
 }
 
-@Suppress("DEPRECATION")
 @Preview(name = "Glass Surface Dual Presets", showBackground = true)
 @Composable
 private fun GlassSurfacePreview() {
@@ -901,7 +955,7 @@ private fun GlassSurfacePreview() {
                         modifier = Modifier
                             .weight(1f)
                             .height(48.dp),
-                        glassStyle = GlassStyle.FROSTED,
+                        material = AuraMaterial.Glass,
                         backdropState = backdrop,
                     ) {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -912,7 +966,7 @@ private fun GlassSurfacePreview() {
                         modifier = Modifier
                             .weight(1f)
                             .height(48.dp),
-                        glassStyle = GlassStyle.LIQUID,
+                        material = AuraMaterial.LiquidGlass,
                         backdropState = backdrop,
                     ) {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

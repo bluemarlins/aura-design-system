@@ -70,6 +70,22 @@ class MaterialResolutionTest {
     }
 
     @Test
+    fun `theme ceiling caps the requested material before SDK resolution`() {
+        fun resolve(requested: AuraMaterial, ceiling: AuraMaterial, sdkInt: Int = 35) =
+            resolveEffectiveMaterial(requested = requested, sdkInt = sdkInt, ceiling = ceiling)
+
+        assertEquals(AuraMaterial.LiquidGlass, resolve(AuraMaterial.LiquidGlass, AuraMaterial.LiquidGlass))
+        assertEquals(AuraMaterial.Glass, resolve(AuraMaterial.LiquidGlass, AuraMaterial.Glass))
+        assertEquals(AuraMaterial.Solid, resolve(AuraMaterial.LiquidGlass, AuraMaterial.Solid))
+        assertEquals(AuraMaterial.Solid, resolve(AuraMaterial.Glass, AuraMaterial.Solid))
+        // A ceiling never raises a lower request
+        assertEquals(AuraMaterial.Glass, resolve(AuraMaterial.Glass, AuraMaterial.LiquidGlass))
+        assertEquals(AuraMaterial.Solid, resolve(AuraMaterial.Solid, AuraMaterial.LiquidGlass))
+        // Ceiling and SDK downgrade compose
+        assertEquals(AuraMaterial.Solid, resolve(AuraMaterial.LiquidGlass, AuraMaterial.Glass, sdkInt = 30))
+    }
+
+    @Test
     @Suppress("DEPRECATION")
     fun `deprecated GlassStyle maps cleanly to AuraMaterial`() {
         assertEquals(AuraMaterial.Glass, GlassStyle.FROSTED.toMaterial())

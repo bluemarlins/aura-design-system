@@ -285,6 +285,7 @@ internal fun AuraDialogSurfaceCard(
                 glassStyle = glassStyle,
                 shape = shape,
                 cornerRadiusHint = DialogCornerRadius,
+                elevation = AuraTheme.elevation.level4,
             ) {
                 body()
             }

@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ds.foundation.color.AuraColors
+import com.example.ds.foundation.elevation.AuraElevationLevel
 import com.example.ds.foundation.theme.AuraColorMode
 import com.example.ds.foundation.theme.AuraMaterial
 import com.example.ds.foundation.theme.AuraTheme
@@ -324,6 +325,7 @@ fun AuraSnackbar(
         AuraSnackbarGlassContainer(
             modifier = cardModifier,
             shape = shape,
+            elevation = elevation,
         ) {
             snackbarContent(colors.content.primary, colors.brand.primary)
         }
@@ -393,6 +395,7 @@ private fun AuraSnackbarAction(
 private fun AuraSnackbarGlassContainer(
     modifier: Modifier,
     shape: Shape,
+    elevation: AuraElevationLevel,
     content: @Composable () -> Unit,
 ) {
     GlassSurface(
@@ -401,6 +404,7 @@ private fun AuraSnackbarGlassContainer(
         shape = shape,
         cornerRadiusHint = 12.dp,
         showShadow = true,
+        elevation = elevation,
     ) {
         content()
     }
