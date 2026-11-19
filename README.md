@@ -1,6 +1,6 @@
 # Aura Design System
 
-**Version `1.1.2`** · One UI-inspired, zero-Material 3 Jetpack Compose design system featuring Glassmorphism, tactile spring physics, and two-axis adaptive layouts.
+**Version `1.2.0`** · One UI-inspired, zero-Material 3 Jetpack Compose design system featuring Glassmorphism, tactile spring physics, and two-axis adaptive layouts.
 
 ---
 
@@ -54,21 +54,21 @@ Add the library dependency to your module's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.github.bluemarlins:aura-design-system:1.1.2")
+    implementation("com.github.bluemarlins:aura-design-system:1.2.0")
 }
 ```
 
 Compose `ui`, `ui-graphics`, and `foundation` come in transitively. Aura does not export an icon set, so if your app uses `Icons.*` glyphs (as the samples below do), also add `implementation("androidx.compose.material:material-icons-core")`.
 
-#### Option 2 — Direct AAR from GitHub Releases (`1.1.2`)
+#### Option 2 — Direct AAR from GitHub Releases (`1.2.0`)
 
-1. Download `aura-design-system-1.1.2.aar` (and optionally `aura-design-system-1.1.2-sources.jar`) from the [GitHub Releases (`1.1.2`)](https://github.com/bluemarlins/aura-design-system/releases/tag/1.1.2) page.
-2. Place the `.aar` file inside your app module's `libs/` directory (e.g., `app/libs/aura-design-system-1.1.2.aar`).
+1. Download `aura-design-system-1.2.0.aar` (and optionally `aura-design-system-1.2.0-sources.jar`) from the [GitHub Releases (`1.2.0`)](https://github.com/bluemarlins/aura-design-system/releases/tag/1.2.0) page.
+2. Place the `.aar` file inside your app module's `libs/` directory (e.g., `app/libs/aura-design-system-1.2.0.aar`).
 3. Declare the AAR alongside Compose Foundation/UI dependencies in `app/build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation(files("libs/aura-design-system-1.1.2.aar"))
+    implementation(files("libs/aura-design-system-1.2.0.aar"))
 
     implementation(platform("androidx.compose:compose-bom:2025.02.00"))
     implementation("androidx.compose.ui:ui")
@@ -81,7 +81,7 @@ dependencies {
 
 #### Option 3 — Local Maven (`mavenLocal()`)
 
-Publish the `1.1.2` artifact locally from a clone of this repository:
+Publish the `1.2.0` artifact locally from a clone of this repository:
 
 ```powershell
 .\gradlew.bat :design-system:publishToMavenLocal
@@ -90,7 +90,7 @@ Publish the `1.1.2` artifact locally from a clone of this repository:
 Then enable `mavenLocal()` in `settings.gradle.kts` and add:
 
 ```kotlin
-implementation("com.github.bluemarlins:aura-design-system:1.1.2")
+implementation("com.github.bluemarlins:aura-design-system:1.2.0")
 ```
 
 ### Quick Start
@@ -355,7 +355,8 @@ powershell -ExecutionPolicy Bypass -File skills/aura-design-system/scripts/verif
   - **API 31–32**: `RenderEffect` backdrop blur and saturation boost in `Glass` mode (`<= 3` live-blur surfaces per viewport).
   - **API 26–30 & Reduced Transparency (`PowerSaveMode` / High-Contrast Text)**: Clean opaque `Solid` (`aura_glass_surface_solid_fallback`) or translucent bordered fallback.
 - **`FloatingGlassScaffold`**: 4-layer edge-to-edge spatial container coordinating Layer 0 live backdrop recording, Layer 1 edge scrims, Layer 2 floating chrome clearance (`calculateBottomIslandContentPadding`), and Layer 3 dismissible overlays.
-- **`AuraTopAppBar` / `FloatingTopPillBar`**: Supports `FloatingCapsule`, `FloatingSplit`, and `SurfaceDocked` modes, scroll-reactive opacity/pill transitions (`rememberFloatingScrollProgress`), `MorphingMorePopover`, and Metaball action splitting.
+- **`AuraTopAppBar` / `FloatingTopPillBar`**: Supports `FloatingCapsule`, `FloatingSplit`, and `SurfaceDocked` modes, scroll-reactive opacity/pill transitions (`rememberFloatingScrollProgress`), `MorphingMorePopover`, and Metaball action splitting. `inlineExpandedTitle` (1.2.0) keeps the large title on the action row.
+- **`AuraDropdownMenu`** (1.2.0): Anchored overflow / filter menu with titled `AuraMenuSection`s and single-choice `AuraMenuItem` check marks; opens below its trigger and flips above when needed.
 - **`AuraBottomIsland` / `FloatingBottomIsland`**: Stadium capsule navigation bar with spring-driven sliding active indicator pill, velocity-coupled **Elastic Squish & Stretch**, and `LiquidMetaballBridge` split auxiliary FAB.
 
 ### 3. Complete Component Catalog (30 Ready Specs)
