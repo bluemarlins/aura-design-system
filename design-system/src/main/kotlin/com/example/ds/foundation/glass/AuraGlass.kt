@@ -39,13 +39,13 @@ data class AuraGlass(
     /** Backdrop saturation multiplier for `Glass`. */
     val saturation: Float = 1.2f,
     /** Backdrop saturation multiplier for `LiquidGlass`. */
-    val liquidSaturation: Float = 1.25f,
+    val liquidSaturation: Float = 1.32f,
     /** Width of the convex edge bevel where `LiquidGlass` refraction ramps in. */
-    val bevelWidth: Dp = 8.dp,
+    val bevelWidth: Dp = 11.dp,
     /** Maximum backdrop displacement at the `LiquidGlass` edge. */
-    val refraction: Dp = 5.5.dp,
+    val refraction: Dp = 7.5.dp,
     /** Chromatic RGB channel separation at the `LiquidGlass` edge. */
-    val dispersion: Dp = 1.15.dp,
+    val dispersion: Dp = 1.45.dp,
 )
 
 object AuraGlassDefaults {

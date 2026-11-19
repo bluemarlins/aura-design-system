@@ -243,7 +243,7 @@ fun FloatingTopPillBar(
                     .weight(1f, fill = false)
                     .padding(horizontal = 8.dp)
                     .height(40.dp)
-                    .widthIn(min = 96.dp, max = 220.dp)
+                    .widthIn(max = 232.dp)
                     .graphicsLayer {
                         val s = 0.86f + (0.14f * titleReveal)
                         scaleX = s
@@ -259,8 +259,8 @@ fun FloatingTopPillBar(
             ) {
                 Column(
                     modifier = Modifier
-                        .height(40.dp)
-                        .padding(horizontal = 16.dp),
+                        .defaultMinSize(minWidth = 88.dp, minHeight = 40.dp)
+                        .padding(horizontal = 18.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
@@ -790,7 +790,7 @@ fun AuraTopAppBar(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(barHeight),
-                        glassStyle = GlassStyle.FROSTED,
+                        material = AuraTheme.material,
                         shape = CircleShape,
                         cornerRadiusHint = barHeight / 2f,
                     ) {
@@ -841,51 +841,103 @@ fun AuraTopAppBar(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .heightIn(min = 48.dp)
-                            .shadow(elevation = AuraTheme.elevation.level1.elevation, shape = CircleShape)
-                            .clip(CircleShape)
-                            .background(barContainerColor, CircleShape)
-                            .border(width = 1.dp, color = colors.border.subtle, shape = CircleShape)
-                            .padding(horizontal = 8.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    if (surface == AuraTopAppBarSurface.TranslucentGlass) {
+                        GlassSurface(
+                            modifier = Modifier.heightIn(min = 48.dp),
+                            material = AuraTheme.material,
+                            shape = CircleShape,
+                            cornerRadiusHint = 24.dp,
                         ) {
-                            if (navigationIcon != null) {
-                                CompositionLocalProvider(LocalAuraContentColor provides colors.content.primary) {
-                                    navigationIcon()
+                            Row(
+                                modifier = Modifier
+                                    .heightIn(min = 48.dp)
+                                    .padding(horizontal = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            ) {
+                                if (navigationIcon != null) {
+                                    CompositionLocalProvider(LocalAuraContentColor provides colors.content.primary) {
+                                        navigationIcon()
+                                    }
+                                }
+                                if (title.isNotBlank()) {
+                                    AuraText(
+                                        text = title,
+                                        style = typography.titleMedium,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier
+                                            .padding(horizontal = 8.dp)
+                                            .semantics { heading() },
+                                    )
                                 }
                             }
-                            if (title.isNotBlank()) {
-                                AuraText(
-                                    text = title,
-                                    style = typography.titleMedium,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier
-                                        .padding(horizontal = 8.dp)
-                                        .semantics { heading() },
-                                )
+                        }
+
+                        GlassSurface(
+                            modifier = Modifier.heightIn(min = 48.dp),
+                            material = AuraTheme.material,
+                            shape = CircleShape,
+                            cornerRadiusHint = 24.dp,
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .heightIn(min = 48.dp)
+                                    .padding(horizontal = 6.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                CompositionLocalProvider(LocalAuraContentColor provides colors.content.primary) {
+                                    actions()
+                                }
                             }
                         }
-                    }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .heightIn(min = 48.dp)
+                                .shadow(elevation = AuraTheme.elevation.level1.elevation, shape = CircleShape)
+                                .clip(CircleShape)
+                                .background(barContainerColor, CircleShape)
+                                .border(width = 1.dp, color = colors.border.subtle, shape = CircleShape)
+                                .padding(horizontal = 8.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            ) {
+                                if (navigationIcon != null) {
+                                    CompositionLocalProvider(LocalAuraContentColor provides colors.content.primary) {
+                                        navigationIcon()
+                                    }
+                                }
+                                if (title.isNotBlank()) {
+                                    AuraText(
+                                        text = title,
+                                        style = typography.titleMedium,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier
+                                            .padding(horizontal = 8.dp)
+                                            .semantics { heading() },
+                                    )
+                                }
+                            }
+                        }
 
-                    Row(
-                        modifier = Modifier
-                            .heightIn(min = 48.dp)
-                            .shadow(elevation = AuraTheme.elevation.level1.elevation, shape = CircleShape)
-                            .clip(CircleShape)
-                            .background(barContainerColor, CircleShape)
-                            .border(width = 1.dp, color = colors.border.subtle, shape = CircleShape)
-                            .padding(horizontal = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        CompositionLocalProvider(LocalAuraContentColor provides colors.content.primary) {
-                            actions()
+                        Row(
+                            modifier = Modifier
+                                .heightIn(min = 48.dp)
+                                .shadow(elevation = AuraTheme.elevation.level1.elevation, shape = CircleShape)
+                                .clip(CircleShape)
+                                .background(barContainerColor, CircleShape)
+                                .border(width = 1.dp, color = colors.border.subtle, shape = CircleShape)
+                                .padding(horizontal = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            CompositionLocalProvider(LocalAuraContentColor provides colors.content.primary) {
+                                actions()
+                            }
                         }
                     }
                 }
@@ -931,8 +983,11 @@ private fun AdaptiveFloatingTopAppBar(
 
     val isCompactDocked = adaptiveState?.phase == AdaptiveFloatingBarPhase.CompactDocked ||
         window.heightClass == AuraHeightClass.Compact
+    val isLiquidMinimizeMode = adaptiveState?.minimizeOnScrollDown == true
     val targetMorph = when {
         isCompactDocked -> 0f
+        isLiquidMinimizeMode ->
+            maxOf(adaptiveState.morphFraction, scrollFraction.coerceIn(0f, 1f))
         adaptiveState != null -> adaptiveState.morphFraction
         else -> scrollFraction.coerceIn(0f, 1f)
     }
@@ -942,13 +997,18 @@ private fun AdaptiveFloatingTopAppBar(
         label = "AdaptiveTopBarMorph",
     )
     val visualMorph = if (isCompactDocked) 0f else smoothMorph.coerceIn(0f, 1f)
-    val hideFraction = if (isCompactDocked) 0f else (adaptiveState?.hideFraction ?: 0f).coerceIn(0f, 1f)
+    val rawHideFraction = if (isCompactDocked) 0f else (adaptiveState?.hideFraction ?: 0f).coerceIn(0f, 1f)
+    val hideFraction = if (isLiquidMinimizeMode) 0f else rawHideFraction
 
     val useExpandedArea = expandedTitle?.isNotEmpty() ?: true
     val resolvedExpandedTitle = expandedTitle ?: title
     val resolvedExpandedSubtitle = expandedSubtitle ?: subtitle
 
-    val topOffset = lerp(0.dp, AdaptiveBarThresholds.FloatingTopOffset, visualMorph)
+    val topOffset = lerp(
+        if (isLiquidMinimizeMode) 4.dp else 0.dp,
+        AdaptiveBarThresholds.FloatingTopOffset,
+        visualMorph,
+    )
     val rowHeight = if (isCompactDocked) {
         AdaptiveBarThresholds.CompactDockedHeight
     } else {
@@ -960,8 +1020,6 @@ private fun AdaptiveFloatingTopAppBar(
         0.dp
     }
 
-    // In AdaptiveFloating mode, Title fades out completely on scroll so center viewport stays unobstructed.
-    // Only CompactDocked (IME / H < 480dp) or DockedExpanded (Y == 0) displays title text.
     val expandedTitleAlpha = if (isCompactDocked || !useExpandedArea) {
         0f
     } else {
@@ -969,45 +1027,62 @@ private fun AdaptiveFloatingTopAppBar(
     }
     val showCompactTitle = isCompactDocked || (!useExpandedArea && visualMorph <= 0.02f)
 
+    // In iOS 26 Liquid Glass mode (minimizeOnScrollDown), a Compact Floating Title Pill emerges once the large title folds
+    val floatingTitleReveal by animateFloatAsState(
+        targetValue = if (isLiquidMinimizeMode && !isCompactDocked && title.isNotBlank() && visualMorph > 0.42f) {
+            ((visualMorph - 0.42f) / 0.58f).coerceIn(0f, 1f)
+        } else {
+            0f
+        },
+        animationSpec = if (reducedMotion) snap() else motion.spatialSpring(),
+        label = "AdaptiveFloatingTitlePillReveal",
+    )
+
     val statusTopPx = with(density) {
         WindowInsets.statusBars.asPaddingValues().calculateTopPadding().toPx()
     }
     var measuredBarHeightPx by remember { mutableIntStateOf(0) }
     val hideTravelPx = (measuredBarHeightPx.toFloat() + statusTopPx).coerceAtLeast(1f)
 
-    val podStyle: AdaptiveTopBarPodStyle? = if (!isCompactDocked && visualMorph > 0.02f) {
+    val podActive = !isCompactDocked && (isLiquidMinimizeMode || visualMorph > 0.02f)
+    val podAlpha = if (isLiquidMinimizeMode) {
+        (0.84f + 0.16f * visualMorph).coerceIn(0f, 1f)
+    } else {
+        visualMorph
+    }
+    val podStyle: AdaptiveTopBarPodStyle? = if (podActive) {
         AdaptiveTopBarPodStyle(
-            morph = visualMorph,
+            morph = podAlpha,
             renderPod = { podShape, podCornerRadius, podContent ->
                 if (surface == AuraTopAppBarSurface.TranslucentGlass) {
                     GlassSurface(
-                        glassStyle = GlassStyle.FROSTED,
+                        material = AuraTheme.material,
                         shape = podShape,
                         cornerRadiusHint = podCornerRadius,
-                        surfaceAlphaMultiplier = visualMorph,
-                        elevationAlphaMultiplier = visualMorph,
+                        surfaceAlphaMultiplier = podAlpha,
+                        elevationAlphaMultiplier = podAlpha,
                         blurRadius = AdaptiveBarThresholds.FloatingBlurRadius,
-                        saturationBoost = 1.2f,
-                        tintColorOverride = colors.surface.floatingGlass,
-                        borderColorOverride = colors.border.glassSpecular,
-                        borderWidth = 0.75.dp,
-                        showShadow = visualMorph > 0.05f,
+                        saturationBoost = AuraTheme.glass.liquidSaturation,
+                        tintColorOverride = if (isLiquidMinimizeMode) null else colors.surface.floatingGlass,
+                        borderColorOverride = if (isLiquidMinimizeMode) null else colors.border.glassSpecular,
+                        borderWidth = if (isLiquidMinimizeMode) 1.dp else 0.75.dp,
+                        showShadow = podAlpha > 0.05f,
                     ) {
                         podContent()
                     }
                 } else {
-                    val solidAlpha = (1f - (0.02f * visualMorph)).coerceIn(0.98f, 1f)
+                    val solidAlpha = (1f - (0.02f * podAlpha)).coerceIn(0.98f, 1f)
                     Box(
                         modifier = Modifier
                             .shadow(
-                                elevation = AuraTheme.elevation.level2.elevation * visualMorph,
+                                elevation = AuraTheme.elevation.level2.elevation * podAlpha,
                                 shape = podShape,
                             )
                             .clip(podShape)
                             .background(colors.surface.floating.copy(alpha = solidAlpha), podShape)
                             .border(
                                 width = 1.dp,
-                                color = colors.border.default.copy(alpha = visualMorph),
+                                color = colors.border.default.copy(alpha = podAlpha),
                                 shape = podShape,
                             ),
                         contentAlignment = Alignment.Center,
@@ -1052,15 +1127,56 @@ private fun AdaptiveFloatingTopAppBar(
                     .fillMaxWidth()
                     .padding(horizontal = barHorizontalPadding),
             ) {
-                TopBarSlotRow(
-                    title = if (showCompactTitle) title else "",
-                    subtitle = if (showCompactTitle) subtitle else null,
-                    height = rowHeight,
-                    centerTitle = centerTitle,
-                    compactTitle = isCompactDocked,
-                    navigationIcon = navigationIcon,
-                    actions = actions,
-                )
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    TopBarSlotRow(
+                        title = if (showCompactTitle) title else "",
+                        subtitle = if (showCompactTitle) subtitle else null,
+                        height = rowHeight,
+                        centerTitle = centerTitle,
+                        compactTitle = isCompactDocked,
+                        navigationIcon = navigationIcon,
+                        actions = actions,
+                    )
+
+                    if (floatingTitleReveal > 0.02f) {
+                        GlassSurface(
+                            modifier = Modifier
+                                .height(40.dp)
+                                .widthIn(max = 240.dp)
+                                .graphicsLayer {
+                                    val s = 0.88f + (0.12f * floatingTitleReveal)
+                                    scaleX = s
+                                    scaleY = s
+                                    alpha = floatingTitleReveal.coerceIn(0f, 1f)
+                                    translationY = (1f - floatingTitleReveal) * -8f
+                                },
+                            material = AuraTheme.material,
+                            shape = RoundedCornerShape(50),
+                            cornerRadiusHint = 20.dp,
+                            surfaceAlphaMultiplier = floatingTitleReveal.coerceIn(0f, 1f),
+                            showShadow = floatingTitleReveal > 0.1f,
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .defaultMinSize(minWidth = 88.dp, minHeight = 40.dp)
+                                    .padding(horizontal = 18.dp),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                AuraText(
+                                    text = title,
+                                    style = typography.labelLarge,
+                                    color = colors.content.primary,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.semantics { heading() },
+                                )
+                            }
+                        }
+                    }
+                }
 
                 if (expandedExtraHeight > 1.dp && expandedTitleAlpha > 0.02f) {
                     Column(

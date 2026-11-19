@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -40,9 +41,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
@@ -52,8 +58,10 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import com.example.ds.foundation.theme.AuraColorMode
 import com.example.ds.foundation.motion.AuraMotionProgressKey
 import com.example.ds.foundation.motion.AuraMotionScaleKey
@@ -69,6 +77,7 @@ data class AuraBottomIslandItem(
 )
 
 private val IslandHeight = 60.dp
+private val MinimizedIslandHeight = 48.dp
 
 /**
  * Computes velocity-coupled Elastic Squish & Stretch scale factors `(scaleX, scaleY)` for
@@ -201,11 +210,23 @@ fun AuraBottomIsland(
     val dispersionBoost = 1f + (travelDelta.coerceIn(0f, 1.4f) * 0.65f) + (islandElasticStretch * 4f)
     val adaptiveState = LocalAuraAdaptiveBarState.current
     val scaffoldHandlesHide = LocalScaffoldHandlesBottomHide.current
-    val standaloneHide = if (!scaffoldHandlesHide && adaptiveState != null) {
+    val isMinimizeMode = adaptiveState?.minimizeOnScrollDown == true
+    val minimizeFraction = if (isMinimizeMode) {
+        (adaptiveState?.minimizeFraction ?: 0f).coerceIn(0f, 1f)
+    } else {
+        0f
+    }
+    val standaloneHide = if (!scaffoldHandlesHide && adaptiveState != null && !isMinimizeMode) {
         adaptiveState.hideFraction
     } else {
         0f
     }
+
+    val currentIslandHeight = lerp(IslandHeight, MinimizedIslandHeight, minimizeFraction)
+    val outerHorizontalPadding = lerp(20.dp, 44.dp, minimizeFraction)
+    val outerBottomPadding = lerp(16.dp, 12.dp, minimizeFraction)
+    val labelAlpha = (1f - (minimizeFraction / 0.55f)).coerceIn(0f, 1f)
+    val showLabelSlot = minimizeFraction < 0.82f
 
     Box(
         modifier = modifier
@@ -220,11 +241,11 @@ fun AuraBottomIsland(
                 }
             }
             .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
+            .padding(start = outerHorizontalPadding, end = outerHorizontalPadding, bottom = outerBottomPadding),
         contentAlignment = Alignment.BottomCenter,
     ) {
         Row(
-            modifier = Modifier.widthIn(max = 560.dp),
+            modifier = Modifier.widthIn(max = lerp(560.dp, 420.dp, minimizeFraction)),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
@@ -232,59 +253,33 @@ fun AuraBottomIsland(
             GlassSurface(
                 modifier = Modifier
                     .weight(1f)
-                    .height(IslandHeight)
+                    .height(currentIslandHeight)
                     .graphicsLayer {
                         scaleX = 1f + islandElasticStretch
                         scaleY = 1f - (islandElasticStretch * 0.55f)
                     },
                 glassStyle = glassStyle,
                 shape = RoundedCornerShape(50),
-                cornerRadiusHint = IslandHeight / 2f,
+                cornerRadiusHint = currentIslandHeight / 2f,
                 dispersionBoost = dispersionBoost,
             ) {
                 BoxWithConstraints(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 6.dp, vertical = 5.dp),
+                        .padding(horizontal = 6.dp, vertical = lerp(5.dp, 4.dp, minimizeFraction)),
                 ) {
                     val slotWidthDp = maxWidth / items.size.coerceAtLeast(1)
-                    val indicatorHeight = IslandHeight - 10.dp
+                    val indicatorHeight = currentIslandHeight - lerp(10.dp, 8.dp, minimizeFraction)
 
-                    val indicatorTint = if (glassStyle == GlassStyle.LIQUID) {
-                        colors.brand.primary.copy(alpha = if (colors.isDark) 0.28f else 0.16f)
-                    } else {
-                        colors.interaction.selectedContainer.copy(alpha = if (colors.isDark) 0.55f else 0.75f)
-                    }
-                    val indicatorBorder = if (glassStyle == GlassStyle.LIQUID) {
-                        Color.White.copy(alpha = if (colors.isDark) 0.28f else 0.62f)
-                    } else {
-                        colors.brand.primary.copy(alpha = 0.22f)
-                    }
-
-                    // Sliding Active Indicator Pill driven by instantaneous spring velocity
-                    Box(
-                        modifier = Modifier
-                            .offset {
-                                val slotPx = slotWidthDp.toPx()
-                                IntOffset(x = (slotPx * indicatorAnimatable.value).roundToInt(), y = 0)
-                            }
-                            .width(slotWidthDp)
-                            .height(indicatorHeight)
-                            .graphicsLayer {
-                                if (!reducedMotion) {
-                                    val (sx, sy) = calculateLiquidSquishStretch(
-                                        currentIndex = indicatorAnimatable.value,
-                                        targetIndex = clampedSelected.toFloat(),
-                                        velocity = indicatorAnimatable.velocity,
-                                        isLiquid = glassStyle == GlassStyle.LIQUID,
-                                    )
-                                    scaleX = sx
-                                    scaleY = sy
-                                }
-                            }
-                            .clip(RoundedCornerShape(50))
-                            .background(indicatorTint, RoundedCornerShape(50))
-                            .border(width = 1.dp, color = indicatorBorder, shape = RoundedCornerShape(50)),
+                    // Sliding Glass Lens Active Indicator Pill driven by instantaneous spring velocity
+                    SlidingGlassLensIndicator(
+                        slotWidthDp = slotWidthDp,
+                        indicatorHeight = indicatorHeight,
+                        currentIndex = indicatorAnimatable.value,
+                        targetIndex = clampedSelected.toFloat(),
+                        velocity = indicatorAnimatable.velocity,
+                        isLiquid = glassStyle == GlassStyle.LIQUID,
+                        reducedMotion = reducedMotion,
                     )
 
                     Row(
@@ -305,7 +300,7 @@ fun AuraBottomIsland(
                                 label = "BottomIslandTabTint",
                             )
                             val contentAlpha by animateFloatAsState(
-                                targetValue = if (isSelected) 1f else 0.60f,
+                                targetValue = if (isSelected) 1f else 0.65f,
                                 animationSpec = if (reducedMotion) snap() else tween(motion.stateChangeDurationMillis),
                                 label = "BottomIslandTabAlpha",
                             )
@@ -327,7 +322,10 @@ fun AuraBottomIsland(
                                         interactionSource = tabInteraction,
                                         indication = null,
                                         role = Role.Tab,
-                                        onClick = { onItemSelected(index) },
+                                        onClick = {
+                                            adaptiveState?.expandFromMinimized()
+                                            onItemSelected(index)
+                                        },
                                     ),
                                 contentAlignment = Alignment.Center,
                             ) {
@@ -346,21 +344,24 @@ fun AuraBottomIsland(
                                             contentDescription = item.label,
                                             colorFilter = ColorFilter.tint(tintColor),
                                             modifier = Modifier
-                                                .size(22.dp)
+                                                .size(lerp(22.dp, 20.dp, minimizeFraction))
                                                 .graphicsLayer {
                                                     scaleX = iconScale
                                                     scaleY = iconScale
                                                 },
                                         )
                                     }
-                                    Spacer(modifier = Modifier.height(2.dp))
-                                    AuraText(
-                                        text = item.label,
-                                        style = typography.labelSmall,
-                                        color = tintColor,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis,
-                                    )
+                                    if (showLabelSlot) {
+                                        Spacer(modifier = Modifier.height(lerp(2.dp, 0.dp, minimizeFraction)))
+                                        AuraText(
+                                            text = item.label,
+                                            style = typography.labelSmall,
+                                            color = tintColor,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            modifier = Modifier.alpha(labelAlpha),
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -370,8 +371,8 @@ fun AuraBottomIsland(
 
             // Split Island Auxiliary Action Button (60x60dp circle + 10dp spacing + Metaball liquid bridge)
             if (splitActionIcon != null && onSplitActionClick != null && splitFraction > 0.04f) {
-                val gapWidth = 10.dp * splitFraction
-                val actionDiameter = IslandHeight * splitFraction
+                val gapWidth = lerp(10.dp, 8.dp, minimizeFraction) * splitFraction
+                val actionDiameter = currentIslandHeight * splitFraction
                 val mergeBridgeStrength = if (glassStyle == GlassStyle.LIQUID) {
                     (1f - ((splitFraction - 0.18f) / 0.70f)).coerceIn(0f, 1f)
                 } else {
@@ -381,29 +382,32 @@ fun AuraBottomIsland(
                 Box(
                     modifier = Modifier
                         .width(gapWidth)
-                        .height(IslandHeight),
+                        .height(currentIslandHeight),
                     contentAlignment = Alignment.Center,
                 ) {
                     LiquidMetaballBridge(
                         gapWidthDp = gapWidth,
-                        heightDp = IslandHeight - 4.dp,
+                        heightDp = currentIslandHeight - 4.dp,
                         glassStyle = glassStyle,
                         mergeProgress = mergeBridgeStrength,
                         modifier = Modifier
                             .width(gapWidth)
-                            .height(IslandHeight - 4.dp),
+                            .height(currentIslandHeight - 4.dp),
                     )
                 }
 
                 val actionInteraction = remember { MutableInteractionSource() }
                 val debouncedActionClick = rememberAuraDebouncedClick(
-                    onClick = onSplitActionClick,
+                    onClick = {
+                        adaptiveState?.expandFromMinimized()
+                        onSplitActionClick()
+                    },
                     debounceIntervalMs = 250L,
                 )
 
                 Box(
                     modifier = Modifier
-                        .size(width = actionDiameter, height = IslandHeight)
+                        .size(width = actionDiameter, height = currentIslandHeight)
                         .defaultMinSize(minWidth = 48.dp, minHeight = 48.dp)
                         .graphicsLayer {
                             alpha = splitFraction
@@ -425,10 +429,10 @@ fun AuraBottomIsland(
                     contentAlignment = Alignment.Center,
                 ) {
                     GlassSurface(
-                        modifier = Modifier.size(IslandHeight),
+                        modifier = Modifier.size(currentIslandHeight),
                         glassStyle = glassStyle,
                         shape = CircleShape,
-                        cornerRadiusHint = IslandHeight / 2f,
+                        cornerRadiusHint = currentIslandHeight / 2f,
                         surfaceAlphaMultiplier = splitFraction,
                         dispersionBoost = dispersionBoost,
                     ) {
@@ -441,12 +445,141 @@ fun AuraBottomIsland(
                                 painter = actionPainter,
                                 contentDescription = null,
                                 colorFilter = ColorFilter.tint(colors.brand.primary),
-                                modifier = Modifier.size(24.dp),
+                                modifier = Modifier.size(lerp(24.dp, 20.dp, minimizeFraction)),
                             )
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun SlidingGlassLensIndicator(
+    slotWidthDp: Dp,
+    indicatorHeight: Dp,
+    currentIndex: Float,
+    targetIndex: Float,
+    velocity: Float,
+    isLiquid: Boolean,
+    reducedMotion: Boolean,
+) {
+    val colors = AuraTheme.colors
+    val isDark = colors.isDark
+    val indicatorTint = if (isLiquid) {
+        colors.brand.primary.copy(alpha = if (isDark) 0.24f else 0.14f)
+    } else {
+        colors.interaction.selectedContainer.copy(alpha = if (isDark) 0.55f else 0.75f)
+    }
+    val speedFactor = (abs(velocity) / 6f).coerceIn(0f, 1f)
+    val travelFactor = abs(targetIndex - currentIndex).coerceIn(0f, 1f)
+    val lensDispersion = (0.35f + speedFactor * 0.85f + travelFactor * 0.45f).coerceIn(0.35f, 1.5f)
+
+    Box(
+        modifier = Modifier
+            .offset {
+                val slotPx = slotWidthDp.toPx()
+                IntOffset(x = (slotPx * currentIndex).roundToInt(), y = 0)
+            }
+            .width(slotWidthDp)
+            .height(indicatorHeight)
+            .graphicsLayer {
+                if (!reducedMotion) {
+                    val (sx, sy) = calculateLiquidSquishStretch(
+                        currentIndex = currentIndex,
+                        targetIndex = targetIndex,
+                        velocity = velocity,
+                        isLiquid = isLiquid,
+                    )
+                    scaleX = sx
+                    scaleY = sy
+                }
+            }
+            .clip(RoundedCornerShape(50))
+            .background(indicatorTint, RoundedCornerShape(50)),
+    ) {
+        if (isLiquid) {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                if (size.width <= 2f || size.height <= 2f) return@Canvas
+                val radiusPx = minOf(size.width, size.height) * 0.5f
+
+                // 1. Top convex lens catchlight gradient (iOS 26 sliding glass droplet)
+                drawRoundRect(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = if (isDark) 0.30f else 0.52f),
+                            Color.White.copy(alpha = if (isDark) 0.06f else 0.14f),
+                            Color.Transparent,
+                        ),
+                        startY = 0f,
+                        endY = size.height * 0.58f,
+                    ),
+                    topLeft = Offset.Zero,
+                    size = Size(size.width, size.height * 0.58f),
+                    cornerRadius = CornerRadius(radiusPx),
+                )
+
+                // 2. Inner Fresnel volume glow ring
+                val inset = 1.4.dp.toPx()
+                if (size.width > inset * 2f && size.height > inset * 2f) {
+                    drawRoundRect(
+                        color = Color.White.copy(alpha = if (isDark) 0.22f else 0.38f),
+                        topLeft = Offset(inset, inset),
+                        size = Size(size.width - inset * 2f, size.height - inset * 2f),
+                        cornerRadius = CornerRadius((radiusPx - inset).coerceAtLeast(1f)),
+                        style = Stroke(width = 1.6.dp.toPx()),
+                    )
+                }
+
+                // 3. Velocity-coupled chromatic dispersion rim during lens sliding
+                val dispAlpha = (0.14f * lensDispersion).coerceIn(0.05f, 0.28f)
+                val shift = (0.85.dp.toPx() * lensDispersion).coerceAtMost(2.2.dp.toPx())
+                val cyanRim = Color(red = 0.35f, green = 0.90f, blue = 1f, alpha = dispAlpha)
+                val magentaRim = Color(red = 1f, green = 0.40f, blue = 0.80f, alpha = dispAlpha)
+
+                drawRoundRect(
+                    color = cyanRim,
+                    topLeft = Offset(shift, shift * 0.4f),
+                    size = Size((size.width - shift * 2f).coerceAtLeast(1f), (size.height - shift).coerceAtLeast(1f)),
+                    cornerRadius = CornerRadius((radiusPx - shift).coerceAtLeast(1f)),
+                    style = Stroke(width = 0.9.dp.toPx()),
+                )
+                drawRoundRect(
+                    color = magentaRim,
+                    topLeft = Offset(shift * 0.4f, shift),
+                    size = Size((size.width - shift).coerceAtLeast(1f), (size.height - shift * 2f).coerceAtLeast(1f)),
+                    cornerRadius = CornerRadius((radiusPx - shift).coerceAtLeast(1f)),
+                    style = Stroke(width = 0.9.dp.toPx()),
+                )
+
+                // 4. Diagonal specular perimeter stroke
+                drawRoundRect(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = if (isDark) 0.48f else 0.78f),
+                            Color.White.copy(alpha = if (isDark) 0.12f else 0.24f),
+                            Color.White.copy(alpha = if (isDark) 0.28f else 0.46f),
+                        ),
+                        start = Offset.Zero,
+                        end = Offset(size.width, size.height),
+                    ),
+                    topLeft = Offset(0.5.dp.toPx(), 0.5.dp.toPx()),
+                    size = Size((size.width - 1.dp.toPx()).coerceAtLeast(1f), (size.height - 1.dp.toPx()).coerceAtLeast(1f)),
+                    cornerRadius = CornerRadius(radiusPx),
+                    style = Stroke(width = 1.dp.toPx()),
+                )
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .border(
+                        width = 1.dp,
+                        color = colors.brand.primary.copy(alpha = 0.22f),
+                        shape = RoundedCornerShape(50),
+                    ),
+            )
         }
     }
 }

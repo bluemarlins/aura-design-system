@@ -181,14 +181,31 @@ fun FloatingGlassScaffold(
         },
     )
 
-    val edgeScrimBase = lerp(
-        start = colors.background.primary,
-        stop = colors.interaction.scrim.copy(alpha = 1f),
-        fraction = 0.22f,
-    )
+    // iOS 26 ScrollEdgeEffectStyle.soft: pure background luminance veil in Light mode (no muddy gray shadow),
+    // subtle deep scrim blend in Dark mode.
+    val edgeScrimBase = if (colors.isDark) {
+        lerp(
+            start = containerColor,
+            stop = colors.interaction.scrim.copy(alpha = 1f),
+            fraction = 0.22f,
+        )
+    } else {
+        containerColor
+    }
 
-    val topScrimAlphaScale = if (adaptiveBarState != null) 0f else 1f
-    val bottomHideFraction = adaptiveBarState?.hideFraction?.coerceIn(0f, 1f) ?: 0f
+    val isMinimizeMode = adaptiveBarState?.minimizeOnScrollDown == true
+    val topHideFraction = if (isMinimizeMode) 0f else (adaptiveBarState?.hideFraction?.coerceIn(0f, 1f) ?: 0f)
+    val topScrimAlphaScale = if (adaptiveBarState != null) {
+        (adaptiveBarState.morphFraction * (1f - topHideFraction)).coerceIn(0f, 1f)
+    } else {
+        1f
+    }
+    val bottomHideFraction = if (isMinimizeMode) {
+        0f
+    } else {
+        adaptiveBarState?.hideFraction?.coerceIn(0f, 1f) ?: 0f
+    }
+    val bottomMinimizeFraction = adaptiveBarState?.minimizeFraction?.coerceIn(0f, 1f) ?: 0f
     val bottomHideTravelPx = remember(density, navBottomPadding, bottomIslandHeight, bottomIslandMargin) {
         with(density) { (navBottomPadding + bottomIslandHeight + bottomIslandMargin + 24.dp).toPx() }
     }
@@ -200,7 +217,7 @@ fun FloatingGlassScaffold(
         CompositionLocalProvider(
             LocalGlassBackdropState provides backdropState,
             LocalAuraAdaptiveBarState provides adaptiveBarState,
-            LocalScaffoldHandlesBottomHide provides (adaptiveBarState != null),
+            LocalScaffoldHandlesBottomHide provides (adaptiveBarState != null && !isMinimizeMode),
         ) {
             Box(
                 modifier = modifier
@@ -227,33 +244,43 @@ fun FloatingGlassScaffold(
                     content(contentPadding)
                 }
 
-                // Layer 1: Progressive Edge Scrims (protects contrast without cutting opaque slabs)
+                // Layer 1: Progressive Edge Scrims (protects status bar & floating chrome contrast without cutting opaque slabs)
                 if (topScrimAlphaScale > 0.01f) {
+                    val topPeakAlpha = if (colors.isDark) {
+                        (AuraTheme.elevation.level3.scrimAlpha * 2.1f).coerceIn(0f, 0.88f)
+                    } else {
+                        (AuraTheme.elevation.level3.scrimAlpha * 2.2f).coerceIn(0f, 0.90f)
+                    }
+                    val topMidAlpha = if (colors.isDark) {
+                        (AuraTheme.elevation.level1.scrimAlpha * 2.2f).coerceIn(0f, 0.42f)
+                    } else {
+                        (AuraTheme.elevation.level1.scrimAlpha * 2.4f).coerceIn(0f, 0.45f)
+                    }
                     Box(
                         modifier = Modifier
                             .align(Alignment.TopCenter)
                             .fillMaxWidth()
-                            .height(statusTopPadding + 76.dp)
+                            .height(statusTopPadding + 72.dp)
                             .graphicsLayer { alpha = topScrimAlphaScale }
                             .background(
                                 Brush.verticalGradient(
-                                    colors = listOf(
-                                        edgeScrimBase.copy(alpha = AuraTheme.elevation.level3.scrimAlpha),
-                                        edgeScrimBase.copy(alpha = AuraTheme.elevation.level1.scrimAlpha),
-                                        Color.Transparent,
-                                    ),
+                                    0f to edgeScrimBase.copy(alpha = topPeakAlpha),
+                                    0.36f to edgeScrimBase.copy(alpha = topPeakAlpha * 0.85f),
+                                    0.68f to edgeScrimBase.copy(alpha = topMidAlpha),
+                                    1f to Color.Transparent,
                                 ),
                             ),
                     )
                 }
 
                 if (hasBottomIsland && (1f - bottomHideFraction) > 0.01f) {
+                    val bottomScrimAlpha = ((1f - bottomHideFraction) * (1f - 0.25f * bottomMinimizeFraction)).coerceIn(0f, 1f)
                     Box(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .fillMaxWidth()
                             .height(navBottomPadding + bottomIslandHeight + bottomIslandMargin + 32.dp)
-                            .graphicsLayer { alpha = (1f - bottomHideFraction).coerceIn(0f, 1f) }
+                            .graphicsLayer { alpha = bottomScrimAlpha }
                             .background(
                                 Brush.verticalGradient(
                                     colors = listOf(
@@ -273,7 +300,7 @@ fun FloatingGlassScaffold(
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth()
                         .graphicsLayer {
-                            if (adaptiveBarState != null) {
+                            if (adaptiveBarState != null && !isMinimizeMode) {
                                 translationY = bottomHideTravelPx * bottomHideFraction
                                 alpha = (1f - bottomHideFraction).coerceIn(0f, 1f)
                             }
@@ -284,8 +311,9 @@ fun FloatingGlassScaffold(
                 }
 
                 // Layer 2/3: Snackbar host clearing bottom navigation chrome and insets
+                val effectiveIslandHeight = bottomIslandHeight - (12.dp * bottomMinimizeFraction)
                 val visibleBottomHeight = if (hasBottomIsland) {
-                    (bottomIslandHeight + bottomIslandMargin) * (1f - bottomHideFraction)
+                    (effectiveIslandHeight + bottomIslandMargin) * (1f - bottomHideFraction)
                 } else {
                     0.dp
                 }

@@ -155,6 +155,25 @@ fun rememberAuraAdaptiveBarState(
     hideScrollDelta: Dp = AdaptiveBarThresholds.HideScrollDelta,
     revealScrollDelta: Dp = AdaptiveBarThresholds.RevealScrollDelta,
     jitterSlop: Dp = AdaptiveBarThresholds.JitterSlop,
+): AuraAdaptiveBarState = rememberAuraAdaptiveBarState(
+    collapseThreshold = collapseThreshold,
+    hideScrollDelta = hideScrollDelta,
+    revealScrollDelta = revealScrollDelta,
+    jitterSlop = jitterSlop,
+    minimizeOnScrollDown = false,
+)
+
+/**
+ * Creates and remembers an [AuraAdaptiveBarState] with iOS 26 `.tabBarMinimizeBehavior(.onScrollDown)`
+ * fluid compacting support when [minimizeOnScrollDown] is `true`.
+ */
+@Composable
+fun rememberAuraAdaptiveBarState(
+    collapseThreshold: Dp = AdaptiveBarThresholds.CollapseThreshold,
+    hideScrollDelta: Dp = AdaptiveBarThresholds.HideScrollDelta,
+    revealScrollDelta: Dp = AdaptiveBarThresholds.RevealScrollDelta,
+    jitterSlop: Dp = AdaptiveBarThresholds.JitterSlop,
+    minimizeOnScrollDown: Boolean,
 ): AuraAdaptiveBarState {
     val density = LocalDensity.current
     val motion = AuraTheme.motion
@@ -177,10 +196,12 @@ fun rememberAuraAdaptiveBarState(
             coroutineScope = scope,
             initialMotion = motion,
             initialWindowHeightDp = window.heightDp,
+            initialMinimizeOnScrollDown = minimizeOnScrollDown,
         )
     }
 
     SideEffect {
+        state.minimizeOnScrollDown = minimizeOnScrollDown
         state.updateEnvironment(
             motion = motion,
             windowHeightDp = window.heightDp,
@@ -203,6 +224,7 @@ class AuraAdaptiveBarState internal constructor(
     private val coroutineScope: CoroutineScope? = null,
     initialMotion: AuraMotion = AuraMotionDefaults.Standard,
     initialWindowHeightDp: Int = 800,
+    initialMinimizeOnScrollDown: Boolean = false,
 ) {
     private var motion: AuraMotion = initialMotion
     private var hideAnimJob: Job? = null
@@ -210,6 +232,8 @@ class AuraAdaptiveBarState internal constructor(
 
     private val hideAnimatable = Animatable(0f)
     private val settledMorphAnimatable = Animatable(0f)
+
+    var minimizeOnScrollDown: Boolean by mutableStateOf(initialMinimizeOnScrollDown)
 
     var scrollOffsetPx: Float by mutableFloatStateOf(0f)
         private set
@@ -266,8 +290,27 @@ class AuraAdaptiveBarState internal constructor(
     val hideFraction: Float
         get() = hideAnimatable.value.coerceIn(0f, 1f)
 
+    /**
+     * iOS 26 `.tabBarMinimizeBehavior(.onScrollDown)` fluid collapse fraction (`0f` = full expanded island,
+     * `1f` = compact minimized pill) when [minimizeOnScrollDown] is enabled.
+     */
+    val minimizeFraction: Float
+        get() = if (minimizeOnScrollDown) hideFraction else 0f
+
     val isPinned: Boolean
         get() = isFocused || isMenuOpen
+
+    /**
+     * Fluidly restores the bottom island and top bar from a minimized state (e.g. when the user taps
+     * a minimized tab capsule).
+     */
+    fun expandFromMinimized() {
+        accumulatedDeltaPx = 0f
+        if (phase == AdaptiveFloatingBarPhase.FloatingHidden) {
+            phase = AdaptiveFloatingBarPhase.FloatingVisible
+            animateHideTo(0f, isAppearing = true)
+        }
+    }
 
     internal fun updateEnvironment(
         motion: AuraMotion,
@@ -366,13 +409,19 @@ class AuraAdaptiveBarState internal constructor(
         accumulatedDeltaPx = 0f
 
         if (phase == AdaptiveFloatingBarPhase.FloatingVisible || phase == AdaptiveFloatingBarPhase.FloatingHidden) {
-            val targetHide = calculateSnapTargetProgress(hideFraction)
-            phase = if (targetHide >= 0.5f) {
-                AdaptiveFloatingBarPhase.FloatingHidden
-            } else {
-                AdaptiveFloatingBarPhase.FloatingVisible
+            if (!hideAnimatable.isRunning) {
+                val targetHide = when {
+                    phase == AdaptiveFloatingBarPhase.FloatingHidden && hideFraction <= 0.01f -> 1f
+                    phase == AdaptiveFloatingBarPhase.FloatingVisible && hideFraction >= 0.99f -> 0f
+                    else -> calculateSnapTargetProgress(hideFraction)
+                }
+                phase = if (targetHide >= 0.5f) {
+                    AdaptiveFloatingBarPhase.FloatingHidden
+                } else {
+                    AdaptiveFloatingBarPhase.FloatingVisible
+                }
+                animateHideTo(targetHide, isAppearing = targetHide < 0.5f)
             }
-            animateHideTo(targetHide, isAppearing = targetHide < 0.5f)
         } else if (phase == AdaptiveFloatingBarPhase.CollapsingTransition) {
             val targetMorph = calculateSnapTargetProgress(collapseProgress)
             useSettledMorph = true

@@ -145,7 +145,8 @@ fun Modifier.glassBackdropSource(state: GlassBackdropState): Modifier = this
 
 /**
  * Interruptible tactile spring compression (`0.92f` on Touch Down, rebounding with
- * `Spring(dampingRatio = 0.65f, stiffness = 450f)`).
+ * `Spring(dampingRatio = 0.65f, stiffness = 450f)`) coupled with iOS 26 `.interactive()`
+ * radial touch illumination and gel-like anisotropic bounce.
  */
 fun Modifier.fluidPressScale(
     interactionSource: InteractionSource,
@@ -167,9 +168,40 @@ fun Modifier.fluidPressScale(
         },
         label = "FluidPressScale",
     )
+    val glowAlpha by animateFloatAsState(
+        targetValue = if (!reducedMotion && enabled && isPressed) 0.24f else 0f,
+        animationSpec = when {
+            reducedMotion -> snap()
+            isPressed -> motion.pressInSpring()
+            else -> motion.spatialSpring()
+        },
+        label = "FluidInteractiveGlow",
+    )
+    // Gel-like slight horizontal expansion on vertical compression
+    val delta = 1f - scale
+    val gelScaleX = scale + (delta * 0.14f)
+    val gelScaleY = scale - (delta * 0.06f)
     graphicsLayer {
-        scaleX = scale
-        scaleY = scale
+        scaleX = gelScaleX
+        scaleY = gelScaleY
+    }.drawWithContent {
+        drawContent()
+        if (glowAlpha > 0.005f && size.minDimension > 2f) {
+            val radius = size.maxDimension * 0.72f
+            drawCircle(
+                brush = Brush.radialGradient(
+                    colors = listOf(
+                        Color.White.copy(alpha = glowAlpha),
+                        Color.White.copy(alpha = glowAlpha * 0.35f),
+                        Color.Transparent,
+                    ),
+                    center = Offset(size.width * 0.5f, size.height * 0.42f),
+                    radius = radius.coerceAtLeast(1f),
+                ),
+                radius = radius,
+                center = Offset(size.width * 0.5f, size.height * 0.42f),
+            )
+        }
     }
 }
 
@@ -201,12 +233,14 @@ half4 main(float2 fragCoord) {
     float gradLen = max(length(grad), 0.0001);
     float2 normal = grad / gradLen;
 
-    // Preserve clear/soft Safe Zone at center; ramp convex lens warping cleanly in outer bevel (8dp)
+    // iOS 26 Liquid Glass lens profile: smooth interior magnification + steep convex edge refraction
     float bevelT = clamp(1.0 - (inset / max(uBevelPx, 1.0)), 0.0, 1.0);
     float curvature = bevelT * bevelT * (3.0 - 2.0 * bevelT);
+    float centerDoming = clamp(1.0 - (inset / max(min(halfSize.x, halfSize.y), 1.0)), 0.0, 1.0) * 0.12;
+    float lensPower = curvature + centerDoming;
 
-    float2 refracted = fragCoord - normal * (curvature * uRefractionPx);
-    float disp = (0.06 + curvature * 1.12) * uDispersionPx;
+    float2 refracted = fragCoord - normal * (lensPower * uRefractionPx);
+    float disp = (0.08 + curvature * 1.25) * uDispersionPx;
     float2 dispOffset = normal * disp;
 
     float2 cR = clamp(refracted + dispOffset, float2(0.0), uSize - float2(1.0));
@@ -219,8 +253,9 @@ half4 main(float2 fragCoord) {
     half aCh = content.eval(cG).a;
 
     half3 rgb = half3(rCh, gCh, bCh);
-    // Subtle Fresnel rim illumination near curved bevel perimeter
-    half fresnel = half(pow(bevelT, 2.1) * 0.14);
+    // Directional top-left specular + Fresnel rim illumination near curved bevel perimeter
+    float lightAlignment = clamp(dot(normal, float2(-0.55, -0.83)), 0.0, 1.0);
+    half fresnel = half(pow(bevelT, 1.85) * (0.14 + 0.12 * lightAlignment));
     rgb = clamp(rgb + half3(fresnel), half3(0.0), half3(1.0));
     return half4(rgb, aCh);
 }
@@ -533,21 +568,21 @@ private fun LiquidOpticalOverlayCanvas(
     Canvas(modifier = Modifier.fillMaxSize()) {
         if (size.width <= 2f || size.height <= 2f) return@Canvas
         val radiusPx = minOf(cornerRadiusHint.toPx(), minOf(size.width, size.height) * 0.5f)
-        val innerGlowPx = 6.dp.toPx()
+        val innerGlowPx = 7.5.dp.toPx()
 
-        // Inner Volume Fresnel Glow (White 35%, 6dp feathered inset rings)
-        val steps = 4
+        // Inner Volume Fresnel Glow (iOS 26 thick glass meniscus rings)
+        val steps = 5
         for (i in 0 until steps) {
             val t = i.toFloat() / steps.toFloat()
             val inset = innerGlowPx * t * 0.65f
-            val alpha = (0.35f * (1f - t) * (1f - t)) * intensity * (if (isDark) 0.55f else 1f)
+            val alpha = (0.42f * (1f - t) * (1f - t)) * intensity * (if (isDark) 0.62f else 1f)
             if (size.width - inset * 2f > 2f && size.height - inset * 2f > 2f) {
                 drawRoundRect(
-                    color = Color.White.copy(alpha = alpha.coerceIn(0f, 0.45f)),
+                    color = Color.White.copy(alpha = alpha.coerceIn(0f, 0.48f)),
                     topLeft = Offset(inset, inset),
                     size = Size(size.width - inset * 2f, size.height - inset * 2f),
                     cornerRadius = CornerRadius((radiusPx - inset).coerceAtLeast(1f)),
-                    style = Stroke(width = 1.8.dp.toPx()),
+                    style = Stroke(width = 1.9.dp.toPx()),
                 )
             }
         }
@@ -556,36 +591,55 @@ private fun LiquidOpticalOverlayCanvas(
         drawRoundRect(
             brush = Brush.verticalGradient(
                 colors = listOf(
-                    Color.White.copy(alpha = 0.28f * intensity),
+                    Color.White.copy(alpha = (if (isDark) 0.22f else 0.34f) * intensity),
                     Color.Transparent,
                 ),
                 startY = 0f,
-                endY = size.height * 0.48f,
+                endY = size.height * 0.46f,
             ),
             topLeft = Offset(1.dp.toPx(), 1.dp.toPx()),
-            size = Size((size.width - 2.dp.toPx()).coerceAtLeast(0f), size.height * 0.48f),
+            size = Size((size.width - 2.dp.toPx()).coerceAtLeast(0f), size.height * 0.46f),
             cornerRadius = CornerRadius(radiusPx),
         )
 
+        // Bottom-right secondary internal bounce reflection (creates physical thickness)
+        val bottomInset = 1.5.dp.toPx()
+        if (size.width > bottomInset * 2f && size.height > bottomInset * 2f) {
+            drawRoundRect(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color.Transparent,
+                        Color.White.copy(alpha = (if (isDark) 0.14f else 0.22f) * intensity),
+                    ),
+                    startY = size.height * 0.62f,
+                    endY = size.height,
+                ),
+                topLeft = Offset(bottomInset, bottomInset),
+                size = Size(size.width - bottomInset * 2f, size.height - bottomInset * 2f),
+                cornerRadius = CornerRadius((radiusPx - bottomInset).coerceAtLeast(1f)),
+                style = Stroke(width = 1.1.dp.toPx()),
+            )
+        }
+
         // Subtle Chromatic Dispersion Prism Rim (enhances API 33 AGSL & carries API < 33 fallback)
-        val dispAlpha = (0.16f * dispersionBoost.coerceIn(0.8f, 2f) * intensity).coerceAtMost(0.35f)
+        val dispAlpha = (0.18f * dispersionBoost.coerceIn(0.8f, 2.2f) * intensity).coerceAtMost(0.38f)
         val cyanRim = Color(red = 0.35f, green = 0.90f, blue = 1f, alpha = dispAlpha)
         val magentaRim = Color(red = 1f, green = 0.40f, blue = 0.80f, alpha = dispAlpha)
-        val shift = (0.9.dp.toPx() * dispersionBoost).coerceAtMost(2.5.dp.toPx())
+        val shift = (1.05.dp.toPx() * dispersionBoost).coerceAtMost(2.8.dp.toPx())
 
         drawRoundRect(
             color = cyanRim,
             topLeft = Offset(shift, shift * 0.5f),
             size = Size((size.width - shift * 2f).coerceAtLeast(1f), (size.height - shift).coerceAtLeast(1f)),
             cornerRadius = CornerRadius((radiusPx - shift).coerceAtLeast(1f)),
-            style = Stroke(width = 0.9.dp.toPx()),
+            style = Stroke(width = 1.dp.toPx()),
         )
         drawRoundRect(
             color = magentaRim,
             topLeft = Offset(shift * 0.4f, shift),
             size = Size((size.width - shift).coerceAtLeast(1f), (size.height - shift * 2f).coerceAtLeast(1f)),
             cornerRadius = CornerRadius((radiusPx - shift).coerceAtLeast(1f)),
-            style = Stroke(width = 0.9.dp.toPx()),
+            style = Stroke(width = 1.dp.toPx()),
         )
     }
 }

@@ -311,4 +311,28 @@ class FloatingGlassNavigationTest {
         assertEquals(AdaptiveFloatingBarPhase.FloatingVisible, state.phase)
         assertEquals(0f, state.hideFraction, 0.001f)
     }
+
+    @Test
+    fun `AuraAdaptiveBarState minimizeOnScrollDown exposes fluid minimizeFraction and expands on interaction`() {
+        val state = AuraAdaptiveBarState(
+            collapseThresholdPx = 480f,
+            hideDeltaPx = 72f,
+            revealDeltaPx = 36f,
+            jitterSlopPx = 36f,
+            initialMinimizeOnScrollDown = true,
+        )
+
+        state.updateScrollBounds(scrollOffsetPx = 600f, maxScrollOffsetPx = 3000f)
+        assertEquals(0f, state.minimizeFraction, 0.001f)
+
+        // Downward scroll past +24dp minimizes rather than hiding when minimizeOnScrollDown is true
+        state.onScrollDelta(deltaYPx = 90f, isFromUserDrag = true)
+        assertEquals(AdaptiveFloatingBarPhase.FloatingHidden, state.phase)
+        assertEquals(1f, state.minimizeFraction, 0.001f)
+
+        // Tapping a minimized tab capsule expands the island immediately
+        state.expandFromMinimized()
+        assertEquals(AdaptiveFloatingBarPhase.FloatingVisible, state.phase)
+        assertEquals(0f, state.minimizeFraction, 0.001f)
+    }
 }
