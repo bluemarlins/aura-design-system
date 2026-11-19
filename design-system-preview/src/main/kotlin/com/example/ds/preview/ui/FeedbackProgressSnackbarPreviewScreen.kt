@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -37,7 +38,10 @@ import com.example.ds.component.AuraChipVariant
 import com.example.ds.component.AuraIcon
 import com.example.ds.component.AuraIconButton
 import com.example.ds.component.AuraIconButtonVariant
+import com.example.ds.component.AuraFloatingActionBar
 import com.example.ds.component.AuraLinearProgressBar
+import com.example.ds.component.AuraSkeleton
+import com.example.ds.component.AuraSkeletonText
 import com.example.ds.component.AuraProgressVariant
 import com.example.ds.component.AuraScaffold
 import com.example.ds.component.AuraSnackbarDuration
@@ -181,6 +185,60 @@ fun FeedbackProgressSnackbarPreviewScreen(
                                 onClick = { currentStep = (currentStep + 1).coerceAtMost(5) },
                                 variant = AuraButtonVariant.Secondary,
                                 size = AuraButtonSize.Small,
+                            )
+                        }
+                    }
+                }
+
+                AuraCard(
+                    variant = AuraCardVariant.Outlined,
+                    padding = AuraCardPadding.Large,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        AuraText(text = "AuraSkeleton", style = t.titleMedium)
+                        AuraText(
+                            text = "Shown until the first load lands, instead of a false empty state.",
+                            style = t.bodySmall,
+                            color = c.content.secondary,
+                        )
+                        AuraSkeleton(
+                            modifier = Modifier.fillMaxWidth().height(72.dp),
+                            shape = AuraTheme.shapes.large,
+                            contentDescription = "Loading preview",
+                        )
+                        AuraSkeletonText(lines = 3)
+                    }
+                }
+
+                AuraCard(
+                    variant = AuraCardVariant.Outlined,
+                    padding = AuraCardPadding.Large,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        AuraText(text = "AuraFloatingActionBar", style = t.titleMedium)
+                        AuraText(
+                            text = "Task-screen dock: keeps Save reachable while the form scrolls.",
+                            style = t.bodySmall,
+                            color = c.content.secondary,
+                        )
+                        AuraFloatingActionBar(
+                            supportingText = if (progress < 1f) "Fill the bar to enable Save" else null,
+                        ) {
+                            AuraButton(
+                                text = "Cancel",
+                                onClick = {},
+                                variant = AuraButtonVariant.Ghost,
+                                size = AuraButtonSize.Large,
+                            )
+                            AuraButton(
+                                text = "Save",
+                                onClick = {},
+                                enabled = progress >= 1f,
+                                size = AuraButtonSize.Large,
+                                fullWidth = true,
+                                modifier = Modifier.weight(1f),
                             )
                         }
                     }
