@@ -262,6 +262,26 @@ fun AuraDropdownMenu(
 )
 ```
 
+### `AuraFloatingActionBar` (1.3.0)
+Floating glass action dock for task screens (create/edit forms, wizards, detail). Holds one `Primary` `AuraButton` plus at most one `Secondary`/`Ghost`; rides above the IME. Use it instead of a trailing inline Save button.
+```kotlin
+@Composable
+fun AuraFloatingActionBar(
+    modifier: Modifier = Modifier,
+    visible: Boolean = true,
+    material: AuraMaterial = AuraMaterial.Glass,
+    supportingText: String? = null, // e.g. why Save is disabled
+    content: @Composable RowScope.() -> Unit,
+)
+
+// FloatingGlassScaffold(
+//     bottomBar = { AuraFloatingActionBar { AuraButton("Save", onSave, Modifier.weight(1f), fullWidth = true) } },
+//     hasBottomIsland = true,
+//     bottomIslandHeight = AuraFloatingActionBarDefaults.Height, // + SupportingTextHeight when supportingText is set
+//     bottomIslandMargin = AuraFloatingActionBarDefaults.BottomMargin,
+// ) { padding -> ... }
+```
+
 ### `AuraBottomIsland` & `FloatingBottomIsland`
 ```kotlin
 data class AuraBottomIslandItem(
@@ -700,5 +720,22 @@ fun AuraSnackbar(
     variant: AuraSnackbarVariant = AuraSnackbarVariant.Neutral,
     material: AuraMaterial = AuraMaterial.Solid,
     shape: Shape = AuraTheme.shapes.medium,
+)
+
+// 1.3.0 — loading placeholders. Render until the first data emission; never show empty-state copy while loading.
+@Composable
+fun AuraSkeleton(
+    modifier: Modifier = Modifier,
+    shape: Shape = AuraTheme.shapes.small,
+    contentDescription: String? = null,
+)
+
+@Composable
+fun AuraSkeletonText(
+    modifier: Modifier = Modifier,
+    lines: Int = 2,
+    lineHeight: Dp = 14.dp,
+    lineSpacing: Dp = 8.dp,
+    contentDescription: String? = null,
 )
 ```
