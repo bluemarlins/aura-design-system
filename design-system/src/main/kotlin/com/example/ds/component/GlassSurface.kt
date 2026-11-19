@@ -56,6 +56,11 @@ import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.ImageShader
+import androidx.compose.ui.graphics.ShaderBrush
+import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
@@ -364,6 +369,7 @@ fun GlassSurface(
         refractionPx,
         cachedRuntimeShader,
         surfaceAlphaMultiplier,
+        glass.highlightGain,
     ) {
         if (isSolidFallback || surfaceAlphaMultiplier <= 0.02f) {
             null
@@ -372,7 +378,7 @@ fun GlassSurface(
                 AuraMaterial.Solid -> null
                 AuraMaterial.Glass -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        GlassRenderEffectCompat.createFrostedEffect(blurPx, saturationBoost)
+                        GlassRenderEffectCompat.createFrostedEffect(blurPx, saturationBoost, glass.highlightGain)
                     } else {
                         null
                     }
@@ -393,10 +399,10 @@ fun GlassSurface(
                                 refractionPx = refractionPx,
                                 softBlurPx = softLiquidBlurPx,
                                 saturation = glass.liquidSaturation,
-                            ) ?: GlassRenderEffectCompat.createFrostedEffect(softLiquidBlurPx, saturationBoost)
+                            ) ?: GlassRenderEffectCompat.createFrostedEffect(softLiquidBlurPx, glass.liquidSaturation)
                         }
                         Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-                            GlassRenderEffectCompat.createFrostedEffect(softLiquidBlurPx, saturationBoost)
+                            GlassRenderEffectCompat.createFrostedEffect(softLiquidBlurPx, glass.liquidSaturation)
                         }
                         else -> null
                     }
@@ -477,6 +483,10 @@ fun GlassSurface(
                 )
                 .background(animatedTint, shape),
         ) {
+            // Glass Morphism micro-grain: etched acrylic texture that also breaks up gradient banding.
+            if (!isSolidFallback && effectiveMaterial == AuraMaterial.Glass && glass.noiseAlpha > 0f) {
+                FrostedGrainCanvas(alpha = glass.noiseAlpha * surfaceAlphaMultiplier.coerceIn(0f, 1f))
+            }
             if (!isSolidFallback && effectiveMaterial == AuraMaterial.LiquidGlass && surfaceAlphaMultiplier > 0.05f) {
                 LiquidOpticalOverlayCanvas(
                     cornerRadiusHint = cornerRadiusHint,
@@ -557,6 +567,29 @@ fun GlassSurface(
     elevationAlphaMultiplier = elevationAlphaMultiplier,
     content = content,
 )
+
+/** Tileable monochrome noise shared by every frosted surface; generated once, deterministically. */
+// `null` where the platform cannot allocate bitmaps (e.g. JVM test renderers); the grain is then skipped.
+private val FrostedGrainBitmap: ImageBitmap? by lazy {
+    runCatching {
+        val size = 96
+        val random = java.util.Random(0x0A0A)
+        val pixels = IntArray(size * size) {
+            val v = random.nextInt(256)
+            android.graphics.Color.argb(255, v, v, v)
+        }
+        ImageBitmap(size, size).also { it.asAndroidBitmap().setPixels(pixels, 0, size, 0, 0, size, size) }
+    }.getOrNull()
+}
+
+@Composable
+private fun FrostedGrainCanvas(alpha: Float) {
+    val bitmap = FrostedGrainBitmap ?: return
+    val brush = remember(bitmap) { ShaderBrush(ImageShader(bitmap, TileMode.Repeated, TileMode.Repeated)) }
+    Canvas(modifier = Modifier.fillMaxSize()) {
+        if (alpha > 0.001f) drawRect(brush = brush, alpha = alpha)
+    }
+}
 
 @Composable
 private fun LiquidOpticalOverlayCanvas(
@@ -913,8 +946,17 @@ fun LiquidMetaballBridge(
 
 private object GlassRenderEffectCompat {
     @RequiresApi(Build.VERSION_CODES.S)
-    fun createFrostedEffect(blurRadiusPx: Float, saturationBoost: Float): RenderEffect? = runCatching {
-        val satMatrix = ColorMatrix().apply { setSaturation(saturationBoost) }
+    fun createFrostedEffect(
+        blurRadiusPx: Float,
+        saturationBoost: Float,
+        highlightGain: Float = 1f,
+    ): RenderEffect? = runCatching {
+        val satMatrix = ColorMatrix().apply {
+            setSaturation(saturationBoost)
+            if (highlightGain != 1f) {
+                postConcat(ColorMatrix().apply { setScale(highlightGain, highlightGain, highlightGain, 1f) })
+            }
+        }
         val satFilter = AndroidRenderEffect.createColorFilterEffect(ColorMatrixColorFilter(satMatrix))
         val blur = AndroidRenderEffect.createBlurEffect(
             blurRadiusPx.coerceAtLeast(1f),

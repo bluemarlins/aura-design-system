@@ -46,6 +46,16 @@ data class AuraGlass(
     val refraction: Dp = 7.5.dp,
     /** Chromatic RGB channel separation at the `LiquidGlass` edge. */
     val dispersion: Dp = 1.45.dp,
+    /**
+     * Opacity of the monochrome frosted micro-grain drawn over a `Glass` (Glass Morphism) sheet.
+     * Breaks up gradient banding and gives the acrylic its etched texture (`0f` disables it).
+     */
+    val noiseAlpha: Float = 0.018f,
+    /**
+     * Linear gain applied to the blurred `Glass` backdrop. Dark mode keeps it below `1f` so bright
+     * highlights passing under smoked glass never bloom into hotspots.
+     */
+    val highlightGain: Float = 1f,
 )
 
 object AuraGlassDefaults {
@@ -55,6 +65,10 @@ object AuraGlassDefaults {
         liquidBridgeTint = AuraPalette.Neutral0.copy(alpha = 0.68f),
         strokeStartAlpha = 0.55f,
         strokeEndAlpha = 0.08f,
+        blurRadius = 26.dp,
+        saturation = 1.35f,
+        noiseAlpha = 0.018f,
+        highlightGain = 1f,
     )
 
     val Dark = AuraGlass(
@@ -63,6 +77,10 @@ object AuraGlassDefaults {
         liquidBridgeTint = AuraPalette.GlassDarkBridgeBase.copy(alpha = 0.62f),
         strokeStartAlpha = 0.34f,
         strokeEndAlpha = 0.06f,
+        blurRadius = 28.dp,
+        saturation = 1.22f,
+        noiseAlpha = 0.022f,
+        highlightGain = 0.9f,
     )
 
     fun forColorMode(colorMode: AuraColorMode): AuraGlass = when (colorMode) {

@@ -33,7 +33,33 @@ class AuraGlassTest {
                 glass.liquidBlurRadius < glass.blurRadius,
             )
             assertTrue("solid fallback must be near-opaque", glass.solidFallbackAlpha >= 0.95f)
+            assertTrue(
+                "Glass Morphism blur must stay in the 26–28dp diffusion band",
+                glass.blurRadius.value in 26f..28f,
+            )
+            assertTrue(
+                "Glass Morphism vibrancy must stay in the 1.20–1.35x band",
+                glass.saturation in 1.2f..1.35f,
+            )
+            assertTrue(
+                "frosted micro-grain must stay a subtle 1.5–2.5% texture",
+                glass.noiseAlpha in 0.015f..0.025f,
+            )
+            assertTrue("highlight gain may only dim the backdrop", glass.highlightGain in 0.8f..1f)
         }
+    }
+
+    @Test
+    fun `glass morphism tokens follow the mode separated spec`() {
+        val light = AuraGlassDefaults.Light
+        val dark = AuraGlassDefaults.Dark
+        assertEquals(26f, light.blurRadius.value, 0.001f)
+        assertEquals(28f, dark.blurRadius.value, 0.001f)
+        assertEquals(1.35f, light.saturation, 0.001f)
+        assertEquals(1.22f, dark.saturation, 0.001f)
+        assertEquals(0.018f, light.noiseAlpha, 0.0001f)
+        assertEquals(0.022f, dark.noiseAlpha, 0.0001f)
+        assertTrue("dark glass clamps highlights", dark.highlightGain < light.highlightGain)
     }
 
     @Test
