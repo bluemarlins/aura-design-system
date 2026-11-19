@@ -66,6 +66,8 @@ data class AuraMotion(
     val adaptiveBarStiffness: Float = 380f,
     val floatingBarAppearDurationMillis: Int = 250,
     val floatingBarDisappearDurationMillis: Int = 180,
+    /** One half-cycle of the `AuraSkeleton` loading pulse (rest → highlight). */
+    val skeletonPulseDurationMillis: Int = 900,
     val reduceMotion: Boolean = false,
 ) {
     fun <T> pressInSpring(): SpringSpec<T> = spring(
