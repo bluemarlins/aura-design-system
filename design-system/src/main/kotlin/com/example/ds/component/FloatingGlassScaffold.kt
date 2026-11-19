@@ -245,28 +245,30 @@ fun FloatingGlassScaffold(
                 }
 
                 // Layer 1: Progressive Edge Scrims (protects status bar & floating chrome contrast without cutting opaque slabs)
+                // ScrollEdgeEffectStyle.soft veil (0.90 → 0.45 → 0): it must reach past the floating pill row,
+                // otherwise scrolled text stays razor-sharp in the gaps between the pills and collides with them.
+                val edgePeakAlpha = if (colors.isDark) {
+                    (AuraTheme.elevation.level3.scrimAlpha * 2.1f).coerceIn(0f, 0.88f)
+                } else {
+                    (AuraTheme.elevation.level3.scrimAlpha * 2.2f).coerceIn(0f, 0.90f)
+                }
+                val edgeMidAlpha = if (colors.isDark) {
+                    (AuraTheme.elevation.level1.scrimAlpha * 2.2f).coerceIn(0f, 0.42f)
+                } else {
+                    (AuraTheme.elevation.level1.scrimAlpha * 2.4f).coerceIn(0f, 0.45f)
+                }
                 if (topScrimAlphaScale > 0.01f) {
-                    val topPeakAlpha = if (colors.isDark) {
-                        (AuraTheme.elevation.level3.scrimAlpha * 2.1f).coerceIn(0f, 0.88f)
-                    } else {
-                        (AuraTheme.elevation.level3.scrimAlpha * 2.2f).coerceIn(0f, 0.90f)
-                    }
-                    val topMidAlpha = if (colors.isDark) {
-                        (AuraTheme.elevation.level1.scrimAlpha * 2.2f).coerceIn(0f, 0.42f)
-                    } else {
-                        (AuraTheme.elevation.level1.scrimAlpha * 2.4f).coerceIn(0f, 0.45f)
-                    }
                     Box(
                         modifier = Modifier
                             .align(Alignment.TopCenter)
                             .fillMaxWidth()
-                            .height(statusTopPadding + 72.dp)
+                            .height(statusTopPadding + maxOf(topBarClearance, 64.dp) + 28.dp)
                             .graphicsLayer { alpha = topScrimAlphaScale }
                             .background(
                                 Brush.verticalGradient(
-                                    0f to edgeScrimBase.copy(alpha = topPeakAlpha),
-                                    0.36f to edgeScrimBase.copy(alpha = topPeakAlpha * 0.85f),
-                                    0.68f to edgeScrimBase.copy(alpha = topMidAlpha),
+                                    0f to edgeScrimBase.copy(alpha = edgePeakAlpha),
+                                    0.55f to edgeScrimBase.copy(alpha = edgePeakAlpha * 0.9f),
+                                    0.8f to edgeScrimBase.copy(alpha = edgeMidAlpha),
                                     1f to Color.Transparent,
                                 ),
                             ),
@@ -283,11 +285,9 @@ fun FloatingGlassScaffold(
                             .graphicsLayer { alpha = bottomScrimAlpha }
                             .background(
                                 Brush.verticalGradient(
-                                    colors = listOf(
-                                        Color.Transparent,
-                                        edgeScrimBase.copy(alpha = AuraTheme.elevation.level1.scrimAlpha),
-                                        edgeScrimBase.copy(alpha = AuraTheme.elevation.level3.scrimAlpha),
-                                    ),
+                                    0f to Color.Transparent,
+                                    0.35f to edgeScrimBase.copy(alpha = edgeMidAlpha),
+                                    1f to edgeScrimBase.copy(alpha = edgePeakAlpha * 0.9f),
                                 ),
                             ),
                     )
