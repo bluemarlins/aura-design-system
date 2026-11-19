@@ -61,6 +61,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -676,6 +677,7 @@ fun AuraTopAppBar(
     adaptiveState: AuraAdaptiveBarState? = LocalAuraAdaptiveBarState.current,
     expandedTitle: String? = null,
     expandedSubtitle: String? = null,
+    inlineExpandedTitle: Boolean = false,
 ) {
     if (scrollBehavior == AuraTopAppBarScrollBehavior.AdaptiveFloating) {
         AdaptiveFloatingTopAppBar(
@@ -690,6 +692,7 @@ fun AuraTopAppBar(
             adaptiveState = adaptiveState,
             expandedTitle = expandedTitle,
             expandedSubtitle = expandedSubtitle,
+            inlineExpandedTitle = inlineExpandedTitle,
             modifier = modifier,
         )
         return
@@ -972,6 +975,7 @@ private fun AdaptiveFloatingTopAppBar(
     adaptiveState: AuraAdaptiveBarState?,
     expandedTitle: String?,
     expandedSubtitle: String?,
+    inlineExpandedTitle: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val colors = AuraTheme.colors
@@ -1014,7 +1018,10 @@ private fun AdaptiveFloatingTopAppBar(
     } else {
         AdaptiveBarThresholds.CollapsedSingleLineHeight
     }
-    val expandedExtraHeight = if (!isCompactDocked && useExpandedArea) {
+    // Inline mode puts the large title on the action row instead of a second row below it, so a
+    // screen with no navigation icon or actions does not leave an empty band above its title.
+    val inlineTitle = inlineExpandedTitle && useExpandedArea && !isCompactDocked
+    val expandedExtraHeight = if (!isCompactDocked && useExpandedArea && !inlineTitle) {
         lerp(AdaptiveBarThresholds.ExpandedExtraHeight, 0.dp, visualMorph)
     } else {
         0.dp
@@ -1131,14 +1138,25 @@ private fun AdaptiveFloatingTopAppBar(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center,
                 ) {
+                    val showInlineTitle = inlineTitle && !showCompactTitle && expandedTitleAlpha > 0.02f
                     TopBarSlotRow(
-                        title = if (showCompactTitle) title else "",
-                        subtitle = if (showCompactTitle) subtitle else null,
+                        title = when {
+                            showCompactTitle -> title
+                            showInlineTitle -> resolvedExpandedTitle
+                            else -> ""
+                        },
+                        subtitle = when {
+                            showCompactTitle -> subtitle
+                            showInlineTitle -> resolvedExpandedSubtitle
+                            else -> null
+                        },
                         height = rowHeight,
                         centerTitle = centerTitle,
                         compactTitle = isCompactDocked,
                         navigationIcon = navigationIcon,
                         actions = actions,
+                        titleStyle = if (showInlineTitle) typography.headlineMedium else null,
+                        titleAlpha = if (showInlineTitle) expandedTitleAlpha else 1f,
                     )
 
                     if (floatingTitleReveal > 0.02f) {
@@ -1243,6 +1261,8 @@ private fun TopBarSlotRow(
     navigationIcon: (@Composable () -> Unit)?,
     actions: @Composable RowScope.() -> Unit,
     modifier: Modifier = Modifier,
+    titleStyle: TextStyle? = null,
+    titleAlpha: Float = 1f,
 ) {
     val colors = AuraTheme.colors
     val typography = AuraTheme.typography
@@ -1261,14 +1281,15 @@ private fun TopBarSlotRow(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 8.dp)
+                .alpha(titleAlpha),
             horizontalAlignment = if (centerTitle) Alignment.CenterHorizontally else Alignment.Start,
             verticalArrangement = Arrangement.Center,
         ) {
             if (title.isNotBlank()) {
                 AuraText(
                     text = title,
-                    style = if (compactTitle) typography.titleMedium else typography.titleLarge,
+                    style = titleStyle ?: if (compactTitle) typography.titleMedium else typography.titleLarge,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.semantics { heading() },

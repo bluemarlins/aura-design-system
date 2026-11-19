@@ -98,6 +98,7 @@ Aura Design System
 │   ├── Containment (containment/) — group or separate content
 │   │   ├── Grouping ──── AuraCard             Elevated / Filled / Outlined / Glass
 │   │   ├── Modal ─────── AuraDialog           Standard / Destructive / Glass
+│   │   ├── Anchored ──── AuraDropdownMenu     AuraMenuSection · AuraMenuItem (single-choice check)
 │   │   └── Separation ── AuraDivider          Horizontal / Vertical · Subtle / Default / Strong
 │   │
 │   ├── Navigation (navigation/) — move between screens, frame the screen edges
@@ -157,7 +158,7 @@ Glass rendering is concentrated in five `chrome` / `spatial` components, all thr
 | Actions | [00-button-principles.md](actions/00-button-principles.md) | [aura-button](actions/aura-button.md) · [aura-icon-button](actions/aura-icon-button.md) · [aura-fab](actions/aura-fab.md) · [aura-segmented-button](actions/aura-segmented-button.md) · [aura-chip-button](actions/aura-chip-button.md) |
 | Inputs | [00-input-principles.md](inputs/00-input-principles.md) | [aura-text-field](inputs/aura-text-field.md) · [aura-number-field](inputs/aura-number-field.md) · [aura-search-bar](inputs/aura-search-bar.md) · [aura-checkbox](inputs/aura-checkbox.md) · [aura-radio](inputs/aura-radio.md) · [aura-switch](inputs/aura-switch.md) · [aura-slider](inputs/aura-slider.md) · [aura-rating-bar](inputs/aura-rating-bar.md) · [aura-date-time-picker](inputs/aura-date-time-picker.md) |
 | Feedback | [00-feedback-principles.md](feedback/00-feedback-principles.md) | [aura-badge](feedback/aura-badge.md) · [aura-progress-bar](feedback/aura-progress-bar.md) · [aura-snackbar](feedback/aura-snackbar.md) |
-| Containment | [00-containment-principles.md](containment/00-containment-principles.md) | [aura-card](containment/aura-card.md) · [aura-dialog](containment/aura-dialog.md) · [aura-divider](containment/aura-divider.md) |
+| Containment | [00-containment-principles.md](containment/00-containment-principles.md) | [aura-card](containment/aura-card.md) · [aura-dialog](containment/aura-dialog.md) · [aura-dropdown-menu](containment/aura-dropdown-menu.md) · [aura-divider](containment/aura-divider.md) |
 | Navigation | [00-navigation-principles.md](navigation/00-navigation-principles.md) | [aura-top-app-bar](navigation/aura-top-app-bar.md) · [aura-bottom-island](navigation/aura-bottom-island.md) · [aura-adaptive-bar-state](navigation/aura-adaptive-bar-state.md) |
 | Layout | — | [aura-scaffold](layout/aura-scaffold.md) · [floating-glass-scaffold](layout/floating-glass-scaffold.md) · [aura-adaptive-two-pane](layout/aura-adaptive-two-pane.md) · [aura-adaptive-grid](layout/aura-adaptive-grid.md) |
 

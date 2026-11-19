@@ -101,6 +101,7 @@ Traditional Material top bars span edge-to-edge as opaque rectangles, cutting of
   - **`FloatingVisible` / `FloatingPinned` (`Y >= 160dp`, `ΔY < -12dp` or `isFocused || isMenuOpen`)**: Title remains hidden and center remains unobstructed; leading/trailing action buttons float as individual circular pods (`26.dp` backdrop blur, `1.2x` saturation boost, `surface.floatingGlass`, `border.glassSpecular`, `elevation.level2`).
   - **`FloatingHidden` (`Y >= 160dp`, `ΔY > +24dp`, jitter `< 12dp` ignored)**: Floating button pods slide upward off-screen (`180ms`, `CubicBezierEasing(0.4f, 0.0f, 1.0f, 1f)`) and reappear (`250ms`, `CubicBezierEasing(0.22f, 1.0f, 0.36f, 1f)`) in the same frame as `FloatingBottomIsland` when coordinated via `FloatingGlassScaffold`.
   - **`CompactDocked` (`IME Visible` or `heightDp < 480dp`)**: Restores a compact `48.dp` docked bar with visible title and flat actions (`0.dp` floating margins).
+  - **Inline expanded title (`inlineExpandedTitle = true`, since 1.2.0)**: The `DockedExpanded` title (`headlineMedium`) and `expandedSubtitle` sit on the action row itself — title at the start, `actions` at the end, vertically centred — instead of in a second row below it. Use it for top-level screens with few or no actions, where the default layout leaves an empty `56.dp` action row above the title. The title still fades as the bar collapses, and the floating title pill still appears in minimise mode.
 
 ## 3. Semantic Token Bindings
 
@@ -212,6 +213,7 @@ fun AuraTopAppBar(
     adaptiveState: AuraAdaptiveBarState? = LocalAuraAdaptiveBarState.current,
     expandedTitle: String? = null,
     expandedSubtitle: String? = null,
+    inlineExpandedTitle: Boolean = false,
 )
 ```
 <!-- API:ANDROID:END -->

@@ -213,6 +213,7 @@ fun AuraTopAppBar(
     adaptiveState: AuraAdaptiveBarState? = LocalAuraAdaptiveBarState.current,
     expandedTitle: String? = null,
     expandedSubtitle: String? = null,
+    inlineExpandedTitle: Boolean = false, // 1.2.0: large title shares the action row
 )
 
 @Composable
@@ -241,6 +242,23 @@ fun MorphingMorePopover(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     glassStyle: GlassStyle = GlassStyle.LIQUID,
+)
+```
+
+### `AuraDropdownMenu` (1.2.0)
+Anchored overflow / filter menu. Put it in the trigger's parent `Box`; it opens below the trigger, end-aligned, and flips above when there is no room. One `AuraMenuSection` per decision, one `selected` item per filter section.
+```kotlin
+data class AuraMenuItem(val id: String, val label: String, val selected: Boolean = false, val enabled: Boolean = true)
+data class AuraMenuSection(val title: String? = null, val items: List<AuraMenuItem>)
+
+@Composable
+fun AuraDropdownMenu(
+    expanded: Boolean,
+    onDismissRequest: () -> Unit,
+    sections: List<AuraMenuSection>,
+    onItemClick: (AuraMenuItem) -> Unit,
+    modifier: Modifier = Modifier,
+    dismissOnItemClick: Boolean = true,
 )
 ```
 
