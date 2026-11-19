@@ -57,8 +57,11 @@ val SelectShowcase = ShowcaseGroup(
                 var selected by remember { mutableIntStateOf(0) }
                 var first by remember { mutableStateOf(true) }
                 var second by remember { mutableStateOf(false) }
-                Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-                    Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
                         repeat(2) { index ->
                             AuraRadio(
                                 selected = selected == index,
@@ -67,7 +70,7 @@ val SelectShowcase = ShowcaseGroup(
                             )
                         }
                     }
-                    Column {
+                    Column(modifier = Modifier.weight(1f)) {
                         AuraCheckbox(checked = first, onCheckedChange = { first = it }, label = "항목 A")
                         AuraCheckbox(checked = second, onCheckedChange = { second = it }, label = "항목 B")
                     }

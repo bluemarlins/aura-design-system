@@ -10,6 +10,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.ds.component.AuraCard
+import com.example.ds.component.AuraCardPadding
+import com.example.ds.component.AuraCardVariant
 import com.example.ds.component.AuraNumberField
 import com.example.ds.component.AuraSearchBar
 import com.example.ds.component.AuraSlider
@@ -34,13 +37,17 @@ val InputShowcase = ShowcaseGroup(
                 var a by remember { mutableStateOf("") }
                 var b by remember { mutableStateOf("") }
                 var c by remember { mutableStateOf("") }
-                Column(
+                // Filled fields use the recessed fill, so they need a raised surface to stay visible.
+                AuraCard(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    variant = AuraCardVariant.Elevated,
+                    padding = AuraCardPadding.Compact,
                 ) {
-                    AuraTextField(value = a, onValueChange = { a = it }, placeholder = "Outlined")
-                    AuraTextField(value = b, onValueChange = { b = it }, placeholder = "Filled", variant = AuraTextFieldVariant.Filled)
-                    AuraTextField(value = c, onValueChange = { c = it }, placeholder = "Paperless", variant = AuraTextFieldVariant.Paperless)
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        AuraTextField(value = a, onValueChange = { a = it }, placeholder = "Outlined")
+                        AuraTextField(value = b, onValueChange = { b = it }, placeholder = "Filled", variant = AuraTextFieldVariant.Filled)
+                        AuraTextField(value = c, onValueChange = { c = it }, placeholder = "Paperless", variant = AuraTextFieldVariant.Paperless)
+                    }
                 }
             },
         ),

@@ -1,5 +1,6 @@
 package com.example.ds.preview.ui.showcase
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,8 +34,12 @@ val ContainShowcase = ShowcaseGroup(
             avoidWhen = "한 목록에서 변형을 섞어 위계를 흐리지 않기.",
             targetCatalogId = ComponentCatalog.CARD_ID,
             specimen = {
+                // Filled cards use the recessed fill, so they need a raised surface to stay visible.
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(AuraTheme.colors.surface.raised, AuraTheme.shapes.medium)
+                        .padding(8.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
