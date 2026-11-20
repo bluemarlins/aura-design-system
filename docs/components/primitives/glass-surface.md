@@ -85,12 +85,13 @@ root (Box: dual shadow → clip(shape))
 
 ---
 
-## 3. Material Matrix & Fallbacks
+## 3. Material Matrix & Fallbacks (`Solid` · `Glass Morphism` · `Liquid Glass` × `Light / Dark`)
 
-| Requested (`material`, after theme cap) | API 33+ | API 31–32 | API 26–30 | Reduced Transparency |
-|---|---|---|---|---|
-| `LiquidGlass` | AGSL bevel refraction + dispersion | Frosted soft blur | `Solid` (`surface.floating` 98%, no backdrop) | `Solid` (`surface.floating` 98%, no backdrop) |
-| `Glass` | Blur `26.dp` + saturation boost | Blur + saturation | `Solid` (`surface.floating` 98%, no backdrop) | `Solid` (`surface.floating` 98%, no backdrop) |
+| Requested (`material`, after theme cap) | Optical Signature (`Light` / `Dark` Mode Separated) | API 33+ | API 31–32 | API 26–30 | Reduced Transparency |
+|---|---|---|---|---|---|
+| **`LiquidGlass`** | **Refractive Optical Lens:** `10.dp` soft interior blur + `11.dp` convex bevel AGSL refraction (`7.5.dp`) + `1.45.dp` RGB dispersion + 5-step Fresnel rings + secondary bounce rim (`Light 54%` / `Dark 66%` tint) | AGSL bevel refraction + dispersion + Fresnel | Frosted soft blur | `Solid` (`surface.floating` 98%, no backdrop) | `Solid` (`surface.floating` 98%, no backdrop) |
+| **`Glass`** *(Glass Morphism)* | **Frosted Acrylic Sheet:** `26.dp` uniform backdrop blur + `1.20–1.35x` vibrancy saturation boost + directional `1.dp` specular hairline (`Light: White 72% tint, 55%→8% rim` / `Dark: Obsidian #1E1E22 68% tint, 34%→6% rim`) | Blur `26.dp` + saturation boost + specular rim | Blur + saturation + specular rim | `Solid` (`surface.floating` 98%, no backdrop) | `Solid` (`surface.floating` 98%, no backdrop) |
+| **`Solid`** | **Opaque Surface:** Tokenized `surface.floating` (`98%` alpha) + crisp `1.dp` `border.default` | `Solid` | `Solid` | `Solid` | `Solid` |
 
 `GlassStyle` is `@Deprecated` in favor of `AuraMaterial`; the `glassStyle` overloads remain for compatibility and map through `GlassStyle.toMaterial()`.
 
