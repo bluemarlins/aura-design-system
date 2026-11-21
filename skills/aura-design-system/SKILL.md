@@ -94,7 +94,7 @@ Every screen and custom component you write in a consumer app **must** follow th
    - **Colors:** Use `AuraTheme.colors.*` (and `LocalAuraContentColor.current`). Never hardcode `Color(0x...)` in screens or components.
    - **Typography:** Use `AuraTheme.typography.*` with `AuraText`. Never hardcode `.sp` font sizes in UI.
    - **Layout & Spacing:** Use `AuraTheme.layout.*` (`screenMarginHorizontal`, `screenMarginVertical`, `sectionSpacing`, `gridColumns`, `gridGutter`, `maxContentWidth`, `supportsTwoPane`, `primaryPaneFraction`, `topBarHeight`) alongside structured `dp` component rhythm.
-   - **Motion (`MOT-RULE-002`):** Use `AuraTheme.motion.*` (`pressInSpring()`, `pressOutSpring()`, `spatialSpring()`, `elasticStretchSpring()`, `enterSpec()`, `exitSpec()`, `staggerDelay(index)`). Never write raw numeric `tween(300)` or `spring(dampingRatio = ..., stiffness = ...)`.
+   - **Motion (`MOT-RULE-002`):** Use `AuraTheme.motion.*` (`pressInSpring()`, `pressOutSpring()` for press release, `selectionSpring()` for selection travel, `spatialSpring()`, `elasticStretchSpring()`, `enterSpec()`, `exitSpec()`, `staggerDelay(index)`). Never write raw numeric `tween(300)` or `spring(dampingRatio = ..., stiffness = ...)`.
    - **Depth & Scrims (`VIS-RULE-005`):** Use `AuraTheme.elevation.level0`–`level4` (`elevation`, `keyShadowAlpha`, `ambientShadowAlpha`, `scrimAlpha`).
 3. **4-Layer Visual & Material Discipline (`VIS-RULE-001` – `VIS-RULE-006`):**
    - **Layer 0 (`canvas`):** `Solid` — `AuraScaffold`, `AuraAdaptiveTwoPane`, `FloatingGlassScaffold` scroll canvas.

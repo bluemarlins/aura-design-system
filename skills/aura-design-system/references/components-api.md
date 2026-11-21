@@ -140,7 +140,7 @@ fun Modifier.glassBackdropSource(state: GlassBackdropState): Modifier
 fun Modifier.fluidPressScale(
     interactionSource: InteractionSource,
     enabled: Boolean = true,
-    pressedScale: Float = 0.92f,
+    pressedScale: Float? = null, // null -> AuraTheme.motion.glassPressedScale (0.95f)
 ): Modifier
 
 @Composable

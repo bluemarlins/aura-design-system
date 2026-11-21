@@ -145,7 +145,8 @@ Aura classifies the viewport along **two axes**:
 | Token | `Standard` Default | `Expressive` Override | Purpose |
 |---|---|---|---|
 | `pressInDampingRatio` / `pressInStiffness` | `0.85f` / `800f` | Same | Fast, firm press compression (`pressInSpring()`) |
-| `pressOutDampingRatio` / `pressOutStiffness` | `0.65f` / `500f` | Same | Subtle tactile release rebound (`pressOutSpring()`) |
+| `pressOutDampingRatio` / `pressOutStiffness` | `0.65f` / `500f` | Same | Press-release scale rebound only (`pressOutSpring()`) |
+| `selectionDampingRatio` / `selectionStiffness` | `0.85f` / `600f` | Same | Selection travel without visible overshoot (`selectionSpring()`) |
 | `iconDampingRatio` / `iconStiffness` | `0.75f` / `600f` | Same | Secondary icon micro-nudge (`iconSpring()`) |
 | `pressInDurationMillis` / `pressOutDurationMillis` | `90` / `180` | Same | Asymmetric color/border press/release interpolation |
 | `minPressDurationMillis` | `110L` | Same | Minimum tactile latch so quick taps inside scroll views still render |
@@ -153,6 +154,10 @@ Aura classifies the viewport along **two axes**:
 | `spinnerRotationDurationMillis` / `spinnerSweepDurationMillis` | `900` / `650` | Same | Indeterminate spinner cycle |
 | `pressedScaleDefault` / `Large` / `Ghost` | `0.96f` / `0.975f` / `0.95f` | Same | Surface press scales |
 | `leadingIconPressedScale` / `trailingIconNudge` | `0.92f` / `2.dp` | Same | Button icon depth cues |
+| `glassPressedScale` / `gelStretchX` / `gelSquashY` / `pressGlowAlpha` | `0.95f` / `0.14f` / `0.06f` / `0.24f` | Same | Glass chrome press (`fluidPressScale`) |
+| `grabScale` / `scrubScale` / `selectedIconScale` | `1.18f` / `1.12f` / `1.08f` | Same | Thumb grab, rating scrub, selected tab icon |
+| `presenceEnterScale` / `overlayEnterScale` / `overlayExitScale` / `popoverEnterScale` | `0.90f` / `0.94f` / `0.97f` / `0.92f` | Same | Badge, Dialog Show/Hide, Dropdown Show |
+| `loadingContentScale` / `spinnerEnterScale` | `0.92f` / `0.75f` | Same | Loading content swap |
 | `profile` | `Standard` | `Expressive` | Active `AuraMotionProfile` track |
 | `enterDurationMillis` / `exitDurationMillis` | `280` / `200` | `380` / `260` | Spatial container enter > exit (`30–50%` asymmetry) |
 | `spatialDampingRatio` / `spatialStiffness` | `0.90f` / `400f` | `0.75f` / `350f` | Dialogs, popovers, FAB expansion, bottom island motion |
@@ -166,8 +171,11 @@ Aura classifies the viewport along **two axes**:
 ### Helper Methods on `AuraMotion`
 - `pressInSpring<T>()`, `pressOutSpring<T>()`, `iconSpring<T>()`
 - `spatialSpring<T>()`, `elasticStretchSpring<T>()`
-- `enterSpec<T>(): FiniteAnimationSpec<T>` — returns `snap()` when `reduceMotion == true`, else `tween(enterDurationMillis, FastOutSlowInEasing)`
-- `exitSpec<T>(): FiniteAnimationSpec<T>` — returns `snap()` when `reduceMotion == true`, else `tween(exitDurationMillis, FastOutSlowInEasing)`
+- `enterSpec<T>(): FiniteAnimationSpec<T>` — returns `snap()` when `reduceMotion == true`, else `tween(enterDurationMillis, AuraEasing.Decelerate)`
+- `exitSpec<T>(): FiniteAnimationSpec<T>` — returns `snap()` when `reduceMotion == true`, else `tween(exitDurationMillis, AuraEasing.Accelerate)`
+- `selectionSpring<T>()` — `spring(0.85f, 600f)` for selection travel (thumbs, indices, values); `snap()` when `reduceMotion == true`
+- `reducedFadeSpec<T>()` — `120ms` opacity fade that replaces spatial Show/Hide under Reduced Motion
+- `forTrack(profile)` — copy with the spatial, stagger, and scrim tokens of `profile`; tactile tokens and `reduceMotion` are kept
 - `staggerDelay(index: Int): Int` — returns `0` when `reduceMotion == true` or `index <= 0`, else `minOf(index * staggerDelayMillis, staggerBudgetMillis)`
 - Top-level composable helper: `com.example.ds.foundation.motion.rememberAuraReducedMotion(): Boolean`
 
