@@ -27,6 +27,7 @@ tokens:
   - "typography.monoMedium"
   - "motion.pressInSpring"
   - "motion.pressOutSpring"
+  - "motion.selectionSpring"
   - "motion.stateChangeDurationMillis"
   - "motion.pressedScaleDefault"
 ---
@@ -109,8 +110,8 @@ Continuous and stepped range slider designed for sensory flavor profiling (**My 
 
 Consumes `AuraTheme.motion`:
 
-1. **Thumb Drag / Press Expansion:** Thumb expands gently (`1.0f -> 1.18f`) and reveals a translucent halo ring via `AuraTheme.motion.pressInSpring()` / `pressOutSpring()` while active.
-2. **Tap Jump Smoothness:** Tapping directly on the track animates the fraction cleanly using `pressOutSpring()` (or snaps cleanly during live continuous drags so thumb never lags behind the finger).
+1. **Thumb Drag / Press Expansion:** Thumb expands gently (`1.0f -> AuraTheme.motion.grabScale`, `1.18f`) and reveals a translucent halo ring via `AuraTheme.motion.pressInSpring()` / `pressOutSpring()` while active.
+2. **Tap Jump Smoothness:** Tapping directly on the track animates the fraction with `selectionSpring()`; during live drags the fraction tracks the finger 1:1 (`snap`) so the thumb never lags.
 3. **Reduced Motion:** Uses `snap()` under `rememberAuraReducedMotion()`.
 
 ---

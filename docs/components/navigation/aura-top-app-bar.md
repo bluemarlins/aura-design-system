@@ -134,7 +134,7 @@ Traditional Material top bars span edge-to-edge as opaque rectangles, cutting of
 
 ## 6. Motion & Reduced Motion
 
-- **Collapse / Reveal (`EnterAlways` & `CompactOnScroll`)**: Driven by spring physics (`AuraTheme.motion.pressOutSpring()`) on scroll release so partial collapses settle cleanly onto either `0%` or `100%` states without sticking halfway.
+- **Collapse / Reveal (`EnterAlways` & `CompactOnScroll`)**: Scroll-linked smoothing and the `EnterAlways` slide use `AuraTheme.motion.spatialSpring()` (`0.15%` overshoot), so partial collapses settle onto `0%` or `100%` without sticking halfway or bouncing. Glass pills compress to `glassPressedScale` via `fluidPressScale`.
 - **Surface Material Morph**: Transition between resting and scrolled elevation/border/frost uses `tween(AuraTheme.motion.stateChangeDurationMillis)`.
 - **Reduced Motion (`ANIMATOR_DURATION_SCALE == 0`)**: Replaces sliding translation and height morphing with immediate visibility / opacity thresholds and crisp elevation border toggles.
 

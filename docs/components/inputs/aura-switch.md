@@ -28,6 +28,7 @@ tokens:
   - "typography.bodySmall"
   - "motion.pressInSpring"
   - "motion.pressOutSpring"
+  - "motion.selectionSpring"
   - "motion.stateChangeDurationMillis"
   - "motion.minPressDurationMillis"
   - "motion.pressedScaleDefault"
@@ -147,7 +148,7 @@ stateDiagram-v2
 
 Consumes `AuraTheme.motion` exclusively (`AuraMotion`):
 
-1. **Thumb Translation:** Slide offset `0f -> 1f` animates with `AuraTheme.motion.pressOutSpring()`, giving crisp spring deceleration when landing on either end of the track.
+1. **Thumb Translation:** Slide offset `0f -> 1f` animates with `AuraTheme.motion.selectionSpring()` (`0.6%` overshoot), landing on either end of the track without visible rebound (`MOT-RULE-008`). While pressed, the thumb widens to `AuraTheme.motion.grabScale` (`1.18f`).
 2. **Tactile Press Feedback:** Uses `rememberAuraTactilePressed(interactionSource, motion.minPressDurationMillis)` (`110ms` minimum latch on fast taps). While pressed:
    - Overall visual track subtly compresses to `AuraTheme.motion.pressedScaleDefault` (`0.96f`) via `pressInSpring()` / `pressOutSpring()`.
    - Thumb gently elongates horizontally (`1.18x` width ratio) to feel physically pliable under the fingertip before snapping into its resting circle.

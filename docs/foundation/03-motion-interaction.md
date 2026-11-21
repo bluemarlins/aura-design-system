@@ -2,7 +2,7 @@
 
 > **Aura-Original Motion System:** `Standard` and `Expressive` motion profiles (`AuraMotionProfile`) and `AuraMotion` physics tokens are **Aura-original concepts** defined specifically for Aura Design System. They are **not** Android Material Design (`material3`) motion tokens or schemes.
 
-> **Status legend:** **Shipped** = present in [`AuraMotion.kt`](../../design-system/src/main/kotlin/com/example/ds/foundation/motion/AuraMotion.kt) today. **Planned** = adopted by this guide but not yet in code; see §11 for the migration backlog. Until a Planned item ships, components keep their current behavior.
+> **Status:** Every token and rule in this guide is implemented in [`AuraMotion.kt`](../../design-system/src/main/kotlin/com/example/ds/foundation/motion/AuraMotion.kt) and the `:design-system` components. §11 records the adoption decisions and the remaining known exceptions.
 
 ## 1. Purpose & Scope
 
@@ -65,16 +65,16 @@ Exposed via `AuraTheme.motion` (`AuraMotionDefaults.Standard`).
 
 ### 4.1 Spring Tokens
 
-| Tier | Token | `ζ` / `k` | OS | `Tₛ` | Use | Status |
-|---|---|---|---|---|---|---|
-| **micro-snappy** | `pressInSpring()` | `0.85` / `800` | `0.6%` | `≈166ms` | Press compression | Shipped |
-| | `pressOutSpring()` | `0.65` / `500` | `6.8%` | `≈275ms` | **Press-release scale return only** | Shipped |
-| | `iconSpring()` | `0.75` / `600` | `2.8%` | `≈218ms` | Icon, glyph, dot accents (8–24dp elements) | Shipped |
-| **standard-fluid** | `selectionSpring()` | `0.85` / `600` | `0.6%` | `≈192ms` | Selection travel: Switch/Segmented thumb, Slider settle, Badge presence | **Planned** |
-| | `spatialSpring()` (Standard) | `0.90` / `400` | `0.15%` | `≈222ms` | Overlays, popovers, chrome travel, scroll-linked smoothing | Shipped |
-| | `adaptiveBarMorphSpring()` | `0.85` / `380` | `0.6%` | `≈241ms` | Topology morphs (Docked ↔ Floating) | Shipped |
-| **macro-expressive** | `spatialSpring()` (Expressive) | `0.75` / `350` | `2.8%` | `≈285ms` | Dialog, Bottom Island, FAB expand | Shipped |
-| | `elasticStretchSpring()` | `0.58` / `320` | `10.7%` | `≈385ms` | **`LiquidGlass` material only**: island stretch, metaball split | Shipped |
+| Tier | Token | `ζ` / `k` | OS | `Tₛ` | Use |
+|---|---|---|---|---|---|
+| **micro-snappy** | `pressInSpring()` | `0.85` / `800` | `0.6%` | `≈166ms` | Press compression |
+| | `pressOutSpring()` | `0.65` / `500` | `6.8%` | `≈275ms` | **Press-release scale return only** |
+| | `iconSpring()` | `0.75` / `600` | `2.8%` | `≈218ms` | Icon, glyph, dot accents (8–24dp elements) |
+| **standard-fluid** | `selectionSpring()` | `0.85` / `600` | `0.6%` | `≈192ms` | Selection travel: Switch/Segmented thumb, Slider settle, Badge presence |
+| | `spatialSpring()` (Standard) | `0.90` / `400` | `0.15%` | `≈222ms` | Overlays, popovers, chrome travel, scroll-linked smoothing |
+| | `adaptiveBarMorphSpring()` | `0.85` / `380` | `0.6%` | `≈241ms` | Topology morphs (Docked ↔ Floating) |
+| **macro-expressive** | `spatialSpring()` (Expressive) | `0.75` / `350` | `2.8%` | `≈285ms` | Dialog, Bottom Island, FAB expand |
+| | `elasticStretchSpring()` | `0.58` / `320` | `10.7%` | `≈385ms` | **`LiquidGlass` material only**: island stretch, metaball split |
 
 ### 4.2 Cross-Platform Spring Mapping
 
@@ -93,12 +93,12 @@ Derived with the formulas in §3. This replaces the earlier table, whose iOS `re
 
 ### 4.3 Easing Tokens
 
-| Token | Curve | Use | Status |
+| Token | Kotlin | Curve | Use |
 |---|---|---|---|
-| `easeStandard` | `cubic-bezier(0.4, 0, 0.2, 1)` (`FastOutSlowInEasing`) | Color, border, state tint, crossfade | Shipped (as `FastOutSlowInEasing`) |
-| `easeDecelerate` | `cubic-bezier(0.22, 1, 0.36, 1)` | All entrances: `enterSpec()`, `floatingBarAppearSpec()` | Shipped in `floatingBarAppearSpec`; **Planned** for `enterSpec` |
-| `easeAccelerate` | `cubic-bezier(0.4, 0, 1, 1)` | All exits: `exitSpec()`, `floatingBarDisappearSpec()` | Shipped in `floatingBarDisappearSpec`; **Planned** for `exitSpec` |
-| `LinearEasing` | `linear` | Continuous loops only (spinner rotation, skeleton pulse) | Shipped |
+| `easeStandard` | `AuraEasing.Standard` | `cubic-bezier(0.4, 0, 0.2, 1)` (`FastOutSlowInEasing`) | Color, border, state tint, crossfade |
+| `easeDecelerate` | `AuraEasing.Decelerate` | `cubic-bezier(0.22, 1, 0.36, 1)` | All entrances: `enterSpec()`, `floatingBarAppearSpec()` |
+| `easeAccelerate` | `AuraEasing.Accelerate` | `cubic-bezier(0.4, 0, 1, 1)` | All exits: `exitSpec()`, `floatingBarDisappearSpec()` |
+| `linear` | `LinearEasing` | `linear` | Continuous loops only (spinner rotation, skeleton pulse) |
 
 ### 4.4 Duration Tokens
 
@@ -120,34 +120,30 @@ Derived with the formulas in §3. This replaces the earlier table, whose iOS `re
 
 ### 4.5 Amplitude Tokens (`MOT-RULE-009`)
 
-| Token | Value | Applies to | Status |
-|---|---|---|---|
-| `pressedScaleGhost` | `0.95f` | Light mass: Ghost buttons, Tag chips, Snackbar action | Shipped |
-| `pressedScaleDefault` | `0.96f` | Medium mass: default buttons, icon buttons, Switch track, Checkbox, Radio, segments | Shipped |
-| `pressedScaleLarge` | `0.975f` | Heavy mass: `Large` / `fullWidth` buttons, extended FAB, Card | Shipped |
-| `glassPressedScale` | `0.95f` | `fluidPressScale` on Glass chrome (Bottom Island, Top App Bar pill, Dropdown items) | **Planned** (replaces `0.92f` default and `0.96f`/`0.97f` overrides) |
-| `leadingIconPressedScale` | `0.92f` | Leading/standalone icon compression | Shipped |
-| `trailingIconNudge` | `2.dp` | Trailing icon forward nudge | Shipped |
-| `grabScale` | `1.18f` | Switch thumb width while pressed; Slider thumb while dragging | **Planned** |
-| `scrubScale` | `1.12f` | Rating star under the finger while scrubbing | **Planned** |
-| `selectedIconScale` | `1.08f` | Selected Bottom Island tab icon | **Planned** |
-| `presenceEnterScale` | `0.90f` | Badge appearing with content | **Planned** |
-| `overlayEnterScale` / `overlayExitScale` | `0.94f` / `0.97f` | Dialog Show / Hide | **Planned** |
-| `popoverEnterScale` | `0.92f` | Dropdown Show (anchored origin) | **Planned** |
-| `loadingContentScale` / `spinnerEnterScale` | `0.92f` / `0.75f` | Button/Fab/IconButton loading swap | **Planned** |
-| `gelStretchX` / `gelSquashY` / `pressGlowAlpha` | `0.14f` / `0.06f` / `0.24f` | Glass gel anisotropy and touch glow | **Planned** |
+| Token | Value | Applies to |
+|---|---|---|
+| `pressedScaleGhost` | `0.95f` | Light mass: Ghost buttons, Tag chips, Snackbar action |
+| `pressedScaleDefault` | `0.96f` | Medium mass: default buttons, icon buttons, Switch track, Checkbox, Radio, segments |
+| `pressedScaleLarge` | `0.975f` | Heavy mass: `Large` / `fullWidth` buttons, extended FAB, Card |
+| `glassPressedScale` | `0.95f` | `fluidPressScale` on Glass chrome (Bottom Island, Top App Bar pill, Dropdown items); `fluidPressScale(pressedScale = null)` reads it |
+| `leadingIconPressedScale` | `0.92f` | Leading/standalone icon compression |
+| `trailingIconNudge` | `2.dp` | Trailing icon forward nudge |
+| `grabScale` | `1.18f` | Switch thumb width while pressed; Slider thumb while dragging |
+| `scrubScale` | `1.12f` | Rating star under the finger while scrubbing |
+| `selectedIconScale` | `1.08f` | Selected Bottom Island tab icon |
+| `presenceEnterScale` | `0.90f` | Badge appearing with content |
+| `overlayEnterScale` / `overlayExitScale` | `0.94f` / `0.97f` | Dialog Show / Hide |
+| `popoverEnterScale` | `0.92f` | Dropdown Show (anchored origin) |
+| `loadingContentScale` / `spinnerEnterScale` | `0.92f` / `0.75f` | Button/Fab/IconButton loading swap |
+| `gelStretchX` / `gelSquashY` / `pressGlowAlpha` | `0.14f` / `0.06f` / `0.24f` | Glass gel anisotropy and touch glow |
 
-```kotlin
-// Planned shape inside AuraMotion (Standard values; shared by both profiles)
-val selectionDampingRatio: Float = 0.85f,
-val selectionStiffness: Float = 600f,
+### 4.6 Helper Functions
 
-fun <T> selectionSpring(): FiniteAnimationSpec<T> = if (reduceMotion) {
-    snap()
-} else {
-    spring(dampingRatio = selectionDampingRatio, stiffness = selectionStiffness)
-}
-```
+| Function | Returns |
+|---|---|
+| `selectionSpring()` | `spring(selectionDampingRatio, selectionStiffness)`, or `snap()` when `reduceMotion` |
+| `reducedFadeSpec()` | `tween(loadingCrossfadeDurationMillis, AuraEasing.Standard)`: the opacity-only fade that replaces spatial Show/Hide/Morph under Reduced Motion |
+| `forTrack(profile)` | A copy whose spatial, stagger, and scrim tokens come from `profile`; tactile tokens and `reduceMotion` are kept (§5) |
 
 ---
 
@@ -168,7 +164,7 @@ Both tracks share the **in-place tactile tokens** (all of §4.1 micro-snappy, `s
 | `scrimFadeDurationMillis` | `180` | `220` | Modal backdrop fade |
 
 - **Global vs. scoped:** Keep `AuraTheme(motionProfile = AuraMotionProfile.Standard)` at the root for forms, lists, and productivity flows. `Expressive` is allowed **only on spatial/chrome layers** (Dialog, Dropdown, FAB, Bottom Island, future `AuraBottomSheet`), with at most **1 Expressive hero** per screen.
-- **Track binding:** A component whose spec declares `motion_track: "Expressive"` must read its spatial and scrim tokens from the Expressive profile. Today these components read `AuraTheme.motion` and only become Expressive inside a nested `AuraTheme`; see §11.
+- **Track binding:** A component whose spec declares `motion_track: "Expressive"` reads `AuraTheme.motion.forTrack(AuraMotionProfile.Expressive)`, so its spatial and scrim tokens are Expressive even under a `Standard` root. `AuraFab`, `AuraDialog`, `AuraDropdownMenu`, and `AuraBottomIsland` do this.
 
 ---
 
@@ -203,8 +199,8 @@ State flip  → geometry travel               via selectionSpring()    ; color s
 
 | Type | Definition | Geometry | Opacity | Reduced Motion | Components |
 |---|---|---|---|---|---|
-| **Show** | A new element enters | `*EnterScale → 1` or translate `50%` of own height, via `spatialSpring` (profile per §5) | `enterSpec()` (`easeDecelerate`) | Geometry snaps; opacity `120ms` fade | `AuraDialog` (`overlayEnterScale` + scrim `0 → scrim`), `AuraDropdownMenu` (`popoverEnterScale`, origin = anchor), `AuraSnackbar` (slide + fade), `AuraFloatingActionBar` (`floatingBarAppearSpec`), `AuraSearchBar` clear button (`150ms` fade + `iconSpring` scale), `AuraBadge` (`presenceEnterScale`) |
-| **Hide** | An element leaves | **No spring, no overshoot.** `1 → overlayExitScale` or translate `50%`, via `exitSpec()` | `exitSpec()` (`easeAccelerate`) | Geometry snaps; opacity `120ms` fade | `AuraSnackbar`, `AuraFloatingActionBar` (`floatingBarDisappearSpec`), `AuraSearchBar` clear button; `AuraDialog` and `AuraDropdownMenu` must follow `MOT-RULE-010` |
+| **Show** | A new element enters | `*EnterScale → 1` or translate `50%` of own height, via `spatialSpring` (profile per §5) | `enterSpec()` (`easeDecelerate`) | Geometry snaps; opacity `120ms` fade | `AuraDialog` (`overlayEnterScale` + window dim `0 → scrim.alpha`), `AuraDropdownMenu` (`popoverEnterScale`, origin = anchor), `AuraSnackbar` (slide + fade), `AuraFloatingActionBar` (`floatingBarAppearSpec`), `AuraSearchBar` clear button (`150ms` fade + `iconSpring` scale), `AuraBadge` (`presenceEnterScale`) |
+| **Hide** | An element leaves | **No spring, no overshoot.** `1 → overlayExitScale` or translate `50%`, via `exitSpec()` | `exitSpec()` (`easeAccelerate`) | Geometry snaps; opacity `120ms` fade | `AuraDialog` (`overlayExitScale` + window dim fade-out), `AuraDropdownMenu` (back to `popoverEnterScale`), `AuraSnackbar`, `AuraFloatingActionBar` (`floatingBarDisappearSpec`), `AuraSearchBar` clear button |
 | **Transform** | The same element changes size, position, or value | `selectionSpring` (controls) or `spatialSpring` (containers) | Inner content crossfades `120ms`: outgoing content fades out first, incoming content fades in after the geometry is ~60% complete | Geometry snaps; content `120ms` crossfade | `AuraFab` extended label, `AuraSwitch`/`AuraSegmentedButton` thumb, `AuraBottomIsland` indicator, `AuraTopAppBar` capsule |
 | **Morph** | Shape or topology changes, or one identity hands off to another | `adaptiveBarMorphSpring`; `elasticStretchSpring` only when material is `LiquidGlass` | `120ms` crossfade between the swapped layers | `120ms` crossfade, no geometry | `AuraAdaptiveBarState` (Docked ↔ Floating), `AuraBottomIsland` action split, `AuraTopAppBar` metaball split and `MorphingMorePopover` |
 
@@ -227,20 +223,20 @@ State flip  → geometry travel               via selectionSpring()    ; color s
 | Latch every press for `minPressDurationMillis` | Read `collectIsPressedAsState()` directly for press visuals |
 | Animate Hide whenever Show is animated (`MOT-RULE-010`) | `if (!visible) return` before the exit finishes |
 | Name every amplitude as a token (`MOT-RULE-009`) | `animateFloatAsState(targetValue = if (x) 0.9f else 1f)` |
-| Read `AuraTheme.motion.reduceMotion` | Read the system setting in each component |
+| Read reduced motion through `AuraTheme.motion.reduceMotion` (components use the internal `rememberAuraReducedMotion()` wrapper) | Read `Settings.Global` directly in a component |
 
 ---
 
 ## 9. Accessibility: Reduced Motion (`MOT-RULE-007`)
 
-**Single source of truth:** `AuraTheme` reads the system `ANIMATOR_DURATION_SCALE` (centralized in [`AuraReducedMotion.kt`](../../design-system/src/main/kotlin/com/example/ds/foundation/motion/AuraReducedMotion.kt)) and merges it into `AuraTheme.motion.reduceMotion`. Components read **only** `AuraTheme.motion.reduceMotion`, so an app-level `AuraMotion(reduceMotion = true)` override is honored everywhere.
+**Single source of truth:** [`AuraReducedMotion.kt`](../../design-system/src/main/kotlin/com/example/ds/foundation/motion/AuraReducedMotion.kt) reads the system `ANIMATOR_DURATION_SCALE` and observes it with a `ContentObserver`, so toggling "Remove animations" applies without restarting the activity. `AuraTheme` merges it into `AuraTheme.motion.reduceMotion`. Components call the internal `rememberAuraReducedMotion()` wrapper (`AuraTheme.motion.reduceMotion || system`), so an app-level `AuraMotion(reduceMotion = true)` override is honored everywhere.
 
 | Motion type | Default | Reduced Motion |
 |---|---|---|
 | Press scale, icon nudge, gel, glow | Springs | `1.0f` / `0.dp` / `0f` (snap) |
 | Press and state color | `90 / 150 / 180ms` tween | **Kept** |
 | Selection / Transform geometry | `selectionSpring` / `spatialSpring` | Snap |
-| Show / Hide | Scale or translate + fade | Geometry snaps; opacity fades `120ms` |
+| Show / Hide | Scale or translate + fade | Geometry snaps; opacity fades `120ms` (`reducedFadeSpec()` in `AuraDialog`, `AuraDropdownMenu`, `AuraSnackbar`) |
 | Morph | Morph spring | `120ms` crossfade |
 | Stagger | `staggerDelay(index)` | `0ms` (built in) |
 | Spinner | Rotation + sweep loop | **Kept** (it communicates loading) with `stateDescription = "In progress"` |
@@ -253,32 +249,33 @@ State flip  → geometry travel               via selectionSpring()    ; color s
 | Layer | Check | Status |
 |---|---|---|
 | [`SpecCodeConsistencyTest.kt`](../../design-system/src/test/kotlin/com/example/ds/contract/SpecCodeConsistencyTest.kt) | No numeric `tween`/`spring` literals (`MOT-RULE-002`); `motion_track` declared | Shipped |
-| | No float literal as animation `targetValue` (`MOT-RULE-009`); `motion_track: "Expressive"` components reference Expressive tokens | Planned |
+| | No float literal as animation `targetValue` (`MOT-RULE-009`); `motion_track: "Expressive"` components call `forTrack(Expressive)` | Planned |
 | [`MotionTokenInvariantTest.kt`](../../design-system/src/test/kotlin/com/example/ds/contract/MotionTokenInvariantTest.kt) | Enter > exit × 1.3; press-in < press-out; stagger bounds; Standard `spatialDampingRatio >= 0.85` | Shipped |
-| | Computed OS ≤ `3%` for Standard `selection`/`spatial`/`morph`; `pressedScale*` within `[0.94, 0.98]` | Planned |
+| | Computed OS ≤ `3%` for Standard `selection`/`spatial`/`morph`/`pressIn` and Expressive spatial; `pressedScale*` within `[0.94, 0.98]`; `forTrack` keeps tactile tokens | Shipped |
 | [`ComponentMotionBehaviorTest.kt`](../../design-system/src/test/kotlin/com/example/ds/motion/ComponentMotionBehaviorTest.kt) | Button press/release, Switch progress, FAB expand, Island indicator, Dialog entry, Reduced Motion snaps | Shipped |
-| | Dialog/Dropdown Hide progress; scrim alpha starts at `0`; Switch thumb progress peak ≤ `1.01` | Planned |
+| | Dialog Hide progress and unmount; Switch thumb progress peak ≤ `1.01` | Shipped |
 
 See [`07-interaction-verification.md`](07-interaction-verification.md) for the full verification methodology.
 
 ---
 
-## 11. Adoption Status & Migration Backlog
+## 11. Adoption Record
 
-Decisions adopted on 2026-11-20: `glassPressedScale = 0.95f`, decelerate/accelerate easing for `enterSpec()`/`exitSpec()`, and a new `selectionSpring()` (`0.85` / `600`). Current code still deviates from this guide in these places:
+Decisions adopted on 2026-11-20 and implemented in `:design-system`:
 
-| # | Gap | Location | Rule |
-|---|---|---|---|
-| 1 | `pressOutSpring()` (6.8% OS) used for state travel | `AuraSwitch` thumb, `AuraSegmentedButton` thumb index, `AuraSlider` settle, `AuraBadge` presence, `AuraTopAppBar` scroll smoothing | `MOT-RULE-003`, `MOT-RULE-008` |
-| 2 | Hide not animated (`if (!visible) return`) | `AuraDialog`, `AuraDropdownMenu` | `MOT-RULE-010` |
-| 3 | Scrim target is constant, so it never fades | `AuraDialog` | `MOT-RULE-005` |
-| 4 | `motion_track: "Expressive"` not bound in code | `AuraFab`, `AuraDialog`, `AuraDropdownMenu`, `AuraBottomIsland` | `MOT-RULE-003` |
-| 5 | Components read the system flag directly instead of `AuraTheme.motion.reduceMotion`; the system flag is not observed for runtime changes | `rememberAuraReducedMotion()` call sites | `MOT-RULE-007` |
-| 6 | `fluidPressScale` uses `0.92f` and releases with `spatialSpring()`; call sites override to `0.96f`/`0.97f` | `GlassSurface`, `AuraDropdownMenu`, `AuraTopAppBar` | P1, `MOT-RULE-009` |
-| 7 | Amplitude literals (`1.18f`, `1.12f`, `1.08f`, `0.9f`, `0.94f`, `0.92f`, `0.75f`, gel/glow) | `AuraSwitch`, `AuraSlider`, `AuraRatingBar`, `AuraBottomIsland`, `AuraBadge`, `AuraDialog`, `AuraDropdownMenu`, `AuraButton`, `GlassSurface` | `MOT-RULE-009` |
-| 8 | Two press-latch implementations; Snackbar action has none | `AuraButton`, `AuraIconButton`, `AuraSnackbar` | §6 |
-| 9 | `enterSpec()` / `exitSpec()` both use `FastOutSlowInEasing` | `AuraMotion` | P4 |
-| 10 | Search bar focus border uses `90ms` in both directions | `AuraSearchBar` | §6 Text focus |
+| Change | Where |
+|---|---|
+| `selectionSpring()` (`0.85` / `600`) replaces `pressOutSpring()` for state travel; scroll-linked smoothing and chrome travel use `spatialSpring()` | `AuraSwitch`, `AuraSegmentedButton`, `AuraSlider`, `AuraBadge`, `AuraTopAppBar` |
+| `enterSpec()` / `exitSpec()` use `AuraEasing.Decelerate` / `AuraEasing.Accelerate` | `AuraMotion` |
+| `glassPressedScale = 0.95f`; `fluidPressScale` releases with `pressOutSpring()`; call-site overrides removed | `GlassSurface`, `AuraDropdownMenu`, `AuraTopAppBar` |
+| Hide is animated before unmount (`MOT-RULE-010`); the Dialog window dim fades with the scrim token | `AuraDialog`, `AuraDropdownMenu` |
+| `motion_track: "Expressive"` bound via `forTrack()` | `AuraFab`, `AuraDialog`, `AuraDropdownMenu`, `AuraBottomIsland` |
+| Amplitude literals moved to §4.5 tokens | `AuraSwitch`, `AuraSlider`, `AuraRatingBar`, `AuraBottomIsland`, `AuraBadge`, `AuraDialog`, `AuraDropdownMenu`, `AuraButton`, `GlassSurface` |
+| One press latch (`rememberAuraTactilePressed`, cancellable release job); Snackbar action uses it | `AuraIconButton` (shared), `AuraButton`, `AuraSnackbar` |
+| System reduced-motion flag observed at runtime | `AuraReducedMotion.kt` |
+| Search bar focus border: in `90ms` / out `150ms` | `AuraSearchBar` |
+
+**Known exceptions (not yet covered by this guide):** `AuraFloatingActionBar` and `AuraAdaptiveBarState` still snap under Reduced Motion instead of using `reducedFadeSpec()`. The `LiquidGlass` elastic stretch constants in `AuraBottomIsland` and the scroll-derived capsule scale in `AuraTopAppBar` are shape math, not amplitude tokens.
 
 ---
 

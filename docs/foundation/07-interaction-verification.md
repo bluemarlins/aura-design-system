@@ -1,6 +1,6 @@
 # 07. Interaction & Visual Verification Strategy (`Solid` · `Glass Morphism` · `Liquid Glass`)
 
-Aura Design System verifies Motion Interaction (`MOT-RULE-001`–`MOT-RULE-007`) and Visual Materiality (`VIS-RULE-001`–`VIS-RULE-007`) across all three materials (**`Solid`**, **`Glass` [Glass Morphism]**, **`LiquidGlass`**) and both color modes (**`Light`**, **`Dark`**) through a **4-stage automated & visual verification methodology**.
+Aura Design System verifies Motion Interaction (`MOT-RULE-001`–`MOT-RULE-010`) and Visual Materiality (`VIS-RULE-001`–`VIS-RULE-007`) across all three materials (**`Solid`**, **`Glass` [Glass Morphism]**, **`LiquidGlass`**) and both color modes (**`Light`**, **`Dark`**) through a **4-stage automated & visual verification methodology**.
 
 ---
 
@@ -71,10 +71,10 @@ Every component below has dedicated deterministic `mainClock` assertions in `Com
 | Component | Test Cases Verified | Rules Covered |
 |---|---|---|
 | `AuraButton` | Press (`pressedScaleDefault`), Release settle (`1.0f`), Mid-flight press->release continuity, `reduceMotion = true` instant snap with `stateDescription = "In progress"` preserved | `MOT-RULE-002`, `MOT-RULE-004`, `MOT-RULE-005`, `MOT-RULE-007` |
-| `AuraSwitch` | Unchecked (`0f`) -> Checked (`1f`) monotonic spring progress and settle; `reduceMotion = true` immediate snap | `MOT-RULE-002`, `MOT-RULE-004`, `MOT-RULE-007` |
+| `AuraSwitch` | Unchecked (`0f`) -> Checked (`1f`) monotonic spring progress and settle; `selectionSpring` peak progress `<= 1.01f`; `reduceMotion = true` immediate snap | `MOT-RULE-002`, `MOT-RULE-004`, `MOT-RULE-007`, `MOT-RULE-008` |
 | `AuraFab` | Extended collapse/expand progress transition; press scale settle | `MOT-RULE-002`, `MOT-RULE-003`, `MOT-RULE-004` |
 | `AuraBottomIsland` | Active indicator transition between index `0` and index `2` under `Expressive` profile, velocity-driven elastic stretch + settle (`1f`), `minimizeOnScrollDown` fluid compacting, `reduceMotion = true` snap | `MOT-RULE-003`, `MOT-RULE-004`, `MOT-RULE-007` |
-| `AuraDialog` | `visible = true` spatial entry scale/alpha (`Expressive` profile), `reduceMotion = true` instant open (`progress == 1f`) | `MOT-RULE-003`, `MOT-RULE-005`, `MOT-RULE-007` |
+| `AuraDialog` | `visible = true` spatial entry scale/alpha (`Expressive` profile); `visible = false` animates Hide (alpha mid-flight, scale `>= overlayExitScale`) and then leaves composition | `MOT-RULE-003`, `MOT-RULE-005`, `MOT-RULE-010` |
 | `GlassSurface` | `reduceTransparency = true` renders `"aura_glass_surface_solid_fallback"`; `reduceTransparency = false` omits solid fallback tag | `VIS-RULE-004` |
 
 ---

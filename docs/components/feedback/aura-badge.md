@@ -31,6 +31,7 @@ tokens:
   - "typography.labelSmall"
   - "typography.labelMedium"
   - "motion.pressOutSpring"
+  - "motion.selectionSpring"
   - "motion.stateChangeDurationMillis"
 ---
 
@@ -110,7 +111,7 @@ Compact status pill, numeric counter, and unread dot indicator (`AuraBadge`) pai
 
 Consumes `AuraTheme.motion`:
 
-1. **Count / Label Transition & Entrance:** Scale and container color changes animate cleanly with `AuraTheme.motion.pressOutSpring()` and `tween(durationMillis = AuraTheme.motion.stateChangeDurationMillis)`.
+1. **Count / Label Transition & Entrance:** Presence scale (`AuraTheme.motion.presenceEnterScale` `0.90f -> 1f`) animates with `AuraTheme.motion.selectionSpring()`; container color changes use `tween(durationMillis = AuraTheme.motion.stateChangeDurationMillis)`.
 2. **Reduced Motion:** Uses `snap()` when `rememberAuraReducedMotion()` is enabled.
 
 ---

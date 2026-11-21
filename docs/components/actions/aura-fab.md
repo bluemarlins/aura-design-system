@@ -129,7 +129,7 @@ Rapid duplicate creations are prevented by `debounceIntervalMs` (default `400L` 
 
 - **Press In / Out**: `Regular` and `Small` compress to `AuraTheme.motion.pressedScaleDefault` (`0.96f`), while `Large` compresses to `AuraTheme.motion.pressedScaleLarge` (`0.975f`) via `pressInSpring()` / `pressOutSpring()`, and icon micro-scales to `leadingIconPressedScale` (`0.92f`) via `iconSpring()`.
 - **Minimum Press Latch**: Holds pressed state for at least `AuraTheme.motion.minPressDurationMillis` (`110ms`) on fast taps.
-- **Extend / Collapse Transition**: Horizontal label container animates width and alpha via `expandHorizontally(pressOutSpring()) + fadeIn(tween(stateChangeDurationMillis))` / `shrinkHorizontally(...) + fadeOut(...)`.
+- **Extend / Collapse Transition**: Bound to the Expressive track (`AuraTheme.motion.forTrack(AuraMotionProfile.Expressive)`), the label container animates via `expandHorizontally(spatialSpring()) + fadeIn(enterSpec())` / `shrinkHorizontally(spatialSpring()) + fadeOut(exitSpec())`.
 - **Loading Transition**: Icon crossfades with `loadingCrossfadeDurationMillis` (`120ms`) into animated stroke spinner (`spinnerRotationDurationMillis`, `spinnerSweepDurationMillis`).
 - **Reduced Motion (`ANIMATOR_DURATION_SCALE == 0`)**: Disables press scaling (`1.0f`) and replaces animated expand/shrink transitions with instant `EnterTransition.None` / `ExitTransition.None`.
 

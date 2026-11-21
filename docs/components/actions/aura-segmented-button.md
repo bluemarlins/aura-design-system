@@ -31,6 +31,7 @@ tokens:
   - "typography.labelSmall"
   - "motion.pressInSpring"
   - "motion.pressOutSpring"
+  - "motion.selectionSpring"
   - "motion.iconSpring"
   - "motion.stateChangeDurationMillis"
   - "motion.minPressDurationMillis"
@@ -123,7 +124,7 @@ Disabled (`enabled == false`) renders track container in `interaction.disabledCo
 
 ## 6. Motion & Reduced Motion
 
-- **Sliding Active Indicator**: Active indicator offset animates horizontally across equal-width segment slots using `AuraTheme.motion.pressOutSpring()` for crisp, non-sluggish damped settle without overshoot jitter.
+- **Sliding Active Indicator**: Active indicator offset animates horizontally across equal-width segment slots using `AuraTheme.motion.selectionSpring()` (`0.6%` overshoot, `< 1dp` on a `100dp` segment). The track itself never scales on press.
 - **Tactile Segment Press**: Pressed segment content scales to `AuraTheme.motion.pressedScaleDefault` (`0.96f`) via `pressInSpring()` / `pressOutSpring()` with `minPressDurationMillis` (`110ms`) press latch, while optional segment icon scales via `iconSpring()` to `leadingIconPressedScale` (`0.92f`).
 - **Color Crossfade**: Selected/unselected label and icon colors crossfade via `tween(AuraTheme.motion.stateChangeDurationMillis)`.
 - **Reduced Motion (`ANIMATOR_DURATION_SCALE == 0`)**: Replaces sliding spring and color/scale curves with `snap()` instant index switching so screen-reader and motion-sensitive users experience zero horizontal travel.
