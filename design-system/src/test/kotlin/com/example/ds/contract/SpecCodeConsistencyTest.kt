@@ -39,6 +39,9 @@ class SpecCodeConsistencyTest {
             val status = frontmatter["status"] ?: "unknown"
             if (status != "ready") return@forEach
 
+            // EVAL-001: Canonical template (docs/components/03-spec-template.md)
+            verifyTemplate(relativePath, specFile, spec)
+
             // EVAL-001: Intent & Usage Principles + Do / Don't
             assertTrue("$relativePath [EVAL-001]: missing Intent & Usage Principles section", spec.contains("Intent & Usage Principles"))
             assertTrue("$relativePath [EVAL-001]: missing 'When to Use' section", spec.contains("### When to Use"))
@@ -187,6 +190,47 @@ class SpecCodeConsistencyTest {
         }
     }
 
+    private fun verifyTemplate(relativePath: String, specFile: File, spec: String) {
+        val keys = frontmatterBlock(spec).lines()
+            .mapNotNull { Regex("""^([a-z_]+):""").find(it)?.groupValues?.get(1) }
+        assertTrue(
+            "$relativePath [EVAL-001]: frontmatter keys must be $TEMPLATE_FRONTMATTER_KEYS in order (was $keys)",
+            keys == TEMPLATE_FRONTMATTER_KEYS,
+        )
+        val expectedId = "aura.component." + specFile.nameWithoutExtension.removePrefix("aura-")
+        assertTrue(
+            "$relativePath [EVAL-001]: frontmatter id must be \"$expectedId\"",
+            parseFrontmatter(spec)["id"] == expectedId,
+        )
+
+        val body = spec.replace(Regex("```.*?```", RegexOption.DOT_MATCHES_ALL), "")
+        val sections = body.lines().filter { it.startsWith("## ") }
+        assertTrue(
+            "$relativePath [EVAL-001]: '##' sections must be $TEMPLATE_SECTIONS in order (was $sections)",
+            sections == TEMPLATE_SECTIONS,
+        )
+
+        val intent = body.substringAfter(TEMPLATE_SECTIONS[0]).substringBefore(TEMPLATE_SECTIONS[1])
+        val intentSubsections = intent.lines().filter { it.startsWith("### ") }
+        assertTrue(
+            "$relativePath [EVAL-001]: §1 subsections must be $TEMPLATE_INTENT_SUBSECTIONS in order (was $intentSubsections)",
+            intentSubsections.take(TEMPLATE_INTENT_SUBSECTIONS.size) == TEMPLATE_INTENT_SUBSECTIONS,
+        )
+
+        val anatomy = body.substringAfter(TEMPLATE_SECTIONS[1]).substringBefore(TEMPLATE_SECTIONS[2])
+        assertTrue(
+            "$relativePath [EVAL-001]: §2 must contain a '| Part ID | Responsibility | Required |' table",
+            anatomy.contains("| Part ID | Responsibility | Required |"),
+        )
+
+        val platform = body.substringAfter(TEMPLATE_SECTIONS[8])
+        val platformSubsections = platform.lines().filter { it.startsWith("### ") }
+        assertTrue(
+            "$relativePath [EVAL-006]: §9 subsections must be $TEMPLATE_PLATFORM_SUBSECTIONS (was $platformSubsections)",
+            platformSubsections == TEMPLATE_PLATFORM_SUBSECTIONS,
+        )
+    }
+
     private fun verifyAndroidApiSync(
         specPath: String,
         spec: String,
@@ -304,5 +348,35 @@ class SpecCodeConsistencyTest {
         return generateSequence(cwd) { it.parentFile }
             .firstOrNull { File(it, "docs/components").isDirectory && File(it, "design-system").isDirectory }
             ?: error("Could not locate repository root from working directory: ${cwd.absolutePath}")
+    }
+
+    private companion object {
+        val TEMPLATE_FRONTMATTER_KEYS = listOf(
+            "id", "name", "category", "status", "version", "layer",
+            "material_allowed", "motion_track", "platforms", "tokens",
+        )
+        val TEMPLATE_SECTIONS = listOf(
+            "## 1. Intent & Usage Principles",
+            "## 2. Anatomy & Canonical Part IDs",
+            "## 3. Variant, Size & Material Matrix",
+            "## 4. State Precedence & Behavior",
+            "## 5. Semantic Token Bindings",
+            "## 6. Interaction Motion Contract",
+            "## 7. Responsive Layout Behavior (`Smallest Width × Display Ratio`)",
+            "## 8. Accessibility & Guardrails",
+            "## 9. Platform Bindings",
+        )
+        val TEMPLATE_INTENT_SUBSECTIONS = listOf(
+            "### Problem",
+            "### When to Use",
+            "### When NOT to Use & Alternatives",
+            "### Context Rules",
+            "### Do / Don't",
+        )
+        val TEMPLATE_PLATFORM_SUBSECTIONS = listOf(
+            "### 9.1 Android (Jetpack Compose)",
+            "### 9.2 iOS (SwiftUI Reference)",
+            "### 9.3 Web (React / TypeScript Reference)",
+        )
     }
 }
