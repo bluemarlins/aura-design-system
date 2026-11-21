@@ -70,6 +70,13 @@ dependencies {
     testImplementation(libs.robolectric)
 }
 
+// SpecCodeConsistencyTest reads the Markdown specs directly, so a docs-only edit must rerun the tests.
+tasks.withType<Test>().configureEach {
+    inputs.dir(rootProject.layout.projectDirectory.dir("docs/components"))
+        .withPropertyName("componentSpecs")
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+}
+
 publishing {
     publications {
         register<MavenPublication>("release") {
