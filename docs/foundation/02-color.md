@@ -33,7 +33,7 @@ Defines Aura's primitive palette (`AuraPalette`), semantic color roles (`AuraCol
 
 ## 5. Implementation Files
 
-- [`AuraPalette.kt`](../../design-system/src/main/kotlin/com/example/ds/foundation/color/AuraPalette.kt)
-- [`AuraColors.kt`](../../design-system/src/main/kotlin/com/example/ds/foundation/color/AuraColors.kt)
-- [`AuraColorSchemes.kt`](../../design-system/src/main/kotlin/com/example/ds/foundation/color/AuraColorSchemes.kt)
-- [`AuraTheme.kt`](../../design-system/src/main/kotlin/com/example/ds/foundation/theme/AuraTheme.kt)
+- [`AuraPalette.kt`](../../design-system/src/main/kotlin/io/github/bluemarlins/aura/foundation/color/AuraPalette.kt)
+- [`AuraColors.kt`](../../design-system/src/main/kotlin/io/github/bluemarlins/aura/foundation/color/AuraColors.kt)
+- [`AuraColorSchemes.kt`](../../design-system/src/main/kotlin/io/github/bluemarlins/aura/foundation/color/AuraColorSchemes.kt)
+- [`AuraTheme.kt`](../../design-system/src/main/kotlin/io/github/bluemarlins/aura/foundation/theme/AuraTheme.kt)

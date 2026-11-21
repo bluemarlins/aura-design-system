@@ -8,7 +8,7 @@ layer: "content"
 material_allowed: ["Solid"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.AuraNumberField"
+  android: "io.github.bluemarlins.aura.component.AuraNumberField"
   ios: "AuraDS.AuraNumberField (planned)"
   web: "@aura-ds/react.AuraNumberField (planned)"
 tokens:
@@ -165,7 +165,7 @@ Consumes `AuraTheme.motion`:
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraNumberField.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraNumberField.kt)
+- **Source:** [`AuraNumberField.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraNumberField.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

@@ -8,7 +8,7 @@ layer: "chrome"
 material_allowed: ["Solid", "Glass", "LiquidGlass"]
 motion_track: "Expressive"
 platforms:
-  android: "com.example.ds.component.AuraBottomIsland"
+  android: "io.github.bluemarlins.aura.component.AuraBottomIsland"
   ios: "AuraDS.AuraBottomIsland (planned)"
   web: "@aura-ds/react.AuraBottomIsland (planned)"
 tokens:
@@ -161,7 +161,7 @@ Consumes `AuraTheme.motion` (`Expressive` track recommended for floating island 
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraBottomIsland.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraBottomIsland.kt)
+- **Source:** [`AuraBottomIsland.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraBottomIsland.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

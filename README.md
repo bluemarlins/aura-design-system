@@ -10,13 +10,13 @@
 
 Inspired by Samsung One UI's calm surface hierarchy and blue-led clarity, Aura pairs high-legibility solid surfaces with first-class **Dual-Materiality Glassmorphism** (`AuraMaterial.Solid` / `Glass` / `LiquidGlass` + `reduceTransparency` fallbacks), **Dual-Track Interaction Physics** (`AuraMotionProfile.Standard` / `Expressive` via `AuraMotion`), a 5-step **Z-Axis Depth Ladder** (`AuraElevation`), and **Smallest Width × Display Ratio** responsive layouts (`AuraWindowInfo` / `AuraLayout`).
 
-Every component in `:design-system` is backed by a bidirectional **`Specs ↔ Code`** Markdown contract under [`docs/components/`](docs/components/), verified automatically on every build by [`SpecCodeConsistencyTest`](design-system/src/test/kotlin/com/example/ds/contract/SpecCodeConsistencyTest.kt), [`MotionTokenInvariantTest`](design-system/src/test/kotlin/com/example/ds/contract/MotionTokenInvariantTest.kt), [`MaterialResolutionTest`](design-system/src/test/kotlin/com/example/ds/foundation/theme/MaterialResolutionTest.kt), and Robolectric `mainClock` tests ([`ComponentMotionBehaviorTest`](design-system/src/test/kotlin/com/example/ds/motion/ComponentMotionBehaviorTest.kt)) against rules `EVAL-001` through `EVAL-008`.
+Every component in `:design-system` is backed by a bidirectional **`Specs ↔ Code`** Markdown contract under [`docs/components/`](docs/components/), verified automatically on every build by [`SpecCodeConsistencyTest`](design-system/src/test/kotlin/io/github/bluemarlins/aura/contract/SpecCodeConsistencyTest.kt), [`MotionTokenInvariantTest`](design-system/src/test/kotlin/io/github/bluemarlins/aura/contract/MotionTokenInvariantTest.kt), [`MaterialResolutionTest`](design-system/src/test/kotlin/io/github/bluemarlins/aura/foundation/theme/MaterialResolutionTest.kt), and Robolectric `mainClock` tests ([`ComponentMotionBehaviorTest`](design-system/src/test/kotlin/io/github/bluemarlins/aura/motion/ComponentMotionBehaviorTest.kt)) against rules `EVAL-001` through `EVAL-008`.
 
 ### Repository Modules & Assets
 
 | Module | Description |
 |---|---|
-| [`:design-system`](design-system/) | Publishable Android library (`com.example.ds`) containing foundation tokens, `AuraTheme`, `GlassSurface`, and all UI components. |
+| [`:design-system`](design-system/) | Publishable Android library (`io.github.bluemarlins.aura`) containing foundation tokens, `AuraTheme`, `GlassSurface`, and all UI components. |
 | [`:design-system-preview`](design-system-preview/) | Interactive catalog app showcasing Light/Dark themes, Interaction Principles playgrounds, token matrices, and live components. |
 | [`docs/`](docs/) | Foundation specifications (`docs/foundation/`) and bidirectional component specs (`docs/components/`). |
 | [`skills/aura-design-system/`](skills/aura-design-system/) | Distributable **Consumer App Skill Kit** (`SKILL.md`, API/token references, recipes, AAR sync & app compliance verification scripts) for AI vibe-coding in external Android apps. |
@@ -101,8 +101,8 @@ implementation("com.github.bluemarlins:aura-design-system:1.3.0")
 
 ```kotlin
 import androidx.compose.runtime.Composable
-import com.example.ds.foundation.theme.AuraColorMode
-import com.example.ds.foundation.theme.AuraTheme
+import io.github.bluemarlins.aura.foundation.theme.AuraColorMode
+import io.github.bluemarlins.aura.foundation.theme.AuraTheme
 
 @Composable
 fun MyApp(isDark: Boolean, content: @Composable () -> Unit) {
@@ -129,18 +129,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.ds.component.AuraButton
-import com.example.ds.component.AuraButtonVariant
-import com.example.ds.component.AuraCard
-import com.example.ds.component.AuraCardVariant
-import com.example.ds.component.AuraNumberField
-import com.example.ds.component.AuraRatingBar
-import com.example.ds.component.AuraScaffold
-import com.example.ds.component.AuraSlider
-import com.example.ds.component.AuraText
-import com.example.ds.component.AuraTextField
-import com.example.ds.component.AuraTopAppBar
-import com.example.ds.foundation.theme.AuraTheme
+import io.github.bluemarlins.aura.component.AuraButton
+import io.github.bluemarlins.aura.component.AuraButtonVariant
+import io.github.bluemarlins.aura.component.AuraCard
+import io.github.bluemarlins.aura.component.AuraCardVariant
+import io.github.bluemarlins.aura.component.AuraNumberField
+import io.github.bluemarlins.aura.component.AuraRatingBar
+import io.github.bluemarlins.aura.component.AuraScaffold
+import io.github.bluemarlins.aura.component.AuraSlider
+import io.github.bluemarlins.aura.component.AuraText
+import io.github.bluemarlins.aura.component.AuraTextField
+import io.github.bluemarlins.aura.component.AuraTopAppBar
+import io.github.bluemarlins.aura.foundation.theme.AuraTheme
 
 @Composable
 fun SampleEntryScreen() {
@@ -223,13 +223,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.ds.component.AuraBottomIslandItem
-import com.example.ds.component.FloatingBottomIsland
-import com.example.ds.component.FloatingGlassScaffold
-import com.example.ds.component.FloatingTopPillBar
-import com.example.ds.component.GlassStyle
-import com.example.ds.component.glassBackdropSource
-import com.example.ds.component.rememberFloatingScrollProgress
+import io.github.bluemarlins.aura.component.AuraBottomIslandItem
+import io.github.bluemarlins.aura.component.FloatingBottomIsland
+import io.github.bluemarlins.aura.component.FloatingGlassScaffold
+import io.github.bluemarlins.aura.component.FloatingTopPillBar
+import io.github.bluemarlins.aura.component.GlassStyle
+import io.github.bluemarlins.aura.component.glassBackdropSource
+import io.github.bluemarlins.aura.component.rememberFloatingScrollProgress
 
 @Composable
 fun SpatialHomeScreen() {
@@ -266,7 +266,7 @@ fun SpatialHomeScreen() {
             )
         },
     ) { contentPadding ->
-        val backdropState = com.example.ds.component.LocalGlassBackdropState.current
+        val backdropState = io.github.bluemarlins.aura.component.LocalGlassBackdropState.current
         LazyColumn(
             state = listState,
             contentPadding = contentPadding,
@@ -399,7 +399,7 @@ The full Foundation → Primitives → Components → Patterns tree is in [`02-c
 
 ### 4. Automated `Specs ↔ Code` Quality Gate (`EVAL-001` – `EVAL-008`)
 
-Every component specification and Kotlin source file is verified by [`SpecCodeConsistencyTest`](design-system/src/test/kotlin/com/example/ds/contract/SpecCodeConsistencyTest.kt), [`MotionTokenInvariantTest`](design-system/src/test/kotlin/com/example/ds/contract/MotionTokenInvariantTest.kt), [`MaterialResolutionTest`](design-system/src/test/kotlin/com/example/ds/foundation/theme/MaterialResolutionTest.kt), and [`ComponentMotionBehaviorTest`](design-system/src/test/kotlin/com/example/ds/motion/ComponentMotionBehaviorTest.kt) against [`01-component-evaluation-ruleset.md`](docs/components/01-component-evaluation-ruleset.md):
+Every component specification and Kotlin source file is verified by [`SpecCodeConsistencyTest`](design-system/src/test/kotlin/io/github/bluemarlins/aura/contract/SpecCodeConsistencyTest.kt), [`MotionTokenInvariantTest`](design-system/src/test/kotlin/io/github/bluemarlins/aura/contract/MotionTokenInvariantTest.kt), [`MaterialResolutionTest`](design-system/src/test/kotlin/io/github/bluemarlins/aura/foundation/theme/MaterialResolutionTest.kt), and [`ComponentMotionBehaviorTest`](design-system/src/test/kotlin/io/github/bluemarlins/aura/motion/ComponentMotionBehaviorTest.kt) against [`01-component-evaluation-ruleset.md`](docs/components/01-component-evaluation-ruleset.md):
 
 - **`EVAL-001`** — Explicit usage principles (`When to Use`, `When NOT to Use`, and `Do / Don't` rows).
 - **`EVAL-002`** — Semantic token compliance (`AuraTheme.colors` / `AuraTheme.typography`, zero `material3` imports, zero hardcoded hex colors in production code).

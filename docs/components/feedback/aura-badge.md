@@ -8,7 +8,7 @@ layer: "content"
 material_allowed: ["Solid"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.AuraBadge"
+  android: "io.github.bluemarlins.aura.component.AuraBadge"
   ios: "AuraDS.AuraBadge (planned)"
   web: "@aura-ds/react.AuraBadge (planned)"
 tokens:
@@ -164,7 +164,7 @@ Consumes `AuraTheme.motion`:
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraBadge.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraBadge.kt)
+- **Source:** [`AuraBadge.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraBadge.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

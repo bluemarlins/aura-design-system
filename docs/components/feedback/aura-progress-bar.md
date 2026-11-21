@@ -8,7 +8,7 @@ layer: "content"
 material_allowed: ["Solid"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.AuraProgressBar"
+  android: "io.github.bluemarlins.aura.component.AuraProgressBar"
   ios: "AuraDS.AuraProgressBar (planned)"
   web: "@aura-ds/react.AuraProgressBar (planned)"
 tokens:
@@ -147,7 +147,7 @@ Consumes `AuraTheme.motion`:
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraProgressBar.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraProgressBar.kt)
+- **Source:** [`AuraProgressBar.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraProgressBar.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

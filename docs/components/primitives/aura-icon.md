@@ -8,7 +8,7 @@ layer: "content"
 material_allowed: ["Solid"]
 motion_track: "none"
 platforms:
-  android: "com.example.ds.component.AuraIcon"
+  android: "io.github.bluemarlins.aura.component.AuraIcon"
   ios: "AuraDS.AuraIcon (planned)"
   web: "@aura-ds/react.AuraIcon (planned)"
 tokens:
@@ -120,7 +120,7 @@ $$\text{explicit } tint \succ \text{LocalAuraContentColor} \succ \text{AuraTheme
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraIcon.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraIcon.kt)
+- **Source:** [`AuraIcon.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraIcon.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

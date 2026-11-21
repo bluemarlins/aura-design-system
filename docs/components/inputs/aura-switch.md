@@ -8,7 +8,7 @@ layer: "content"
 material_allowed: ["Solid"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.AuraSwitch"
+  android: "io.github.bluemarlins.aura.component.AuraSwitch"
   ios: "AuraDS.AuraSwitch (planned)"
   web: "@aura-ds/react.AuraSwitch (planned)"
 tokens:
@@ -186,7 +186,7 @@ Consumes `AuraTheme.motion` exclusively (`AuraMotion`):
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraSwitch.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraSwitch.kt)
+- **Source:** [`AuraSwitch.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraSwitch.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

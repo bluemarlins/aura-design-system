@@ -8,7 +8,7 @@ layer: "chrome"
 material_allowed: ["Solid", "Glass"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.AuraSearchBar"
+  android: "io.github.bluemarlins.aura.component.AuraSearchBar"
   ios: "AuraDS.AuraSearchBar (planned)"
   web: "@aura-ds/react.AuraSearchBar (planned)"
 tokens:
@@ -156,7 +156,7 @@ Consumes `AuraTheme.motion`:
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraSearchBar.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraSearchBar.kt)
+- **Source:** [`AuraSearchBar.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraSearchBar.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

@@ -8,7 +8,7 @@ layer: "content"
 material_allowed: ["Solid"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.AuraDivider"
+  android: "io.github.bluemarlins.aura.component.AuraDivider"
   ios: "AuraDS.AuraDivider (planned)"
   web: "@aura-ds/react.AuraDivider (planned)"
 tokens:
@@ -140,7 +140,7 @@ Consumes `AuraTheme.motion`:
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraDivider.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraDivider.kt)
+- **Source:** [`AuraDivider.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraDivider.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

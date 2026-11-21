@@ -8,7 +8,7 @@ layer: "content"
 material_allowed: ["Solid"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.AuraCheckbox"
+  android: "io.github.bluemarlins.aura.component.AuraCheckbox"
   ios: "AuraDS.AuraCheckbox (planned)"
   web: "@aura-ds/react.AuraCheckbox (planned)"
 tokens:
@@ -178,7 +178,7 @@ Consumes `AuraTheme.motion`:
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraCheckbox.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraCheckbox.kt)
+- **Source:** [`AuraCheckbox.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraCheckbox.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

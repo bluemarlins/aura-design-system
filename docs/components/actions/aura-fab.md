@@ -8,7 +8,7 @@ layer: "chrome"
 material_allowed: ["Solid", "Glass"]
 motion_track: "Expressive"
 platforms:
-  android: "com.example.ds.component.AuraFab"
+  android: "io.github.bluemarlins.aura.component.AuraFab"
   ios: "AuraDS.AuraFab (planned)"
   web: "@aura-ds/react.AuraFab (planned)"
 tokens:
@@ -182,11 +182,11 @@ All colors, typography, and motion resolve through `AuraTheme`:
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraFab.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraFab.kt)
+- **Source:** [`AuraFab.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraFab.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
-package com.example.ds.component
+package io.github.bluemarlins.aura.component
 
 enum class AuraFabVariant {
     Primary,

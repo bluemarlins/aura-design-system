@@ -8,7 +8,7 @@ layer: "content"
 material_allowed: ["Solid"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.AuraTextField"
+  android: "io.github.bluemarlins.aura.component.AuraTextField"
   ios: "AuraDS.AuraTextField (planned)"
   web: "@aura-ds/react.AuraTextField (planned)"
 tokens:
@@ -206,12 +206,12 @@ $$\text{Disabled} \succ \text{ReadOnly} \succ \text{Error} \succ \text{Focused} 
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraTextField.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraTextField.kt)
+- **Source:** [`AuraTextField.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraTextField.kt)
 - **Dependency Policy:** Built strictly on Compose Foundation `BasicTextField` without `material3`.
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
-package com.example.ds.component
+package io.github.bluemarlins.aura.component
 
 enum class AuraTextFieldVariant {
     Outlined,

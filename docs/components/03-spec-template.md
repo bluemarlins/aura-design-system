@@ -1,6 +1,6 @@
 # 03 · Component Spec Template
 
-Every component spec in `docs/components/<category>/<component>.md` uses this exact structure. Copy the block below into a new file and replace the placeholders. [`SpecCodeConsistencyTest`](../../design-system/src/test/kotlin/com/example/ds/contract/SpecCodeConsistencyTest.kt) fails the build when a ready spec departs from it.
+Every component spec in `docs/components/<category>/<component>.md` uses this exact structure. Copy the block below into a new file and replace the placeholders. [`SpecCodeConsistencyTest`](../../design-system/src/test/kotlin/io/github/bluemarlins/aura/contract/SpecCodeConsistencyTest.kt) fails the build when a ready spec departs from it.
 
 ## Fixed Rules
 
@@ -30,7 +30,7 @@ layer: "<canvas|content|chrome|spatial>"
 material_allowed: ["Solid"]
 motion_track: "<Standard|Expressive|none>"
 platforms:
-  android: "com.example.ds.component.Aura<Name>"
+  android: "io.github.bluemarlins.aura.component.Aura<Name>"
   ios: "AuraDS.Aura<Name> (planned)"
   web: "@aura-ds/react.Aura<Name> (planned)"
 tokens:
@@ -141,7 +141,7 @@ Motion tokens used for press, state change, and enter/exit, plus the Reduced Mot
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`Aura<Name>.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/Aura<Name>.kt)
+- **Source:** [`Aura<Name>.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/Aura<Name>.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

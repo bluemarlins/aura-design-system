@@ -8,7 +8,7 @@ layer: "content"
 material_allowed: ["Solid", "Glass"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.AuraSegmentedButton"
+  android: "io.github.bluemarlins.aura.component.AuraSegmentedButton"
   ios: "AuraDS.AuraSegmentedButton (planned)"
   web: "@aura-ds/react.AuraSegmentedButton (planned)"
 tokens:
@@ -180,11 +180,11 @@ Disabled (`enabled == false`) renders track container in `interaction.disabledCo
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraSegmentedButton.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraSegmentedButton.kt)
+- **Source:** [`AuraSegmentedButton.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraSegmentedButton.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
-package com.example.ds.component
+package io.github.bluemarlins.aura.component
 
 enum class AuraSegmentedVariant {
     Surface,

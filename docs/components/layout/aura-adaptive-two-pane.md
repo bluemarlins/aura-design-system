@@ -8,7 +8,7 @@ layer: "canvas"
 material_allowed: ["Solid"]
 motion_track: "none"
 platforms:
-  android: "com.example.ds.component.AuraAdaptiveTwoPane"
+  android: "io.github.bluemarlins.aura.component.AuraAdaptiveTwoPane"
   ios: "AuraDS.AuraAdaptiveTwoPane (planned)"
   web: "@aura-ds/react.AuraAdaptiveTwoPane (planned)"
 tokens:
@@ -142,7 +142,7 @@ Passive container: no interactive states. Mode resolves as `forceSinglePane` > `
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraAdaptiveTwoPane.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraAdaptiveTwoPane.kt)
+- **Source:** [`AuraAdaptiveTwoPane.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraAdaptiveTwoPane.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

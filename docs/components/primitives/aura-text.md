@@ -8,7 +8,7 @@ layer: "content"
 material_allowed: ["Solid"]
 motion_track: "none"
 platforms:
-  android: "com.example.ds.component.AuraText"
+  android: "io.github.bluemarlins.aura.component.AuraText"
   ios: "AuraDS.AuraText (planned)"
   web: "@aura-ds/react.AuraText (planned)"
 tokens:
@@ -130,7 +130,7 @@ Style resolution: `LocalAuraTextStyle.current.merge(style)`, then `textAlign` (w
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraText.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraText.kt)
+- **Source:** [`AuraText.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraText.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

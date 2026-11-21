@@ -8,7 +8,7 @@ layer: "content"
 material_allowed: ["Solid", "Glass"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.AuraChipButton"
+  android: "io.github.bluemarlins.aura.component.AuraChipButton"
   ios: "AuraDS.AuraChipButton (planned)"
   web: "@aura-ds/react.AuraChipButton (planned)"
 tokens:
@@ -192,11 +192,11 @@ Disabled (`enabled == false`) across all variants resolves to `interaction.disab
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraChipButton.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraChipButton.kt)
+- **Source:** [`AuraChipButton.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraChipButton.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
-package com.example.ds.component
+package io.github.bluemarlins.aura.component
 
 enum class AuraChipVariant {
     Filter,

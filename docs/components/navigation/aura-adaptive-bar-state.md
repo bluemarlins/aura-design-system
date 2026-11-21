@@ -8,7 +8,7 @@ layer: "chrome"
 material_allowed: ["Solid", "Glass", "LiquidGlass"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.AuraAdaptiveBarState"
+  android: "io.github.bluemarlins.aura.component.AuraAdaptiveBarState"
   ios: "AuraDS.AuraAdaptiveBarState (planned, @Observable)"
   web: "@aura-ds/react.useAuraAdaptiveBar (planned hook)"
 tokens:
@@ -146,7 +146,7 @@ Exposed read-only values: `phase`, `collapseProgress`, `morphFraction`, `hideFra
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraAdaptiveBarState.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraAdaptiveBarState.kt)
+- **Source:** [`AuraAdaptiveBarState.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraAdaptiveBarState.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

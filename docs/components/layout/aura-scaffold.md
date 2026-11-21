@@ -8,7 +8,7 @@ layer: "canvas"
 material_allowed: ["Solid"]
 motion_track: "none"
 platforms:
-  android: "com.example.ds.component.AuraScaffold"
+  android: "io.github.bluemarlins.aura.component.AuraScaffold"
   ios: "AuraDS.AuraScaffold (planned)"
   web: "@aura-ds/react.AuraScaffold (planned)"
 tokens:
@@ -150,7 +150,7 @@ Passive container: no interactive states. `innerPadding` resolves from measured 
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraScaffold.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraScaffold.kt)
+- **Source:** [`AuraScaffold.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraScaffold.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

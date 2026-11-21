@@ -8,7 +8,7 @@ layer: "content"
 material_allowed: ["Solid"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.AuraSkeleton"
+  android: "io.github.bluemarlins.aura.component.AuraSkeleton"
   ios: "AuraDS.AuraSkeleton (planned)"
   web: "@aura-ds/react.AuraSkeleton (planned)"
 tokens:
@@ -128,7 +128,7 @@ Passive component: no pointer, focus, or pressed states. The only state is the p
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraSkeleton.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraSkeleton.kt)
+- **Source:** [`AuraSkeleton.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraSkeleton.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

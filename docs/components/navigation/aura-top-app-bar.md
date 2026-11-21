@@ -8,7 +8,7 @@ layer: "chrome"
 material_allowed: ["Solid", "Glass", "LiquidGlass"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.AuraTopAppBar"
+  android: "io.github.bluemarlins.aura.component.AuraTopAppBar"
   ios: "AuraDS.AuraTopAppBar (planned)"
   web: "@aura-ds/react.AuraTopAppBar (planned)"
 tokens:
@@ -194,7 +194,7 @@ Every screen needs a consistent place for its title, back navigation, and screen
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraTopAppBar.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraTopAppBar.kt)
+- **Source:** [`AuraTopAppBar.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraTopAppBar.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

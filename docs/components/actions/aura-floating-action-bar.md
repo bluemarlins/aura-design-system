@@ -8,7 +8,7 @@ layer: "chrome"
 material_allowed: ["Solid", "Glass", "LiquidGlass"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.AuraFloatingActionBar"
+  android: "io.github.bluemarlins.aura.component.AuraFloatingActionBar"
   ios: "AuraDS.AuraFloatingActionBar (planned)"
   web: "@aura-ds/react.AuraFloatingActionBar (planned)"
 tokens:
@@ -136,7 +136,7 @@ Task screens (editors, wizards, detail views) need their commit actions to stay 
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraFloatingActionBar.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraFloatingActionBar.kt)
+- **Source:** [`AuraFloatingActionBar.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraFloatingActionBar.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

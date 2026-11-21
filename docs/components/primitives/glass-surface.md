@@ -8,7 +8,7 @@ layer: "chrome"
 material_allowed: ["Solid", "Glass", "LiquidGlass"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.GlassSurface"
+  android: "io.github.bluemarlins.aura.component.GlassSurface"
   ios: "AuraDS.GlassSurface (planned, .ultraThinMaterial)"
   web: "@aura-ds/react.GlassSurface (planned, backdrop-filter)"
 tokens:
@@ -157,7 +157,7 @@ Tint color changes animate with `motion.stateChangeDurationMillis` (snap under R
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`GlassSurface.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/GlassSurface.kt)
+- **Source:** [`GlassSurface.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/GlassSurface.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

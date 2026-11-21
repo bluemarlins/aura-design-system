@@ -62,6 +62,6 @@ Display, Headline, and Title roles scale multiplicatively using `AuraTheme.layou
 
 ## 5. Implementation Files
 
-- [`AuraTypography.kt`](../../design-system/src/main/kotlin/com/example/ds/foundation/typography/AuraTypography.kt)
-- [`AuraText.kt`](../../design-system/src/main/kotlin/com/example/ds/component/AuraText.kt)
-- [`AuraTheme.kt`](../../design-system/src/main/kotlin/com/example/ds/foundation/theme/AuraTheme.kt)
+- [`AuraTypography.kt`](../../design-system/src/main/kotlin/io/github/bluemarlins/aura/foundation/typography/AuraTypography.kt)
+- [`AuraText.kt`](../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraText.kt)
+- [`AuraTheme.kt`](../../design-system/src/main/kotlin/io/github/bluemarlins/aura/foundation/theme/AuraTheme.kt)

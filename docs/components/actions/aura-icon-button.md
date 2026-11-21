@@ -8,7 +8,7 @@ layer: "chrome"
 material_allowed: ["Solid", "Glass"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.AuraIconButton"
+  android: "io.github.bluemarlins.aura.component.AuraIconButton"
   ios: "AuraDS.AuraIconButton (planned)"
   web: "@aura-ds/react.AuraIconButton (planned)"
 tokens:
@@ -209,11 +209,11 @@ All colors resolve through `AuraTheme.colors` with zero direct Material 3 theme 
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraIconButton.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraIconButton.kt)
+- **Source:** [`AuraIconButton.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraIconButton.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
-package com.example.ds.component
+package io.github.bluemarlins.aura.component
 
 enum class AuraIconButtonVariant {
     Filled,

@@ -8,7 +8,7 @@ layer: "spatial"
 material_allowed: ["Solid"]
 motion_track: "Expressive"
 platforms:
-  android: "com.example.ds.component.AuraDropdownMenu"
+  android: "io.github.bluemarlins.aura.component.AuraDropdownMenu"
   ios: "AuraDS.AuraDropdownMenu (planned)"
   web: "@aura-ds/react.AuraDropdownMenu (planned)"
 tokens:
@@ -150,7 +150,7 @@ Uses the `Expressive` track like other `spatial` surfaces:
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraDropdownMenu.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraDropdownMenu.kt)
+- **Source:** [`AuraDropdownMenu.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraDropdownMenu.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

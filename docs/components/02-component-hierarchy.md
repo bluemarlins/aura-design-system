@@ -133,7 +133,7 @@ Aura Design System
 
 ## 4. Composition Dependencies (L2 → L1 / L2)
 
-Taken from direct calls in `design-system/src/main/kotlin/com/example/ds/component/`.
+Taken from direct calls in `design-system/src/main/kotlin/io/github/bluemarlins/aura/component/`.
 
 | Component | `AuraText` | `GlassSurface` | Other Components |
 |---|---|---|---|

@@ -8,7 +8,7 @@ layer: "canvas"
 material_allowed: ["Solid"]
 motion_track: "none"
 platforms:
-  android: "com.example.ds.component.AuraAdaptiveGrid"
+  android: "io.github.bluemarlins.aura.component.AuraAdaptiveGrid"
   ios: "AuraDS.AuraAdaptiveGrid (planned)"
   web: "@aura-ds/react.AuraAdaptiveGrid (planned)"
 tokens:
@@ -137,7 +137,7 @@ Exact values are owned by `AuraLayoutDefaults` in [05-responsive-layout.md](../.
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraAdaptiveGrid.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraAdaptiveGrid.kt)
+- **Source:** [`AuraAdaptiveGrid.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraAdaptiveGrid.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

@@ -8,7 +8,7 @@ layer: "canvas"
 material_allowed: ["Solid"]
 motion_track: "none"
 platforms:
-  android: "com.example.ds.component.FloatingGlassScaffold"
+  android: "io.github.bluemarlins.aura.component.FloatingGlassScaffold"
   ios: "AuraDS.FloatingGlassScaffold (planned)"
   web: "@aura-ds/react.FloatingGlassScaffold (planned)"
 tokens:
@@ -145,7 +145,7 @@ Passive container: no pointer states of its own. Layer visibility resolves as `o
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`FloatingGlassScaffold.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/FloatingGlassScaffold.kt)
+- **Source:** [`FloatingGlassScaffold.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/FloatingGlassScaffold.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

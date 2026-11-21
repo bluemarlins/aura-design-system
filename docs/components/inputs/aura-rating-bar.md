@@ -8,7 +8,7 @@ layer: "content"
 material_allowed: ["Solid"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.AuraRatingBar"
+  android: "io.github.bluemarlins.aura.component.AuraRatingBar"
   ios: "AuraDS.AuraRatingBar (planned)"
   web: "@aura-ds/react.AuraRatingBar (planned)"
 tokens:
@@ -149,7 +149,7 @@ Consumes `AuraTheme.motion`:
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraRatingBar.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraRatingBar.kt)
+- **Source:** [`AuraRatingBar.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraRatingBar.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

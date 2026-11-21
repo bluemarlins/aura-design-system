@@ -2,7 +2,7 @@
 
 ## 1. Purpose
 
-Defines the mandatory quality gate (**`EVAL-001` – `EVAL-008`**) used to audit both **component specifications** (`docs/components/<category>/<component>.md`) and **Kotlin implementations** (`design-system/src/main/kotlin/com/example/ds/component/*.kt`).
+Defines the mandatory quality gate (**`EVAL-001` – `EVAL-008`**) used to audit both **component specifications** (`docs/components/<category>/<component>.md`) and **Kotlin implementations** (`design-system/src/main/kotlin/io/github/bluemarlins/aura/component/*.kt`).
 
 Every Aura component must satisfy all eight rules before reaching `status: "ready"`, guaranteeing:
 - Explicit design intent and `Do / Don't` usage boundaries across all target apps (**My Planner**, **My Finance**, **My Drink Diary**, **Home Launcher**).
@@ -69,7 +69,7 @@ Every Aura component must satisfy all eight rules before reaching `status: "read
 | Dimension | Requirement |
 |---|---|
 | **Spec Check** | Must include cross-platform signature blocks (`<!-- API:ANDROID:BEGIN / END -->`, `<!-- API:IOS:BEGIN / END -->`, `<!-- API:WEB:BEGIN / END -->`) so contracts remain portable to iOS SwiftUI and Web React/TS. |
-| **Code Check** | Every public `@Composable fun Aura*` signature and parameter name inside `<!-- API:ANDROID:BEGIN --> ... <!-- API:ANDROID:END -->` must match the live Kotlin declaration in `design-system/src/main/kotlin/com/example/ds/component/`. Overloads (e.g., `AuraIcon(imageVector)` / `AuraIcon(painter)`) are matched against any declaration of the same name. |
+| **Code Check** | Every public `@Composable fun Aura*` signature and parameter name inside `<!-- API:ANDROID:BEGIN --> ... <!-- API:ANDROID:END -->` must match the live Kotlin declaration in `design-system/src/main/kotlin/io/github/bluemarlins/aura/component/`. Overloads (e.g., `AuraIcon(imageVector)` / `AuraIcon(painter)`) are matched against any declaration of the same name. |
 | **Automated Gate** | `SpecCodeConsistencyTest` parses Android signature names and parameter lists from Markdown and verifies their presence in Kotlin source files. |
 
 ---
@@ -89,7 +89,7 @@ Every Aura component must satisfy all eight rules before reaching `status: "read
 | Dimension | Requirement |
 |---|---|
 | **Spec Check** | Ready specs must declare `motion_track` (`Standard` \| `Expressive` \| `none`) in YAML frontmatter. Interactive components must specify `Standard` or `Expressive`; passive containers (`layout`) and passive primitives (`primitives`, e.g. `AuraText`, `AuraIcon`) may specify `none`. |
-| **Code Check** | Components with spatial transitions use `AuraTheme.motion` spatial tokens; components listed in [`07-interaction-verification.md`](../foundation/07-interaction-verification.md) §3 (`AuraButton`, `AuraSwitch`, `AuraFab`, `AuraBottomIsland`, `AuraDialog`, `GlassSurface`) have deterministic Robolectric + Compose `mainClock` assertions under `design-system/src/test/kotlin/com/example/ds/motion/`. |
+| **Code Check** | Components with spatial transitions use `AuraTheme.motion` spatial tokens; components listed in [`07-interaction-verification.md`](../foundation/07-interaction-verification.md) §3 (`AuraButton`, `AuraSwitch`, `AuraFab`, `AuraBottomIsland`, `AuraDialog`, `GlassSurface`) have deterministic Robolectric + Compose `mainClock` assertions under `design-system/src/test/kotlin/io/github/bluemarlins/aura/motion/`. |
 | **Automated Gate** | `SpecCodeConsistencyTest` validates `motion_track` and `ComponentMotionBehaviorTest.kt` coverage; `MotionTokenInvariantTest` and `ComponentMotionBehaviorTest` execute on JVM + Robolectric. |
 
 ---
@@ -136,7 +136,7 @@ Every Aura component must satisfy all eight rules before reaching `status: "read
 
 ## 4. Automated Verification
 
-- **Contract Suite:** [`SpecCodeConsistencyTest.kt`](../../design-system/src/test/kotlin/com/example/ds/contract/SpecCodeConsistencyTest.kt) (`EVAL-001`–`EVAL-008`)
-- **Token Invariants & Material Matrix:** [`MotionTokenInvariantTest.kt`](../../design-system/src/test/kotlin/com/example/ds/contract/MotionTokenInvariantTest.kt), [`MaterialResolutionTest.kt`](../../design-system/src/test/kotlin/com/example/ds/foundation/theme/MaterialResolutionTest.kt)
-- **Robolectric `mainClock` Behavior:** [`ComponentMotionBehaviorTest.kt`](../../design-system/src/test/kotlin/com/example/ds/motion/ComponentMotionBehaviorTest.kt)
+- **Contract Suite:** [`SpecCodeConsistencyTest.kt`](../../design-system/src/test/kotlin/io/github/bluemarlins/aura/contract/SpecCodeConsistencyTest.kt) (`EVAL-001`–`EVAL-008`)
+- **Token Invariants & Material Matrix:** [`MotionTokenInvariantTest.kt`](../../design-system/src/test/kotlin/io/github/bluemarlins/aura/contract/MotionTokenInvariantTest.kt), [`MaterialResolutionTest.kt`](../../design-system/src/test/kotlin/io/github/bluemarlins/aura/foundation/theme/MaterialResolutionTest.kt)
+- **Robolectric `mainClock` Behavior:** [`ComponentMotionBehaviorTest.kt`](../../design-system/src/test/kotlin/io/github/bluemarlins/aura/motion/ComponentMotionBehaviorTest.kt)
 - **Command:** `.\gradlew.bat :design-system:testDebugUnitTest`

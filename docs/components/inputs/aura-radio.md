@@ -8,7 +8,7 @@ layer: "content"
 material_allowed: ["Solid"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.AuraRadio"
+  android: "io.github.bluemarlins.aura.component.AuraRadio"
   ios: "AuraDS.AuraRadio (planned)"
   web: "@aura-ds/react.AuraRadio (planned)"
 tokens:
@@ -174,7 +174,7 @@ Consumes `AuraTheme.motion`:
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraRadio.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraRadio.kt)
+- **Source:** [`AuraRadio.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraRadio.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

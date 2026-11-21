@@ -164,7 +164,7 @@ All components resolve effective materiality via `resolveEffectiveMaterial(reque
 
 ## 10. Implementation Files
 
-- [`AuraElevation.kt`](../../design-system/src/main/kotlin/com/example/ds/foundation/elevation/AuraElevation.kt)
-- [`AuraGlass.kt`](../../design-system/src/main/kotlin/com/example/ds/foundation/glass/AuraGlass.kt)
-- [`AuraTheme.kt`](../../design-system/src/main/kotlin/com/example/ds/foundation/theme/AuraTheme.kt)
-- [`GlassSurface.kt`](../../design-system/src/main/kotlin/com/example/ds/component/GlassSurface.kt)
+- [`AuraElevation.kt`](../../design-system/src/main/kotlin/io/github/bluemarlins/aura/foundation/elevation/AuraElevation.kt)
+- [`AuraGlass.kt`](../../design-system/src/main/kotlin/io/github/bluemarlins/aura/foundation/glass/AuraGlass.kt)
+- [`AuraTheme.kt`](../../design-system/src/main/kotlin/io/github/bluemarlins/aura/foundation/theme/AuraTheme.kt)
+- [`GlassSurface.kt`](../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/GlassSurface.kt)

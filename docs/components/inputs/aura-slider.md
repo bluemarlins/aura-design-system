@@ -8,7 +8,7 @@ layer: "content"
 material_allowed: ["Solid"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.AuraSlider"
+  android: "io.github.bluemarlins.aura.component.AuraSlider"
   ios: "AuraDS.AuraSlider (planned)"
   web: "@aura-ds/react.AuraSlider (planned)"
 tokens:
@@ -159,7 +159,7 @@ Consumes `AuraTheme.motion`:
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraSlider.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraSlider.kt)
+- **Source:** [`AuraSlider.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraSlider.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

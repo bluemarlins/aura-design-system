@@ -100,7 +100,7 @@ When multiple window traits co-occur, `AuraLayoutDefaults.fromWindowInfo` evalua
 
 ## 6. Implementation Files
 
-- [`AuraWindowInfo.kt`](../../design-system/src/main/kotlin/com/example/ds/foundation/layout/AuraWindowInfo.kt)
-- [`AuraLayout.kt`](../../design-system/src/main/kotlin/com/example/ds/foundation/layout/AuraLayout.kt)
-- [`AuraAdaptiveTwoPane.kt`](../../design-system/src/main/kotlin/com/example/ds/component/AuraAdaptiveTwoPane.kt)
-- [`AuraAdaptiveGrid.kt`](../../design-system/src/main/kotlin/com/example/ds/component/AuraAdaptiveGrid.kt)
+- [`AuraWindowInfo.kt`](../../design-system/src/main/kotlin/io/github/bluemarlins/aura/foundation/layout/AuraWindowInfo.kt)
+- [`AuraLayout.kt`](../../design-system/src/main/kotlin/io/github/bluemarlins/aura/foundation/layout/AuraLayout.kt)
+- [`AuraAdaptiveTwoPane.kt`](../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraAdaptiveTwoPane.kt)
+- [`AuraAdaptiveGrid.kt`](../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraAdaptiveGrid.kt)

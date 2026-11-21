@@ -8,7 +8,7 @@ layer: "spatial"
 material_allowed: ["Solid", "Glass"]
 motion_track: "Expressive"
 platforms:
-  android: "com.example.ds.component.AuraDialog"
+  android: "io.github.bluemarlins.aura.component.AuraDialog"
   ios: "AuraDS.AuraDialog (planned)"
   web: "@aura-ds/react.AuraDialog (planned)"
 tokens:
@@ -161,7 +161,7 @@ Consumes `AuraTheme.motion` (`Expressive` profile recommended for spatial modal 
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraDialog.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraDialog.kt)
+- **Source:** [`AuraDialog.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraDialog.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

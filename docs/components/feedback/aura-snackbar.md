@@ -8,7 +8,7 @@ layer: "chrome"
 material_allowed: ["Solid", "Glass"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.AuraSnackbar"
+  android: "io.github.bluemarlins.aura.component.AuraSnackbar"
   ios: "AuraDS.AuraSnackbar (planned)"
   web: "@aura-ds/react.AuraSnackbar (planned)"
 tokens:
@@ -162,7 +162,7 @@ Consumes `AuraTheme.motion`:
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraSnackbar.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraSnackbar.kt)
+- **Source:** [`AuraSnackbar.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraSnackbar.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

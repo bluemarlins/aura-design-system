@@ -8,7 +8,7 @@ layer: "content"
 material_allowed: ["Solid", "Glass"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.AuraButton"
+  android: "io.github.bluemarlins.aura.component.AuraButton"
   ios: "AuraDS.AuraButton (planned)"
   web: "@aura-ds/react.AuraButton (planned)"
 tokens:
@@ -220,12 +220,12 @@ Aura uses **Tactile Spring Compression + Smooth State-Layer Interpolation** inst
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraButton.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraButton.kt)
+- **Source:** [`AuraButton.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraButton.kt)
 - **Dependency Policy:** Uses Compose Foundation/UI/Animation primitives only (`material3` independent).
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
-package com.example.ds.component
+package io.github.bluemarlins.aura.component
 
 enum class AuraButtonVariant {
     Primary,

@@ -2,7 +2,7 @@
 
 > **Aura-Original Motion System:** `Standard` and `Expressive` motion profiles (`AuraMotionProfile`) and `AuraMotion` physics tokens are **Aura-original concepts** defined specifically for Aura Design System. They are **not** Android Material Design (`material3`) motion tokens or schemes.
 
-> **Status:** Every token and rule in this guide is implemented in [`AuraMotion.kt`](../../design-system/src/main/kotlin/com/example/ds/foundation/motion/AuraMotion.kt) and the `:design-system` components. §11 records the adoption decisions and the remaining known exceptions.
+> **Status:** Every token and rule in this guide is implemented in [`AuraMotion.kt`](../../design-system/src/main/kotlin/io/github/bluemarlins/aura/foundation/motion/AuraMotion.kt) and the `:design-system` components. §11 records the adoption decisions and the remaining known exceptions.
 
 ## 1. Purpose & Scope
 
@@ -229,7 +229,7 @@ State flip  → geometry travel               via selectionSpring()    ; color s
 
 ## 9. Accessibility: Reduced Motion (`MOT-RULE-007`)
 
-**Single source of truth:** [`AuraReducedMotion.kt`](../../design-system/src/main/kotlin/com/example/ds/foundation/motion/AuraReducedMotion.kt) reads the system `ANIMATOR_DURATION_SCALE` and observes it with a `ContentObserver`, so toggling "Remove animations" applies without restarting the activity. `AuraTheme` merges it into `AuraTheme.motion.reduceMotion`. Components call the internal `rememberAuraReducedMotion()` wrapper (`AuraTheme.motion.reduceMotion || system`), so an app-level `AuraMotion(reduceMotion = true)` override is honored everywhere.
+**Single source of truth:** [`AuraReducedMotion.kt`](../../design-system/src/main/kotlin/io/github/bluemarlins/aura/foundation/motion/AuraReducedMotion.kt) reads the system `ANIMATOR_DURATION_SCALE` and observes it with a `ContentObserver`, so toggling "Remove animations" applies without restarting the activity. `AuraTheme` merges it into `AuraTheme.motion.reduceMotion`. Components call the internal `rememberAuraReducedMotion()` wrapper (`AuraTheme.motion.reduceMotion || system`), so an app-level `AuraMotion(reduceMotion = true)` override is honored everywhere.
 
 | Motion type | Default | Reduced Motion |
 |---|---|---|
@@ -248,11 +248,11 @@ State flip  → geometry travel               via selectionSpring()    ; color s
 
 | Layer | Check | Status |
 |---|---|---|
-| [`SpecCodeConsistencyTest.kt`](../../design-system/src/test/kotlin/com/example/ds/contract/SpecCodeConsistencyTest.kt) | No numeric `tween`/`spring` literals (`MOT-RULE-002`); `motion_track` declared | Shipped |
+| [`SpecCodeConsistencyTest.kt`](../../design-system/src/test/kotlin/io/github/bluemarlins/aura/contract/SpecCodeConsistencyTest.kt) | No numeric `tween`/`spring` literals (`MOT-RULE-002`); `motion_track` declared | Shipped |
 | | No float literal as animation `targetValue` (`MOT-RULE-009`); `motion_track: "Expressive"` components call `forTrack(Expressive)` | Planned |
-| [`MotionTokenInvariantTest.kt`](../../design-system/src/test/kotlin/com/example/ds/contract/MotionTokenInvariantTest.kt) | Enter > exit × 1.3; press-in < press-out; stagger bounds; Standard `spatialDampingRatio >= 0.85` | Shipped |
+| [`MotionTokenInvariantTest.kt`](../../design-system/src/test/kotlin/io/github/bluemarlins/aura/contract/MotionTokenInvariantTest.kt) | Enter > exit × 1.3; press-in < press-out; stagger bounds; Standard `spatialDampingRatio >= 0.85` | Shipped |
 | | Computed OS ≤ `3%` for Standard `selection`/`spatial`/`morph`/`pressIn` and Expressive spatial; `pressedScale*` within `[0.94, 0.98]`; `forTrack` keeps tactile tokens | Shipped |
-| [`ComponentMotionBehaviorTest.kt`](../../design-system/src/test/kotlin/com/example/ds/motion/ComponentMotionBehaviorTest.kt) | Button press/release, Switch progress, FAB expand, Island indicator, Dialog entry, Reduced Motion snaps | Shipped |
+| [`ComponentMotionBehaviorTest.kt`](../../design-system/src/test/kotlin/io/github/bluemarlins/aura/motion/ComponentMotionBehaviorTest.kt) | Button press/release, Switch progress, FAB expand, Island indicator, Dialog entry, Reduced Motion snaps | Shipped |
 | | Dialog Hide progress and unmount; Switch thumb progress peak ≤ `1.01` | Shipped |
 
 See [`07-interaction-verification.md`](07-interaction-verification.md) for the full verification methodology.
@@ -281,7 +281,7 @@ Decisions adopted on 2026-11-20 and implemented in `:design-system`:
 
 ## 12. Implementation Files
 
-- [`AuraMotion.kt`](../../design-system/src/main/kotlin/com/example/ds/foundation/motion/AuraMotion.kt)
-- [`AuraReducedMotion.kt`](../../design-system/src/main/kotlin/com/example/ds/foundation/motion/AuraReducedMotion.kt)
-- [`AuraMotionSemantics.kt`](../../design-system/src/main/kotlin/com/example/ds/foundation/motion/AuraMotionSemantics.kt)
-- [`AuraTheme.kt`](../../design-system/src/main/kotlin/com/example/ds/foundation/theme/AuraTheme.kt)
+- [`AuraMotion.kt`](../../design-system/src/main/kotlin/io/github/bluemarlins/aura/foundation/motion/AuraMotion.kt)
+- [`AuraReducedMotion.kt`](../../design-system/src/main/kotlin/io/github/bluemarlins/aura/foundation/motion/AuraReducedMotion.kt)
+- [`AuraMotionSemantics.kt`](../../design-system/src/main/kotlin/io/github/bluemarlins/aura/foundation/motion/AuraMotionSemantics.kt)
+- [`AuraTheme.kt`](../../design-system/src/main/kotlin/io/github/bluemarlins/aura/foundation/theme/AuraTheme.kt)

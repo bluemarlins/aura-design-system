@@ -8,7 +8,7 @@ layer: "content"
 material_allowed: ["Solid", "Glass"]
 motion_track: "Standard"
 platforms:
-  android: "com.example.ds.component.AuraCard"
+  android: "io.github.bluemarlins.aura.component.AuraCard"
   ios: "AuraDS.AuraCard (planned)"
   web: "@aura-ds/react.AuraCard (planned)"
 tokens:
@@ -180,7 +180,7 @@ Consumes `AuraTheme.motion`:
 
 ### 9.1 Android (Jetpack Compose)
 
-- **Source:** [`AuraCard.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraCard.kt)
+- **Source:** [`AuraCard.kt`](../../../design-system/src/main/kotlin/io/github/bluemarlins/aura/component/AuraCard.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
