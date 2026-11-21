@@ -352,6 +352,9 @@ class ComponentMotionBehaviorTest {
         composeTestRule.mainClock.advanceTimeBy(1000L)
 
         composeTestRule.runOnIdle { visible = false }
+        // Let the restarted LaunchedEffect start its Hide animations before the clock moves;
+        // otherwise the frames below elapse before the animations register their start time.
+        composeTestRule.waitForIdle()
         composeTestRule.mainClock.advanceTimeByFrame()
         composeTestRule.mainClock.advanceTimeBy(80L)
 
