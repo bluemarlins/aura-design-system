@@ -1,6 +1,6 @@
 # Aura Consumer Screen & Component Recipes
 
-All recipes below compile against `com.example.ds` using zero Material 3 widgets and zero hardcoded color, font-size, or motion literals.
+All recipes below compile against `io.github.bluemarlins.aura` using zero Material 3 widgets and zero hardcoded color, font-size, or motion literals.
 
 ---
 

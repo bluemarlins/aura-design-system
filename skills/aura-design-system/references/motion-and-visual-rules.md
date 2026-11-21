@@ -61,7 +61,7 @@ val contentAlpha by animateFloatAsState(
 )
 ```
 
-For press compression on custom clickable cards that cannot use `AuraCard(onClick = ...)` directly, reuse `Modifier.fluidPressScale(interactionSource, enabled, pressedScale = motion.pressedScaleDefault)` from `com.example.ds.component`.
+For press compression on custom clickable cards that cannot use `AuraCard(onClick = ...)` directly, reuse `Modifier.fluidPressScale(interactionSource, enabled, pressedScale = motion.pressedScaleDefault)` from `io.github.bluemarlins.aura.component`.
 
 ---
 

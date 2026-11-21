@@ -1,6 +1,6 @@
 # Aura Component API Reference
 
-All components live in `package com.example.ds.component`. Call these composables directly—do **not** fall back to Material 3 equivalents.
+All components live in `package io.github.bluemarlins.aura.component`. Call these composables directly—do **not** fall back to Material 3 equivalents.
 
 > **Note on `GlassStyle`:** `GlassStyle` (`FROSTED` = `AuraMaterial.Glass`, `LIQUID` = `AuraMaterial.LiquidGlass`) is `@Deprecated` in favor of `AuraMaterial` and `GlassStyle.toMaterial()`. `GlassSurface` and `LiquidMetaballBridge` take `material: AuraMaterial` (their `glassStyle` overloads are deprecated), though `FloatingBottomIsland`, `AuraBottomIsland`, `FloatingTopPillBar`, `MorphingMorePopover`, `AuraDialog`, and `AuraSearchBar` keep `glassStyle` parameters for compatibility (expect a deprecation warning when passing one). Every surface resolves its final rendering through `AuraTheme.effectiveMaterial(...)`, which never exceeds the `AuraTheme(material = ...)` ceiling.
 

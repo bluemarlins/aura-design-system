@@ -1,13 +1,13 @@
 # Aura Tokens, Theme & Accessors Reference
 
-All theme tokens live under `com.example.ds.foundation.*` and are accessed through `AuraTheme` (`com.example.ds.foundation.theme.AuraTheme`).
+All theme tokens live under `io.github.bluemarlins.aura.foundation.*` and are accessed through `AuraTheme` (`io.github.bluemarlins.aura.foundation.theme.AuraTheme`).
 
 ---
 
 ## 1. Root Theme (`AuraTheme`)
 
 ```kotlin
-package com.example.ds.foundation.theme
+package io.github.bluemarlins.aura.foundation.theme
 
 enum class AuraColorMode { Light, Dark }
 
@@ -40,7 +40,7 @@ fun AuraTheme(
 - `AuraTheme.shapes: AuraShapes` (`extraSmall = 4.dp`, `small = 8.dp`, `medium = 12.dp`, `large = 16.dp`, `extraLarge = 24.dp`, `full = CircleShape`)
 - `AuraTheme.motion: AuraMotion`
 - `AuraTheme.elevation: AuraElevation`
-- `AuraTheme.glass: AuraGlass` (`com.example.ds.foundation.glass`) — optical tokens read by `GlassSurface`: `frostedTint`, `liquidTint`, `liquidBridgeTint`, `strokeStartAlpha`, `strokeEndAlpha`, `solidFallbackAlpha`, `blurRadius` (`26.dp`), `liquidBlurRadius` (`10.dp`), `saturation` (`1.2f`), `liquidSaturation` (`1.25f`), `bevelWidth`, `refraction`, `dispersion`. Apps rarely need to read or override these.
+- `AuraTheme.glass: AuraGlass` (`io.github.bluemarlins.aura.foundation.glass`) — optical tokens read by `GlassSurface`: `frostedTint`, `liquidTint`, `liquidBridgeTint`, `strokeStartAlpha`, `strokeEndAlpha`, `solidFallbackAlpha`, `blurRadius` (`26.dp`), `liquidBlurRadius` (`10.dp`), `saturation` (`1.2f`), `liquidSaturation` (`1.25f`), `bevelWidth`, `refraction`, `dispersion`. Apps rarely need to read or override these.
 - `AuraTheme.window: AuraWindowInfo`
 - `AuraTheme.layout: AuraLayout`
 - `AuraTheme.colorMode: AuraColorMode`
@@ -74,7 +74,7 @@ fun rememberAuraReduceTransparency(): Boolean
 
 ## 2. Color Tokens (`AuraTheme.colors`)
 
-`AuraColors` (`com.example.ds.foundation.color`) adapts automatically to `Light` / `Dark`:
+`AuraColors` (`io.github.bluemarlins.aura.foundation.color`) adapts automatically to `Light` / `Dark`:
 
 | Group | Fields (`Color`) | Purpose |
 |---|---|---|
@@ -93,7 +93,7 @@ fun rememberAuraReduceTransparency(): Boolean
 
 ## 3. Typography Tokens (`AuraTheme.typography`)
 
-`AuraTypography` (`com.example.ds.foundation.typography`) provides **16 semantic roles**. `display*`, `headline*`, and `title*` scale dynamically via `AuraTheme.layout.typographyScale` (`0.92f`–`1.08f`). `body*`, `label*`, and `mono*` hold fixed baseline readability across breakpoints.
+`AuraTypography` (`io.github.bluemarlins.aura.foundation.typography`) provides **16 semantic roles**. `display*`, `headline*`, and `title*` scale dynamically via `AuraTheme.layout.typographyScale` (`0.92f`–`1.08f`). `body*`, `label*`, and `mono*` hold fixed baseline readability across breakpoints.
 
 | Role | Baseline Size / LineHeight | Weight | Notes |
 |---|---|---|---|
@@ -138,7 +138,7 @@ Aura classifies the viewport along **two axes**:
 
 ## 5. Interaction Motion Tokens (`AuraTheme.motion`)
 
-`AuraMotion` (`com.example.ds.foundation.motion`) provides dual-track motion specs (`AuraMotionProfile.Standard` vs `AuraMotionProfile.Expressive`) plus system accessibility helpers.
+`AuraMotion` (`io.github.bluemarlins.aura.foundation.motion`) provides dual-track motion specs (`AuraMotionProfile.Standard` vs `AuraMotionProfile.Expressive`) plus system accessibility helpers.
 
 ### Properties & Defaults
 
@@ -177,13 +177,13 @@ Aura classifies the viewport along **two axes**:
 - `reducedFadeSpec<T>()` — `120ms` opacity fade that replaces spatial Show/Hide under Reduced Motion
 - `forTrack(profile)` — copy with the spatial, stagger, and scrim tokens of `profile`; tactile tokens and `reduceMotion` are kept
 - `staggerDelay(index: Int): Int` — returns `0` when `reduceMotion == true` or `index <= 0`, else `minOf(index * staggerDelayMillis, staggerBudgetMillis)`
-- Top-level composable helper: `com.example.ds.foundation.motion.rememberAuraReducedMotion(): Boolean`
+- Top-level composable helper: `io.github.bluemarlins.aura.foundation.motion.rememberAuraReducedMotion(): Boolean`
 
 ---
 
 ## 6. Elevation & Scrim Ladder (`AuraTheme.elevation`)
 
-`AuraElevation` (`com.example.ds.foundation.elevation.AuraElevationDefaults.Standard`) defines 5 Z-axis levels (`AuraElevationLevel(elevation, keyShadowAlpha, ambientShadowAlpha, scrimAlpha)`):
+`AuraElevation` (`io.github.bluemarlins.aura.foundation.elevation.AuraElevationDefaults.Standard`) defines 5 Z-axis levels (`AuraElevationLevel(elevation, keyShadowAlpha, ambientShadowAlpha, scrimAlpha)`):
 
 | Token | `elevation` | `keyShadowAlpha` | `ambientShadowAlpha` | `scrimAlpha` | Typical Surface Role |
 |---|---|---|---|---|---|

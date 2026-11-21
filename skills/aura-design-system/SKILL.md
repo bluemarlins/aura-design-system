@@ -1,11 +1,11 @@
 ---
 name: aura-design-system
-description: Applies the Aura Design System (com.example.ds, github.com/bluemarlins/aura-design-system) to Android Jetpack Compose apps. Use when the user asks to apply, adopt, install, or migrate to Aura ("apply Aura Design System to my app"), to replace Material 3 UI with Aura, or to build or edit any Compose screen in an app that already depends on Aura. Covers Gradle setup, the AuraTheme root, Material 3 to Aura migration, semantic tokens (colors, typography, layout, motion, elevation), Solid/Glass/LiquidGlass materiality, and a compliance audit.
+description: Applies the Aura Design System (io.github.bluemarlins.aura, github.com/bluemarlins/aura-design-system) to Android Jetpack Compose apps. Use when the user asks to apply, adopt, install, or migrate to Aura ("apply Aura Design System to my app"), to replace Material 3 UI with Aura, or to build or edit any Compose screen in an app that already depends on Aura. Covers Gradle setup, the AuraTheme root, Material 3 to Aura migration, semantic tokens (colors, typography, layout, motion, elevation), Solid/Glass/LiquidGlass materiality, and a compliance audit.
 ---
 
 # Aura Design System — Consumer App Integration Skill
 
-Use this skill whenever applying the **Aura Design System** (`com.example.ds`) to an Android app, or building, refactoring, or "vibe-coding" Jetpack Compose UI in an app that consumes it.
+Use this skill whenever applying the **Aura Design System** (`io.github.bluemarlins.aura`) to an Android app, or building, refactoring, or "vibe-coding" Jetpack Compose UI in an app that consumes it.
 
 > **Important Distinction:** Aura (`AuraTheme`, `AuraMotionProfile.Standard/Expressive`, `AuraMaterial.Solid/Glass/LiquidGlass`, `AuraElevation`) is an **Aura-original design system**. Never mix it with `androidx.compose.material3` (`MaterialTheme`, `Button`, `Text`, `Scaffold`, `Surface`, `Card`). Note: `androidx.compose.material.icons.*` vector glyphs are acceptable inside `AuraIcon`, `FloatingBottomIsland`, etc., as long as no `material3` widgets, themes, or tokens are used.
 
@@ -114,7 +114,7 @@ Every screen and custom component you write in a consumer app **must** follow th
 
 ## 4. Component Selection Quick Map (Material 3 → Aura)
 
-All components live in `package com.example.ds.component`. Choose the closest Aura component instead of writing raw Foundation boxes:
+All components live in `package io.github.bluemarlins.aura.component`. Choose the closest Aura component instead of writing raw Foundation boxes:
 
 | Category | Aura Components | Replaces Material 3 |
 |---|---|---|
