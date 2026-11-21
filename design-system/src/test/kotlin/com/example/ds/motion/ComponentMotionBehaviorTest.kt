@@ -333,6 +333,76 @@ class ComponentMotionBehaviorTest {
     }
 
     @Test
+    fun auraDialog_hide_animatesOutBeforeLeavingComposition() {
+        composeTestRule.mainClock.autoAdvance = false
+        var visible by mutableStateOf(true)
+
+        composeTestRule.setContent {
+            AuraTheme {
+                AuraDialog(
+                    visible = visible,
+                    title = "Confirm Action",
+                    onConfirm = {},
+                    onDismissRequest = { visible = false },
+                    modifier = Modifier.testTag("aura_dialog"),
+                )
+            }
+        }
+        composeTestRule.mainClock.advanceTimeByFrame()
+        composeTestRule.mainClock.advanceTimeBy(1000L)
+
+        composeTestRule.runOnIdle { visible = false }
+        composeTestRule.mainClock.advanceTimeByFrame()
+        composeTestRule.mainClock.advanceTimeBy(80L)
+
+        val midExit = composeTestRule.onNodeWithTag("aura_dialog", useUnmergedTree = true)
+            .fetchSemanticsNode().config
+        assertTrue(
+            "Expected Hide in progress (alpha between 0 and 1), was ${midExit[AuraMotionProgressKey]}",
+            midExit[AuraMotionProgressKey] in 0.01f..0.99f,
+        )
+        assertTrue(
+            "Hide must not overshoot below overlayExitScale, was ${midExit[AuraMotionScaleKey]}",
+            midExit[AuraMotionScaleKey] >= AuraMotionDefaults.Standard.overlayExitScale - 0.001f,
+        )
+
+        composeTestRule.mainClock.advanceTimeBy(1000L)
+        composeTestRule.onAllNodesWithTag("aura_dialog", useUnmergedTree = true).assertCountEquals(0)
+    }
+
+    @Test
+    fun auraSwitch_selectionTravel_staysWithinOvershootBudget() {
+        composeTestRule.mainClock.autoAdvance = false
+        var checked by mutableStateOf(false)
+
+        composeTestRule.setContent {
+            AuraTheme {
+                AuraSwitch(
+                    checked = checked,
+                    onCheckedChange = { checked = it },
+                    modifier = Modifier.testTag("aura_switch"),
+                )
+            }
+        }
+        composeTestRule.mainClock.advanceTimeByFrame()
+
+        checked = true
+        composeTestRule.mainClock.advanceTimeByFrame()
+        val samples = buildList {
+            repeat(40) {
+                composeTestRule.mainClock.advanceTimeBy(16L)
+                add(
+                    composeTestRule.onNodeWithTag("aura_switch")
+                        .fetchSemanticsNode().config[AuraMotionProgressKey],
+                )
+            }
+        }
+        val peak = samples.max()
+        assertTrue("Thumb progress peak must stay <= 1.01f (MOT-RULE-008), was $peak", peak <= 1.01f)
+        assertEquals(1f, samples.last(), 0.01f)
+    }
+
+    @Test
     fun glassSurface_reduceTransparency_togglesSolidFallbackTag() {
         var reduceTransparency by mutableStateOf(false)
 

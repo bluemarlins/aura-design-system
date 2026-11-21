@@ -92,8 +92,10 @@ fun AuraSearchBar(
     val isFocused by resolvedInteractionSource.collectIsFocusedAsState()
     val activeFocus = enabled && isFocused
 
+    // Focus in uses the fast press timing; focus out settles on the state-change timing.
+    val focusDurationMillis = if (activeFocus) motion.pressInDurationMillis else motion.stateChangeDurationMillis
     val colorSpec = tween<Color>(
-        durationMillis = if (reducedMotion) 0 else motion.stateChangeDurationMillis,
+        durationMillis = if (reducedMotion) 0 else focusDurationMillis,
     )
     val borderColor by animateColorAsState(
         targetValue = when {
@@ -106,7 +108,7 @@ fun AuraSearchBar(
     )
     val borderWidth by animateDpAsState(
         targetValue = if (activeFocus) 2.dp else 1.dp,
-        animationSpec = if (reducedMotion) snap() else tween(durationMillis = motion.pressInDurationMillis),
+        animationSpec = if (reducedMotion) snap() else tween(durationMillis = focusDurationMillis),
         label = "AuraSearchBarBorderWidth",
     )
     val leadingIconColor by animateColorAsState(

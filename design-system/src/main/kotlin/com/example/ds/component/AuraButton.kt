@@ -15,9 +15,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,11 +28,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -65,9 +60,6 @@ import com.example.ds.foundation.motion.AuraMotionProgressKey
 import com.example.ds.foundation.motion.AuraMotionScaleKey
 import com.example.ds.foundation.theme.AuraTheme
 import com.example.ds.foundation.typography.AuraTypography
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 private val MinTouchTargetWidth = 48.dp
 
@@ -231,61 +223,6 @@ private fun resolveAuraButtonColors(
     }
 }
 
-@Composable
-private fun rememberTactilePressedState(
-    interactionSource: InteractionSource,
-    minPressDurationMillis: Long,
-): State<Boolean> {
-    val isVisuallyPressed = remember(interactionSource) { mutableStateOf(false) }
-    LaunchedEffect(interactionSource, minPressDurationMillis) {
-        val activePresses = mutableListOf<PressInteraction.Press>()
-        var pressStartUptimeMs = 0L
-        var releaseJob: Job? = null
-
-        interactionSource.interactions.collect { interaction ->
-            when (interaction) {
-                is PressInteraction.Press -> {
-                    releaseJob?.cancel()
-                    releaseJob = null
-                    if (activePresses.isEmpty()) {
-                        pressStartUptimeMs = SystemClock.uptimeMillis()
-                    }
-                    activePresses.add(interaction)
-                    isVisuallyPressed.value = true
-                }
-
-                is PressInteraction.Release -> {
-                    activePresses.remove(interaction.press)
-                    if (activePresses.isEmpty()) {
-                        val elapsedMs = SystemClock.uptimeMillis() - pressStartUptimeMs
-                        val remainingMs = minPressDurationMillis - elapsedMs
-                        if (remainingMs > 0L) {
-                            releaseJob?.cancel()
-                            releaseJob = launch {
-                                delay(remainingMs)
-                                isVisuallyPressed.value = false
-                            }
-                        } else {
-                            isVisuallyPressed.value = false
-                        }
-                    }
-                }
-
-                is PressInteraction.Cancel -> {
-                    activePresses.remove(interaction.press)
-                    if (activePresses.isEmpty()) {
-                        releaseJob?.cancel()
-                        releaseJob = null
-                        isVisuallyPressed.value = false
-                    }
-                }
-            }
-        }
-    }
-    return isVisuallyPressed
-}
-
-
 /**
  * Labeled action button implementing the `aura.component.button` specification.
  *
@@ -326,7 +263,7 @@ fun AuraButton(
     val labelTextStyle = sizeSpec.textStyle(size, typography)
     val shape = RoundedCornerShape(sizeSpec.cornerRadius)
     val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by rememberTactilePressedState(interactionSource, motion.minPressDurationMillis)
+    val isPressed by rememberAuraTactilePressed(interactionSource, motion.minPressDurationMillis)
     val pressedActive = enabled && !loading && isPressed
 
     val resolvedColors = resolveAuraButtonColors(
@@ -399,7 +336,7 @@ fun AuraButton(
         label = "AuraButtonContentAlpha",
     )
     val contentScale by animateFloatAsState(
-        targetValue = if (loading && !reducedMotion) 0.92f else 1f,
+        targetValue = if (loading && !reducedMotion) motion.loadingContentScale else 1f,
         animationSpec = motion.iconSpring(),
         label = "AuraButtonContentScale",
     )
@@ -409,7 +346,7 @@ fun AuraButton(
         label = "AuraButtonSpinnerAlpha",
     )
     val spinnerScale by animateFloatAsState(
-        targetValue = if (loading || reducedMotion) 1f else 0.75f,
+        targetValue = if (loading || reducedMotion) 1f else motion.spinnerEnterScale,
         animationSpec = motion.iconSpring(),
         label = "AuraButtonSpinnerScale",
     )

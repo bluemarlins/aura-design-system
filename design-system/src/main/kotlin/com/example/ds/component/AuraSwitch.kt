@@ -107,7 +107,7 @@ fun AuraSwitch(
         if (reducedMotion) snap<Color>() else tween(durationMillis = motion.stateChangeDurationMillis)
     }
     val thumbProgressSpec = remember(reducedMotion, motion) {
-        if (reducedMotion) snap<Float>() else motion.pressOutSpring<Float>()
+        if (reducedMotion) snap<Float>() else motion.selectionSpring<Float>()
     }
     val scaleSpec = remember(reducedMotion, isPressed, motion) {
         when {
@@ -131,7 +131,7 @@ fun AuraSwitch(
         label = "AuraSwitchTrackScale",
     )
     val targetThumbWidth = if (!reducedMotion && isInteractive && isPressed) {
-        dims.thumbDiameter * 1.18f
+        dims.thumbDiameter * motion.grabScale
     } else {
         dims.thumbDiameter
     }

@@ -1,5 +1,8 @@
 package com.example.ds.contract
 
+import kotlin.math.PI
+import kotlin.math.exp
+import kotlin.math.sqrt
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -63,5 +66,67 @@ class MotionTokenInvariantTest {
         )
         assertEquals(standard, AuraMotionDefaults.forProfile(AuraMotionProfile.Standard))
         assertEquals(expressive, AuraMotionDefaults.forProfile(AuraMotionProfile.Expressive))
+    }
+
+    /** Overshoot of a unit-mass damped spring: `e^(-ζπ/√(1-ζ²))`, `0` when critically damped. */
+    private fun overshoot(dampingRatio: Float): Double =
+        if (dampingRatio >= 1f) 0.0 else exp(-dampingRatio * PI / sqrt(1.0 - dampingRatio * dampingRatio))
+
+    @Test
+    fun `standard travel springs stay within the 3 percent overshoot budget`() {
+        val standard = AuraMotionDefaults.Standard
+        listOf(
+            "selection" to standard.selectionDampingRatio,
+            "spatial" to standard.spatialDampingRatio,
+            "adaptiveBarMorph" to standard.adaptiveBarDampingRatio,
+            "pressIn" to standard.pressInDampingRatio,
+        ).forEach { (name, ratio) ->
+            assertTrue("$name overshoot must be <= 3% (was ${overshoot(ratio)})", overshoot(ratio) <= 0.03)
+        }
+        assertTrue(
+            "Expressive spatial overshoot must stay <= 3%",
+            overshoot(AuraMotionDefaults.Expressive.spatialDampingRatio) <= 0.03,
+        )
+        assertTrue(
+            "selectionSpring must settle faster than spatialSpring",
+            standard.selectionStiffness > standard.spatialStiffness,
+        )
+    }
+
+    @Test
+    fun `press amplitudes follow the mass classes`() {
+        val motion = AuraMotionDefaults.Standard
+        listOf(
+            motion.pressedScaleGhost,
+            motion.pressedScaleDefault,
+            motion.pressedScaleLarge,
+            motion.glassPressedScale,
+        ).forEach { scale ->
+            assertTrue("pressed scale $scale must stay within [0.94, 0.98]", scale in 0.94f..0.98f)
+        }
+        assertTrue(motion.pressedScaleGhost <= motion.pressedScaleDefault)
+        assertTrue(motion.pressedScaleDefault < motion.pressedScaleLarge)
+        assertEquals(motion.pressedScaleGhost, motion.glassPressedScale)
+        assertTrue(
+            "Hide must travel less than Show (overlayExitScale > overlayEnterScale)",
+            motion.overlayExitScale > motion.overlayEnterScale,
+        )
+    }
+
+    @Test
+    fun `forTrack swaps spatial tokens and keeps tactile tokens and reduceMotion`() {
+        val custom = AuraMotionDefaults.Standard.copy(pressedScaleDefault = 0.97f, reduceMotion = true)
+        val bound = custom.forTrack(AuraMotionProfile.Expressive)
+        val expressive = AuraMotionDefaults.Expressive
+
+        assertEquals(AuraMotionProfile.Expressive, bound.profile)
+        assertEquals(expressive.enterDurationMillis, bound.enterDurationMillis)
+        assertEquals(expressive.exitDurationMillis, bound.exitDurationMillis)
+        assertEquals(expressive.spatialDampingRatio, bound.spatialDampingRatio)
+        assertEquals(expressive.spatialStiffness, bound.spatialStiffness)
+        assertEquals(expressive.scrimFadeDurationMillis, bound.scrimFadeDurationMillis)
+        assertEquals(0.97f, bound.pressedScaleDefault)
+        assertTrue(bound.reduceMotion)
+        assertEquals(expressive, expressive.forTrack(AuraMotionProfile.Expressive))
     }
 }

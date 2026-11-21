@@ -149,14 +149,17 @@ fun Modifier.glassBackdropSource(state: GlassBackdropState): Modifier = this
     }
 
 /**
- * Interruptible tactile spring compression (`0.92f` on Touch Down, rebounding with
- * `Spring(dampingRatio = 0.65f, stiffness = 450f)`) coupled with iOS 26 `.interactive()`
- * radial touch illumination and gel-like anisotropic bounce.
+ * Interruptible tactile spring compression for Glass chrome: compresses to
+ * [AuraMotion.glassPressedScale] via `pressInSpring()` and rebounds via `pressOutSpring()`,
+ * coupled with radial touch illumination ([AuraMotion.pressGlowAlpha]) and gel-like anisotropic
+ * bounce ([AuraMotion.gelStretchX] / [AuraMotion.gelSquashY]).
+ *
+ * @param pressedScale Overrides the press depth; `null` uses [AuraMotion.glassPressedScale].
  */
 fun Modifier.fluidPressScale(
     interactionSource: InteractionSource,
     enabled: Boolean = true,
-    pressedScale: Float = 0.92f,
+    pressedScale: Float? = null,
 ): Modifier = composed {
     val motion = AuraTheme.motion
     val reducedMotion = rememberAuraReducedMotion()
@@ -164,28 +167,29 @@ fun Modifier.fluidPressScale(
         interactionSource = interactionSource,
         minPressDurationMillis = motion.minPressDurationMillis,
     )
+    val targetPressedScale = pressedScale ?: motion.glassPressedScale
     val scale by animateFloatAsState(
-        targetValue = if (!reducedMotion && enabled && isPressed) pressedScale else 1f,
+        targetValue = if (!reducedMotion && enabled && isPressed) targetPressedScale else 1f,
         animationSpec = when {
             reducedMotion -> snap()
             isPressed -> motion.pressInSpring()
-            else -> motion.spatialSpring()
+            else -> motion.pressOutSpring()
         },
         label = "FluidPressScale",
     )
     val glowAlpha by animateFloatAsState(
-        targetValue = if (!reducedMotion && enabled && isPressed) 0.24f else 0f,
+        targetValue = if (!reducedMotion && enabled && isPressed) motion.pressGlowAlpha else 0f,
         animationSpec = when {
             reducedMotion -> snap()
             isPressed -> motion.pressInSpring()
-            else -> motion.spatialSpring()
+            else -> motion.pressOutSpring()
         },
         label = "FluidInteractiveGlow",
     )
     // Gel-like slight horizontal expansion on vertical compression
     val delta = 1f - scale
-    val gelScaleX = scale + (delta * 0.14f)
-    val gelScaleY = scale - (delta * 0.06f)
+    val gelScaleX = scale + (delta * motion.gelStretchX)
+    val gelScaleY = scale - (delta * motion.gelSquashY)
     graphicsLayer {
         scaleX = gelScaleX
         scaleY = gelScaleY

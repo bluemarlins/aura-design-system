@@ -158,7 +158,7 @@ fun FloatingTopPillBar(
     val clampedScroll = scrollProgress.coerceIn(0f, 1f)
     val smoothScroll by animateFloatAsState(
         targetValue = clampedScroll,
-        animationSpec = if (reducedMotion) snap() else motion.pressOutSpring(),
+        animationSpec = if (reducedMotion) snap() else motion.spatialSpring(),
         label = "TopPillScrollProgress",
     )
     val smoothSplit by animateFloatAsState(
@@ -549,7 +549,7 @@ private fun TopPillActionIconButton(
 
 /**
  * Layer 3 Container-Transform Popover that morphs directly out of the top-right `[More]` capsule
- * using interruptible `Spring(dampingRatio = 0.65f, stiffness = 450f)` physics.
+ * using interruptible `AuraTheme.motion.spatialSpring()` physics.
  */
 @Suppress("DEPRECATION")
 @Composable
@@ -624,7 +624,7 @@ fun MorphingMorePopover(
                                 .fillMaxWidth()
                                 .heightIn(min = 48.dp)
                                 .clip(RoundedCornerShape(14.dp))
-                                .fluidPressScale(itemInteraction, pressedScale = 0.96f)
+                                .fluidPressScale(itemInteraction)
                                 .clickable(
                                     interactionSource = itemInteraction,
                                     indication = null,
@@ -708,7 +708,7 @@ fun AuraTopAppBar(
     val clampedScroll = scrollFraction.coerceIn(0f, 1f)
     val smoothScroll by animateFloatAsState(
         targetValue = clampedScroll,
-        animationSpec = if (reducedMotion) snap() else motion.pressOutSpring(),
+        animationSpec = if (reducedMotion) snap() else motion.spatialSpring(),
         label = "AuraTopAppBarScroll",
     )
 
@@ -732,7 +732,7 @@ fun AuraTopAppBar(
 
     val translationYOffset by animateDpAsState(
         targetValue = if (scrollBehavior == AuraTopAppBarScrollBehavior.EnterAlways && smoothScroll > 0.7f) (-72).dp else 0.dp,
-        animationSpec = if (reducedMotion) snap() else motion.pressOutSpring(),
+        animationSpec = if (reducedMotion) snap() else motion.spatialSpring(),
         label = "AuraTopAppBarEnterAlways",
     )
 

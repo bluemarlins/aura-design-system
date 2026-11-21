@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
+import com.example.ds.foundation.motion.AuraMotionProfile
 import com.example.ds.foundation.theme.AuraColorMode
 import com.example.ds.foundation.motion.AuraMotionProgressKey
 import com.example.ds.foundation.motion.AuraMotionScaleKey
@@ -170,7 +171,7 @@ fun AuraBottomIsland(
 
     val colors = AuraTheme.colors
     val typography = AuraTheme.typography
-    val motion = AuraTheme.motion
+    val motion = AuraTheme.motion.forTrack(AuraMotionProfile.Expressive)
     val reducedMotion = rememberAuraReducedMotion()
 
     val clampedSelected = selectedIndex.coerceIn(0, items.lastIndex)
@@ -305,7 +306,7 @@ fun AuraBottomIsland(
                                 label = "BottomIslandTabAlpha",
                             )
                             val iconScale by animateFloatAsState(
-                                targetValue = if (isSelected) 1.08f else 1f,
+                                targetValue = if (isSelected) motion.selectedIconScale else 1f,
                                 animationSpec = if (reducedMotion) snap() else motion.iconSpring(),
                                 label = "BottomIslandIconScale",
                             )

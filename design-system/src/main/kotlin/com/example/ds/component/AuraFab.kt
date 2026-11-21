@@ -58,6 +58,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.ds.foundation.motion.AuraMotionProfile
 import com.example.ds.foundation.color.AuraColors
 import com.example.ds.foundation.elevation.AuraElevation
 import com.example.ds.foundation.motion.AuraMotionProgressKey
@@ -118,7 +119,7 @@ fun AuraFab(
     val resolvedInteractionSource = interactionSource ?: remember { MutableInteractionSource() }
     val colors = AuraTheme.colors
     val typography = AuraTheme.typography
-    val motion = AuraTheme.motion
+    val motion = AuraTheme.motion.forTrack(AuraMotionProfile.Expressive)
     val reducedMotion = rememberAuraReducedMotion()
     val isInteractive = enabled && !loading
     val showExtendedLabel = !text.isNullOrEmpty() && expanded && !loading

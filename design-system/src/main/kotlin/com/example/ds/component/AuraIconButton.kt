@@ -64,7 +64,9 @@ import androidx.compose.ui.unit.dp
 import com.example.ds.foundation.elevation.AuraElevation
 import com.example.ds.foundation.motion.rememberAuraReducedMotion as rememberSystemReducedMotion
 import com.example.ds.foundation.theme.AuraTheme
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 enum class AuraIconButtonVariant {
     Filled,
@@ -403,34 +405,53 @@ internal fun rememberAuraTactilePressed(
     interactionSource: InteractionSource,
     minPressDurationMillis: Long,
 ): State<Boolean> {
-    val pressedState = remember(interactionSource) { mutableStateOf(false) }
-
+    val isVisuallyPressed = remember(interactionSource) { mutableStateOf(false) }
     LaunchedEffect(interactionSource, minPressDurationMillis) {
-        var pressStartTimeMs = 0L
-        var activePresses = 0
+        val activePresses = mutableListOf<PressInteraction.Press>()
+        var pressStartUptimeMs = 0L
+        var releaseJob: Job? = null
+
         interactionSource.interactions.collect { interaction ->
             when (interaction) {
                 is PressInteraction.Press -> {
-                    activePresses++
-                    pressStartTimeMs = SystemClock.uptimeMillis()
-                    pressedState.value = true
+                    releaseJob?.cancel()
+                    releaseJob = null
+                    if (activePresses.isEmpty()) {
+                        pressStartUptimeMs = SystemClock.uptimeMillis()
+                    }
+                    activePresses.add(interaction)
+                    isVisuallyPressed.value = true
                 }
-                is PressInteraction.Release,
-                is PressInteraction.Cancel,
-                -> {
-                    if (activePresses > 0) activePresses--
-                    if (activePresses == 0) {
-                        val elapsed = SystemClock.uptimeMillis() - pressStartTimeMs
-                        val remaining = (minPressDurationMillis - elapsed).coerceAtLeast(0L)
-                        if (remaining > 0L) delay(remaining)
-                        pressedState.value = false
+
+                is PressInteraction.Release -> {
+                    activePresses.remove(interaction.press)
+                    if (activePresses.isEmpty()) {
+                        val elapsedMs = SystemClock.uptimeMillis() - pressStartUptimeMs
+                        val remainingMs = minPressDurationMillis - elapsedMs
+                        if (remainingMs > 0L) {
+                            releaseJob?.cancel()
+                            releaseJob = launch {
+                                delay(remainingMs)
+                                isVisuallyPressed.value = false
+                            }
+                        } else {
+                            isVisuallyPressed.value = false
+                        }
+                    }
+                }
+
+                is PressInteraction.Cancel -> {
+                    activePresses.remove(interaction.press)
+                    if (activePresses.isEmpty()) {
+                        releaseJob?.cancel()
+                        releaseJob = null
+                        isVisuallyPressed.value = false
                     }
                 }
             }
         }
     }
-
-    return pressedState
+    return isVisuallyPressed
 }
 
 @Composable

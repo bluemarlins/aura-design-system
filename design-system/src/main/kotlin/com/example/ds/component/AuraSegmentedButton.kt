@@ -136,7 +136,7 @@ fun AuraSegmentedButton(
 
     val animatedThumbIndex by animateFloatAsState(
         targetValue = safeSelectedIndex.toFloat(),
-        animationSpec = if (reducedMotion) snap() else motion.pressOutSpring(),
+        animationSpec = if (reducedMotion) snap() else motion.selectionSpring(),
         label = "AuraSegmentedThumbIndex",
     )
 

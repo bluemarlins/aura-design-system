@@ -142,8 +142,8 @@ fun AuraBadge(
         label = "AuraBadgeContent",
     )
     val presenceScale by animateFloatAsState(
-        targetValue = if (size == AuraBadgeSize.Dot || displayText != null) 1f else 0.9f,
-        animationSpec = if (reducedMotion) snap() else motion.pressOutSpring(),
+        targetValue = if (size == AuraBadgeSize.Dot || displayText != null) 1f else motion.presenceEnterScale,
+        animationSpec = if (reducedMotion) snap() else motion.selectionSpring(),
         label = "AuraBadgeScale",
     )
 

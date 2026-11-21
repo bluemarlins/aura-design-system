@@ -1,7 +1,6 @@
 package com.example.ds.component
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -53,8 +52,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
+import com.example.ds.foundation.motion.AuraMotionProfile
 import com.example.ds.foundation.motion.AuraMotionProgressKey
 import com.example.ds.foundation.theme.AuraTheme
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 /**
  * One choice in an [AuraDropdownMenu].
@@ -100,26 +102,45 @@ fun AuraDropdownMenu(
     modifier: Modifier = Modifier,
     dismissOnItemClick: Boolean = true,
 ) {
-    if (!expanded) return
-
     val colors = AuraTheme.colors
-    val motion = AuraTheme.motion
+    val motion = AuraTheme.motion.forTrack(AuraMotionProfile.Expressive)
     val reducedMotion = rememberAuraReducedMotion()
     val density = LocalDensity.current
 
-    var entered by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { entered = true }
+    // Stays composed through the Hide animation (MOT-RULE-010).
+    var mounted by remember { mutableStateOf(expanded) }
+    val scale = remember { Animatable(if (reducedMotion) 1f else motion.popoverEnterScale) }
+    val alpha = remember { Animatable(0f) }
 
-    val scale by animateFloatAsState(
-        targetValue = if (entered) 1f else 0.92f,
-        animationSpec = if (reducedMotion) snap() else motion.spatialSpring(),
-        label = "AuraDropdownMenuScale",
-    )
-    val alpha by animateFloatAsState(
-        targetValue = if (entered) 1f else 0f,
-        animationSpec = if (reducedMotion) snap() else motion.enterSpec(),
-        label = "AuraDropdownMenuAlpha",
-    )
+    LaunchedEffect(expanded, reducedMotion) {
+        if (expanded) {
+            mounted = true
+            if (alpha.value == 0f) {
+                scale.snapTo(if (reducedMotion) 1f else motion.popoverEnterScale)
+            }
+            coroutineScope {
+                if (reducedMotion) {
+                    launch { scale.snapTo(1f) }
+                    launch { alpha.animateTo(1f, motion.reducedFadeSpec()) }
+                } else {
+                    launch { scale.animateTo(1f, motion.spatialSpring()) }
+                    launch { alpha.animateTo(1f, motion.enterSpec()) }
+                }
+            }
+        } else if (mounted) {
+            coroutineScope {
+                if (reducedMotion) {
+                    launch { alpha.animateTo(0f, motion.reducedFadeSpec()) }
+                } else {
+                    launch { scale.animateTo(motion.popoverEnterScale, motion.exitSpec()) }
+                    launch { alpha.animateTo(0f, motion.exitSpec()) }
+                }
+            }
+            mounted = false
+        }
+    }
+
+    if (!mounted) return
 
     val positionProvider = remember(density) {
         DropdownMenuPositionProvider(
@@ -136,11 +157,11 @@ fun AuraDropdownMenu(
     ) {
         Column(
             modifier = modifier
-                .semantics { this[AuraMotionProgressKey] = alpha }
+                .semantics { this[AuraMotionProgressKey] = alpha.value }
                 .graphicsLayer {
-                    scaleX = scale
-                    scaleY = scale
-                    this.alpha = alpha
+                    scaleX = scale.value
+                    scaleY = scale.value
+                    this.alpha = alpha.value
                     transformOrigin = TransformOrigin(1f, 0f)
                 }
                 .widthIn(min = MenuMinWidth, max = MenuMaxWidth)
@@ -211,7 +232,7 @@ private fun MenuItemRow(
             .padding(horizontal = 8.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(if (item.selected) colors.interaction.selectedContainer else Color.Transparent)
-            .fluidPressScale(interaction, pressedScale = 0.97f)
+            .fluidPressScale(interaction)
             .clickable(
                 interactionSource = interaction,
                 indication = null,

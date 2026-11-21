@@ -1,8 +1,6 @@
 package com.example.ds.component
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -20,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,16 +30,22 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.DialogWindowProvider
 import com.example.ds.foundation.theme.AuraColorMode
+import com.example.ds.foundation.motion.AuraEasing
+import com.example.ds.foundation.motion.AuraMotionProfile
 import com.example.ds.foundation.motion.AuraMotionProgressKey
 import com.example.ds.foundation.motion.AuraMotionScaleKey
 import com.example.ds.foundation.theme.AuraTheme
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 /**
  * Presentation variants for [AuraDialog].
@@ -79,27 +84,53 @@ fun AuraDialog(
     dismissOnClickOutside: Boolean = true,
     content: (@Composable () -> Unit)? = null,
 ) {
-    if (!visible) return
-
     val colors = AuraTheme.colors
-    val motion = AuraTheme.motion
+    val motion = AuraTheme.motion.forTrack(AuraMotionProfile.Expressive)
     val reducedMotion = rememberAuraReducedMotion()
 
-    var entered by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        entered = true
+    // Stays composed through the Hide animation (MOT-RULE-010).
+    var mounted by remember { mutableStateOf(visible) }
+    val containerScale = remember { Animatable(if (reducedMotion) 1f else motion.overlayEnterScale) }
+    val containerAlpha = remember { Animatable(0f) }
+    val scrimProgress = remember { Animatable(0f) }
+
+    LaunchedEffect(visible, reducedMotion) {
+        val scrimSpec = tween<Float>(
+            durationMillis = motion.scrimFadeDurationMillis,
+            easing = AuraEasing.Standard,
+        )
+        if (visible) {
+            mounted = true
+            if (containerAlpha.value == 0f) {
+                containerScale.snapTo(if (reducedMotion) 1f else motion.overlayEnterScale)
+            }
+            coroutineScope {
+                if (reducedMotion) {
+                    launch { containerScale.snapTo(1f) }
+                    launch { containerAlpha.animateTo(1f, motion.reducedFadeSpec()) }
+                    launch { scrimProgress.animateTo(1f, motion.reducedFadeSpec()) }
+                } else {
+                    launch { containerScale.animateTo(1f, motion.spatialSpring()) }
+                    launch { containerAlpha.animateTo(1f, motion.enterSpec()) }
+                    launch { scrimProgress.animateTo(1f, scrimSpec) }
+                }
+            }
+        } else if (mounted) {
+            coroutineScope {
+                if (reducedMotion) {
+                    launch { containerAlpha.animateTo(0f, motion.reducedFadeSpec()) }
+                    launch { scrimProgress.animateTo(0f, motion.reducedFadeSpec()) }
+                } else {
+                    launch { containerScale.animateTo(motion.overlayExitScale, motion.exitSpec()) }
+                    launch { containerAlpha.animateTo(0f, motion.exitSpec()) }
+                    launch { scrimProgress.animateTo(0f, scrimSpec) }
+                }
+            }
+            mounted = false
+        }
     }
 
-    val containerScale by animateFloatAsState(
-        targetValue = if (entered) 1f else 0.94f,
-        animationSpec = if (reducedMotion) snap() else motion.spatialSpring(),
-        label = "AuraDialogScale",
-    )
-    val containerAlpha by animateFloatAsState(
-        targetValue = if (entered) 1f else 0f,
-        animationSpec = if (reducedMotion) snap() else motion.enterSpec(),
-        label = "AuraDialogAlpha",
-    )
+    if (!mounted) return
 
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -109,19 +140,20 @@ fun AuraDialog(
             usePlatformDefaultWidth = false,
         ),
     ) {
-        val animatedScrim = animateColorAsState(
-            targetValue = colors.interaction.scrim,
-            animationSpec = if (reducedMotion) snap() else tween(durationMillis = motion.scrimFadeDurationMillis),
-            label = "AuraDialogScrim",
-        )
+        // The platform window draws the dim; drive its amount from the scrim token so it fades.
+        val dialogWindow = (LocalView.current.parent as? DialogWindowProvider)?.window
+        val scrimAlpha = colors.interaction.scrim.alpha
+        SideEffect {
+            dialogWindow?.setDimAmount(scrimAlpha * scrimProgress.value)
+        }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
                 .graphicsLayer {
-                    scaleX = containerScale
-                    scaleY = containerScale
-                    alpha = containerAlpha
+                    scaleX = containerScale.value
+                    scaleY = containerScale.value
+                    alpha = containerAlpha.value
                 },
             contentAlignment = Alignment.Center,
         ) {
@@ -138,16 +170,12 @@ fun AuraDialog(
                 content = content,
                 modifier = modifier
                     .semantics {
-                        this[AuraMotionScaleKey] = containerScale
-                        this[AuraMotionProgressKey] = containerAlpha
+                        this[AuraMotionScaleKey] = containerScale.value
+                        this[AuraMotionProgressKey] = containerAlpha.value
                     }
                     .widthIn(min = 280.dp, max = 420.dp)
                     .fillMaxWidth()
-                    .background(Color.Transparent, RoundedCornerShape(DialogCornerRadius))
-                    .let { base ->
-                        // Keep scrim token actively bound
-                        if (animatedScrim.value.alpha < 0f) base else base
-                    },
+                    .background(Color.Transparent, RoundedCornerShape(DialogCornerRadius)),
             )
         }
     }

@@ -12,7 +12,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -204,13 +203,13 @@ fun AuraSnackbarHost(
             targetState = currentData,
             transitionSpec = {
                 val enter = if (motion.reduceMotion) {
-                    fadeIn(animationSpec = snap())
+                    fadeIn(animationSpec = motion.reducedFadeSpec())
                 } else {
                     fadeIn(animationSpec = motion.enterSpec()) +
                         slideInVertically(animationSpec = motion.spatialSpring()) { it / 2 }
                 }
                 val exit = if (motion.reduceMotion) {
-                    fadeOut(animationSpec = snap())
+                    fadeOut(animationSpec = motion.reducedFadeSpec())
                 } else {
                     fadeOut(animationSpec = motion.exitSpec()) +
                         slideOutVertically(animationSpec = motion.exitSpec()) { it / 2 }
@@ -356,7 +355,7 @@ private fun AuraSnackbarAction(
     val typography = AuraTheme.typography
     val shapes = AuraTheme.shapes
     val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
+    val isPressed by rememberAuraTactilePressed(interactionSource, motion.minPressDurationMillis)
     val scale by animateFloatAsState(
         targetValue = if (isPressed && !motion.reduceMotion) motion.pressedScaleGhost else 1f,
         animationSpec = if (motion.reduceMotion) snap() else if (isPressed) motion.pressInSpring() else motion.pressOutSpring(),

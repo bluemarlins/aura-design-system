@@ -115,11 +115,11 @@ fun AuraSlider(
 
     val animatedFraction by animateFloatAsState(
         targetValue = targetFraction,
-        animationSpec = if (reducedMotion || isDragging) snap() else motion.pressOutSpring(),
+        animationSpec = if (reducedMotion || isDragging) snap() else motion.selectionSpring(),
         label = "AuraSliderFraction",
     )
     val thumbScale by animateFloatAsState(
-        targetValue = if (isDragging && enabled && !reducedMotion) 1.18f else 1f,
+        targetValue = if (isDragging && enabled && !reducedMotion) motion.grabScale else 1f,
         animationSpec = when {
             reducedMotion -> snap()
             isDragging -> motion.pressInSpring()

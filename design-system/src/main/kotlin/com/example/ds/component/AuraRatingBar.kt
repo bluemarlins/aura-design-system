@@ -187,7 +187,7 @@ fun AuraRatingBar(
     val emptyStarColor = colors.surface.sunken
     val starOutlineColor = if (enabled) colors.border.strong else colors.border.subtle
     val activeScale by animateFloatAsState(
-        targetValue = if (isScrubbing && isInteractive && !reducedMotion) 1.12f else 1f,
+        targetValue = if (isScrubbing && isInteractive && !reducedMotion) motion.scrubScale else 1f,
         animationSpec = if (reducedMotion) snap() else motion.iconSpring(),
         label = "AuraRatingActiveScale",
     )
