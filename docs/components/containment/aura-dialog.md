@@ -1,5 +1,5 @@
 ---
-id: "aura-dialog"
+id: "aura.component.dialog"
 name: "AuraDialog"
 category: "containment"
 status: "ready"
@@ -9,19 +9,19 @@ material_allowed: ["Solid", "Glass"]
 motion_track: "Expressive"
 platforms:
   android: "com.example.ds.component.AuraDialog"
-  ios: "AuraDialog"
-  web: "AuraDialog"
+  ios: "AuraDS.AuraDialog (planned)"
+  web: "@aura-ds/react.AuraDialog (planned)"
 tokens:
-  - "color.surface.floating"
-  - "color.surface.raised"
-  - "color.content.primary"
-  - "color.content.secondary"
-  - "color.brand.primary"
-  - "color.status.error.solid"
-  - "color.status.error.subtle"
-  - "color.status.error.onSubtle"
-  - "color.border.subtle"
-  - "color.interaction.scrim"
+  - "colors.surface.floating"
+  - "colors.surface.raised"
+  - "colors.content.primary"
+  - "colors.content.secondary"
+  - "colors.brand.primary"
+  - "colors.status.error.solid"
+  - "colors.status.error.subtle"
+  - "colors.status.error.onSubtle"
+  - "colors.border.subtle"
+  - "colors.interaction.scrim"
   - "elevation.level4"
   - "typography.headlineSmall"
   - "typography.bodyMedium"
@@ -32,9 +32,15 @@ tokens:
 
 # AuraDialog
 
-Focused modal confirmation, alert, and high-consequence action dialog (`Standard`, `Destructive`, `Glass`), built on Aura tokens without Material 3 modal chrome.
+> Focused modal confirmation, alert, and high-consequence action dialog (`Standard`, `Destructive`, `Glass`), built on Aura tokens without Material 3 modal chrome.
+
+---
 
 ## 1. Intent & Usage Principles
+
+### Problem
+
+Some decisions (confirming, alerting, or a high-consequence destructive action) must interrupt the flow and get an explicit answer before the user continues.
 
 ### When to Use
 
@@ -42,13 +48,13 @@ Focused modal confirmation, alert, and high-consequence action dialog (`Standard
 - Presenting focused, concise modal prompts that require explicit acknowledgment before returning to the underlying flow.
 - Rendering a spatial fluid confirmation prompt over translucent glass backdrops (`AuraDialogVariant.Glass` with `GlassStyle.FROSTED` / `LIQUID`).
 
-### When NOT to Use
+### When NOT to Use & Alternatives
 
 - **Multi-field forms, long pickers, or secondary navigation:** Use a dedicated sheet, screen, or two-pane detail flow (`CNT-RULE-002`).
 - **Passive inline grouped content:** Use `AuraCard`.
 - **Transient non-blocking status feedback:** Use `AuraBadge` or an inline status banner.
 
-### Usage Rules
+### Context Rules
 
 - **`DLG-RULE-001` (Action Verb Clarity):** Always label `confirmText` with a concrete verb (`"Delete Bottle"`, `"Clear Draft"`, `"Confirm"`) rather than ambiguous `"OK"` / `"Yes"`.
 - **`DLG-RULE-002` (Destructive Isolation):** Whenever a confirmation causes irreversible deletion or financial reset, set `variant = AuraDialogVariant.Destructive` so the confirm CTA renders in `AuraButtonVariant.Destructive` (`status.error.solid`) paired with an error-tinted indicator banner.
@@ -65,7 +71,7 @@ Focused modal confirmation, alert, and high-consequence action dialog (`Standard
 
 ---
 
-## 2. Anatomy & Variants
+## 2. Anatomy & Canonical Part IDs
 
 ```text
   ╭──────────────────────────────────────────╮
@@ -78,15 +84,36 @@ Focused modal confirmation, alert, and high-consequence action dialog (`Standard
   ╰──────────────────────────────────────────╯
 ```
 
+| Part ID | Responsibility | Required | Semantics Owner |
+|---|---|---|---|
+| `scrim` | Platform window dim driven by `interaction.scrim` | Yes | Dismisses on outside tap when `dismissOnClickOutside` |
+| `root` | `280–420dp` wide surface, `24dp` radius, `24dp` padding | Yes | Dialog window (focus trap) |
+| `alertEmblem` | `36dp` warning pill (`Destructive` only) | Conditional | Decorative |
+| `title` | Short question or statement | Yes | `heading()` |
+| `message` | Supporting explanation | No | Merged into dialog content |
+| `content` | Optional custom slot below `message` | No | Children keep their own semantics |
+| `dismissButton` | `AuraButton` (`Outline`) when `dismissText != null` | No | `Role.Button` |
+| `confirmButton` | `AuraButton` (`Primary` / `Destructive`) | Yes | `Role.Button` |
+
+---
+
+## 3. Variant, Size & Material Matrix
+
 | Variant (`AuraDialogVariant`) | Surface Material | Confirm CTA Style | Accent Indicator |
 |---|---|---|---|
-| `Standard` (default) | `surface.floating` (`24.dp` corner radius) | `AuraButtonVariant.Primary` | None |
+| `Standard` (default) | `surface.floating` (`24dp` corner radius) | `AuraButtonVariant.Primary` | None |
 | `Destructive` | `surface.floating` + subtle alert pill | `AuraButtonVariant.Destructive` | `status.error.subtle` / `status.error.solid` alert emblem |
 | `Glass` | `GlassSurface(glassStyle, 24.dp)` | `AuraButtonVariant.Primary` | Optical blur/refraction bevel + specular stroke |
 
 ---
 
-## 3. Token Bindings
+## 4. State Precedence & Behavior
+
+`Hidden` (`!visible`) > `ConfirmDisabled` (`!confirmEnabled`) > `Destructive` > `Glass` > `Standard`.
+
+---
+
+## 5. Semantic Token Bindings
 
 | Element | Variant / State | Light / Dark Semantic Token |
 |---|---|---|
@@ -99,22 +126,7 @@ Focused modal confirmation, alert, and high-consequence action dialog (`Standard
 
 ---
 
-## 4. State Precedence & Accessibility
-
-### State Precedence
-
-`Hidden` (`!visible`) > `ConfirmDisabled` (`!confirmEnabled`) > `Destructive` > `Glass` > `Standard`.
-
-### Accessibility
-
-- Wraps modal in Jetpack Compose `Dialog` (`DialogProperties`) so TalkBack traps focus cleanly inside the dialog and restores focus to the trigger control upon dismissal.
-- Marks `title` with `semantics { heading() }` for immediate modal announcement.
-- Enforces `>= 48.dp` touch height on both confirm and dismiss `AuraButton`s.
-- **Reduced Transparency & Contrast (`VIS-RULE-003`–`004`):** Maintains `>= 4.5:1` body/title text contrast (`>= 3:1` borders/actions) on `AuraDialogVariant.Glass` and falls back to opaque `Solid` (`colors.surface.floating`) via `AuraTheme.effectiveMaterial(...)` when Reduced Transparency, Battery Saver, or High-Contrast Text is active.
-
----
-
-## 5. Motion
+## 6. Interaction Motion Contract
 
 Consumes `AuraTheme.motion` (`Expressive` profile recommended for spatial modal entrance):
 
@@ -124,19 +136,32 @@ Consumes `AuraTheme.motion` (`Expressive` profile recommended for spatial modal 
 
 ---
 
-## 6. Responsive Layout Behavior
+## 7. Responsive Layout Behavior (`Smallest Width × Display Ratio`)
 
 | Width / Display Profile | Dialog Sizing & Action Button Layout |
 |---|---|
-| `ExtraSmall` (`< 360dp`) | Expands to `fillMaxWidth(0.94f)` with `20.dp` inner padding; when action labels are long, stacks footer buttons vertically (`Confirm` above `Dismiss`) so neither truncates. |
-| `Compact` (`360–599dp`) | Centred modal (`widthIn(min = 280.dp, max = 380.dp)`) with horizontal end-aligned button row (`10.dp` gap). |
+| `ExtraSmall` (`< 360dp`) | Expands to `fillMaxWidth(0.94f)` with `20dp` inner padding; when action labels are long, stacks footer buttons vertically (`Confirm` above `Dismiss`) so neither truncates. |
+| `Compact` (`360–599dp`) | Centred modal (`widthIn(min = 280.dp, max = 380.dp)`) with horizontal end-aligned button row (`10dp` gap). |
 | `Square` (`~1:1` Pop-up / Foldable) | Centered safely above hinge/split boundaries with `widthIn(max = 400.dp)` and comfortable scrim margin. |
 | `UltraWide` (`> 21:9`) | Vertical padding adjusts cleanly (`heightIn`) so title, message, and actions stay comfortably visible without clipping in short landscape frames. |
 | `Expanded` (`>= 840dp` Tablet) | Remains compact and focused (`widthIn(max = 440.dp)`), never stretching across an entire tablet screen. |
 
 ---
 
-## 7. Cross-Platform API Contract
+## 8. Accessibility & Guardrails
+
+- Wraps modal in Jetpack Compose `Dialog` (`DialogProperties`) so TalkBack traps focus cleanly inside the dialog and restores focus to the trigger control upon dismissal.
+- Marks `title` with `semantics { heading() }` for immediate modal announcement.
+- Enforces `>= 48dp` touch height on both confirm and dismiss `AuraButton`s.
+- **Reduced Transparency & Contrast (`VIS-RULE-003`–`004`):** Maintains `>= 4.5:1` body/title text contrast (`>= 3:1` borders/actions) on `AuraDialogVariant.Glass` and falls back to opaque `Solid` (`colors.surface.floating`) via `AuraTheme.effectiveMaterial(...)` when Reduced Transparency, Battery Saver, or High-Contrast Text is active.
+
+---
+
+## 9. Platform Bindings
+
+### 9.1 Android (Jetpack Compose)
+
+- **Source:** [`AuraDialog.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraDialog.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
@@ -166,6 +191,8 @@ fun AuraDialog(
 ```
 <!-- API:ANDROID:END -->
 
+### 9.2 iOS (SwiftUI Reference)
+
 <!-- API:IOS:BEGIN -->
 ```swift
 public enum AuraDialogVariant: Sendable {
@@ -193,6 +220,8 @@ public struct AuraDialog<Content: View>: View {
 }
 ```
 <!-- API:IOS:END -->
+
+### 9.3 Web (React / TypeScript Reference)
 
 <!-- API:WEB:BEGIN -->
 ```ts

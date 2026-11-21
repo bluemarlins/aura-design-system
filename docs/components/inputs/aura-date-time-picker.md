@@ -1,29 +1,29 @@
 ---
-id: "aura-date-time-picker"
+id: "aura.component.date-time-picker"
 name: "AuraDateTimePicker"
 category: "inputs"
 status: "ready"
+version: "1.0.0"
 layer: "content"
 material_allowed: ["Solid"]
 motion_track: "Standard"
-version: "1.0.0"
 platforms:
   android: "com.example.ds.component.AuraDateTimePicker"
-  ios: "AuraDateTimePicker"
-  web: "AuraDateTimePicker"
+  ios: "AuraDS.AuraDateTimePicker (planned)"
+  web: "@aura-ds/react.AuraDateTimePicker (planned)"
 tokens:
-  - "color.surface.default"
-  - "color.surface.sunken"
-  - "color.brand.primary"
-  - "color.brand.onPrimary"
-  - "color.brand.subtle"
-  - "color.brand.onSubtle"
-  - "color.content.primary"
-  - "color.content.secondary"
-  - "color.content.tertiary"
-  - "color.content.disabled"
-  - "color.border.default"
-  - "color.border.subtle"
+  - "colors.surface.default"
+  - "colors.surface.sunken"
+  - "colors.brand.primary"
+  - "colors.brand.onPrimary"
+  - "colors.brand.subtle"
+  - "colors.brand.onSubtle"
+  - "colors.content.primary"
+  - "colors.content.secondary"
+  - "colors.content.tertiary"
+  - "colors.content.disabled"
+  - "colors.border.default"
+  - "colors.border.subtle"
   - "typography.titleSmall"
   - "typography.bodyMedium"
   - "typography.labelMedium"
@@ -37,9 +37,15 @@ tokens:
 
 # AuraDateTimePicker
 
-Structured calendar date, time-slot, and vintage-year selector built exclusively on Aura tokens for **My Planner**, **My Finance**, and **My Drink Diary**.
+> Structured calendar date, time-slot, and vintage-year selector built exclusively on Aura tokens for **My Planner**, **My Finance**, and **My Drink Diary**.
+
+---
 
 ## 1. Intent & Usage Principles
+
+### Problem
+
+Users need to pick a calendar date, a time, or a vintage year reliably without typing and validating free-form date text.
 
 ### When to Use
 
@@ -47,13 +53,13 @@ Structured calendar date, time-slot, and vintage-year selector built exclusively
 - Selecting combined date + hour/minute schedule slots (`AuraDateTimeMode.DateTime`).
 - Rapidly choosing a wine/whiskey bottle vintage year (`AuraDateTimeMode.YearVintage`) within `minYear..maxYear`.
 
-### When NOT to Use
+### When NOT to Use & Alternatives
 
 - **Typing raw numbers unrelated to calendar dates (currency, ABV):** Use `AuraNumberField`.
 - **Relative duration / temperature scales:** Use `AuraSlider`.
 - **Single-line view scope switching (`Day | Week | Month`):** Use `AuraSegmentedButton`.
 
-### Usage Rules
+### Context Rules
 
 - **`DTP-RULE-001` (48dp Calendar Cell Accessibility):** Day cells, `<` / `>` month arrows, and hour/minute steppers maintain comfortable hit bounds (`>= 40–48dp`) with clear visual selected pill highlighting.
 - **`DTP-RULE-002` (Fast Vintage Selection):** In `YearVintage` mode, prioritize an intuitive scannable grid/strip of years instead of forcing users to tap "previous month" hundreds of times.
@@ -70,7 +76,7 @@ Structured calendar date, time-slot, and vintage-year selector built exclusively
 
 ---
 
-## 2. Anatomy & Variants
+## 2. Anatomy & Canonical Part IDs
 
 ```text
   Label (optional)
@@ -84,14 +90,36 @@ Structured calendar date, time-slot, and vintage-year selector built exclusively
   ╰──────────────────────────────────────────────────────╯
 ```
 
+| Part ID | Responsibility | Required | Semantics Owner |
+|---|---|---|---|
+| `label` | Optional header above the picker | No | Merged |
+| `root` | Rounded picker container | Yes | Inherited |
+| `monthHeader` | Month/year title with previous/next buttons | Conditional (`Date`, `DateTime`) | `Role.Button` per arrow |
+| `dayCell` | One selectable day in the 7-column grid | Conditional (`Date`, `DateTime`) | `Role.RadioButton` |
+| `timeStepper` | Hour and minute `−` / `+` steppers | Conditional (`DateTime`) | `Role.Button` per stepper |
+| `yearCell` | One selectable year in the 4-column matrix | Conditional (`YearVintage`) | `Role.RadioButton` |
+| `supportingText` | Guidance text below the picker | No | Merged |
+
+---
+
+## 3. Variant, Size & Material Matrix
+
 `AuraDateTimeMode`:
 - `Date`: Month header + 7-column calendar grid.
 - `DateTime`: Calendar grid + interactive Hour (`00..23`) and Minute (`00..55` 5-min steppers).
 - `YearVintage`: Dedicated 4-column selectable year matrix with quick decade/range jumps.
 
+- **Material:** `Solid` only (`layer: content`).
+
 ---
 
-## 3. Token Bindings
+## 4. State Precedence & Behavior
+
+`Disabled` (`!enabled`) > `Selected` > `Pressed` > `Rest`.
+
+---
+
+## 5. Semantic Token Bindings
 
 | Element | State | Light / Dark Semantic Token |
 |---|---|---|
@@ -104,20 +132,7 @@ Structured calendar date, time-slot, and vintage-year selector built exclusively
 
 ---
 
-## 4. State Precedence & Accessibility
-
-### State Precedence
-
-`Disabled` (`!enabled`) > `Selected` > `Pressed` > `Rest`.
-
-### Accessibility
-
-- Month navigation `<` / `>`, day cells, year buttons, and hour/minute steppers all expose `Role.Button` / `Role.RadioButton` semantics with complete screen-reader descriptions (e.g., `"2026-11-15"`, `"Previous month"`, `"Increase hour"`).
-- Keyboard and TalkBack traversal follows logical calendar order (header navigation -> weekday headers -> day cells -> optional time steppers).
-
----
-
-## 5. Motion
+## 6. Interaction Motion Contract
 
 Consumes `AuraTheme.motion`:
 
@@ -126,11 +141,11 @@ Consumes `AuraTheme.motion`:
 
 ---
 
-## 6. Responsive Layout Behavior
+## 7. Responsive Layout Behavior (`Smallest Width × Display Ratio`)
 
 | Width / Display Profile | Calendar & Selector Adaptation |
 |---|---|
-| `ExtraSmall` (`< 360dp`) | Compact `12.dp` outer card padding; 7 calendar columns share equal `weight(1f)` so all weekdays remain visible without horizontal scroll. |
+| `ExtraSmall` (`< 360dp`) | Compact `12dp` outer card padding; 7 calendar columns share equal `weight(1f)` so all weekdays remain visible without horizontal scroll. |
 | `Compact` (`360–599dp`) | Full-width `40–44dp` square-friendly day cells and side-by-side Hour/Minute steppers. |
 | `Square` (`~1:1` Pop-up / Foldable) | Fits comfortably in a single fold pane or pop-up sheet (`~340dp`–`420dp` width) with tight vertical rhythm. |
 | `UltraWide` (`> 21:9`) | Centered or pane-aligned inside `AuraAdaptiveTwoPane` so picker never stretches uncomfortably thin vertically. |
@@ -138,7 +153,18 @@ Consumes `AuraTheme.motion`:
 
 ---
 
-## 7. Cross-Platform API Contract
+## 8. Accessibility & Guardrails
+
+- Month navigation `<` / `>`, day cells, year buttons, and hour/minute steppers all expose `Role.Button` / `Role.RadioButton` semantics with complete screen-reader descriptions (e.g., `"2026-11-15"`, `"Previous month"`, `"Increase hour"`).
+- Keyboard and TalkBack traversal follows logical calendar order (header navigation -> weekday headers -> day cells -> optional time steppers).
+
+---
+
+## 9. Platform Bindings
+
+### 9.1 Android (Jetpack Compose)
+
+- **Source:** [`AuraDateTimePicker.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraDateTimePicker.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
@@ -168,6 +194,8 @@ fun AuraDateTimePicker(
 ```
 <!-- API:ANDROID:END -->
 
+### 9.2 iOS (SwiftUI Reference)
+
 <!-- API:IOS:BEGIN -->
 ```swift
 public enum AuraDateTimeMode: Sendable {
@@ -195,6 +223,8 @@ public struct AuraDateTimePicker: View {
 }
 ```
 <!-- API:IOS:END -->
+
+### 9.3 Web (React / TypeScript Reference)
 
 <!-- API:WEB:BEGIN -->
 ```ts

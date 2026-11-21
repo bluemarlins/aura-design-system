@@ -1,12 +1,12 @@
 ---
-component_id: "aura.component.adaptive-two-pane"
+id: "aura.component.adaptive-two-pane"
 name: "AuraAdaptiveTwoPane"
 category: "layout"
 status: "ready"
+version: "0.1.0"
 layer: "canvas"
 material_allowed: ["Solid"]
 motion_track: "none"
-version: "0.1.0"
 platforms:
   android: "com.example.ds.component.AuraAdaptiveTwoPane"
   ios: "AuraDS.AuraAdaptiveTwoPane (planned)"
@@ -80,24 +80,24 @@ Single-Pane (supportsTwoPane == false)        Two-Pane (supportsTwoPane == true)
 
 ---
 
-## 3. Responsive Layout Behavior (`Adaptive Behavior Matrix`)
+## 3. Variant, Size & Material Matrix
 
-| `AuraLayout` Profile | `supportsTwoPane` | `primaryPaneFraction` | `paneSpacing` / Stack Spacing | Pane Scroll Behavior |
-|---|---|---|---|---|
-| **`ExtraSmall`** (Cover `sw < 360dp` / `UltraTall`) | `false` | Stacked (`100%`) | Vertical `16px` (`sectionSpacing`) | Unified single scroll |
-| **`Compact`** (Phone Portrait) | `false` | Stacked (`100%`) | Vertical `20px` (`sectionSpacing`) | Unified single scroll |
-| **`PhoneLandscape`** (`UltraWide`, `width >= 640dp`) | `true` | `42% : 58%` | Horizontal `16px` (`gridGutter`) | Independent dual vertical scroll |
-| **`Medium` + `Square`** (Foldable `~1:1`) | `true` | `45% : 55%` | Horizontal `16px` (`gridGutter`) | Independent dual vertical scroll |
-| **`Expanded`** (Tablet / DeX `>= 840dp`) | `true` | `38% : 62%` | Horizontal `20px` (`gridGutter`) | Independent dual vertical scroll |
+| Mode | Condition | Layout |
+|---|---|---|
+| **Single-Pane** | `!AuraTheme.layout.supportsTwoPane` or `forceSinglePane = true` | `primaryPane` stacked above `secondaryPane` |
+| **Two-Pane** | `AuraTheme.layout.supportsTwoPane` | Side-by-side; `primaryPane` takes `primaryPaneFraction`, separated by `paneSpacing` |
 
-### Guardrail Rules
-
-- **`PAN-001`:** `primaryPaneFraction` must be clamped within `(0.25f .. 0.65f)` to prevent unusable micro-panes on custom overrides.
-- **`PAN-002`:** Callers may pass `forceSinglePane = true` for debug simulation or explicitly linear flows without modifying `AuraTheme.layout`.
+- **Material:** `Solid` canvas only (`layer: canvas`).
 
 ---
 
-## 4. Semantic Token Bindings
+## 4. State Precedence & Behavior
+
+Passive container: no interactive states. Mode resolves as `forceSinglePane` > `AuraTheme.layout.supportsTwoPane` > Single-Pane.
+
+---
+
+## 5. Semantic Token Bindings
 
 | Part | Token Binding |
 |---|---|
@@ -108,18 +108,41 @@ Single-Pane (supportsTwoPane == false)        Two-Pane (supportsTwoPane == true)
 
 ---
 
-## 5. Interaction Motion & Accessibility Contract
+## 6. Interaction Motion Contract
 
-- **Interaction Motion (`interaction_motion: "none"`):** `AuraAdaptiveTwoPane` is a passive responsive structural layout container with no clickable press target of its own. Scroll physics use native platform inertia while interactive child components own their `AuraTheme.motion` transitions.
-- **Accessibility & Focus Order:**
-  - Keyboard/TalkBack focus traversal progresses linearly from `primaryPane` (top/start) into `secondaryPane` (bottom/end), preserving predictable reading order in both Single-Pane and Two-Pane modes.
-  - Preserves composable identity inside in-place configuration changes (`configChanges` / Popup Window resizing) when callers hoist screen state outside `AuraAdaptiveTwoPane`.
+- **Interaction Motion (`motion_track: "none"`):** `AuraAdaptiveTwoPane` is a passive responsive structural layout container with no clickable press target of its own. Scroll physics use native platform inertia while interactive child components own their `AuraTheme.motion` transitions.
 
 ---
 
-## 6. Platform Bindings (Layer B)
+## 7. Responsive Layout Behavior (`Smallest Width × Display Ratio`)
 
-### 6.1 Android (Jetpack Compose)
+| `AuraLayout` Profile | `supportsTwoPane` | `primaryPaneFraction` | `paneSpacing` / Stack Spacing | Pane Scroll Behavior |
+|---|---|---|---|---|
+| **`ExtraSmall`** (Cover `sw < 360dp` / `UltraTall`) | `false` | Stacked (`100%`) | Vertical `16dp` (`sectionSpacing`) | Unified single scroll |
+| **`Compact`** (Phone Portrait) | `false` | Stacked (`100%`) | Vertical `20dp` (`sectionSpacing`) | Unified single scroll |
+| **`PhoneLandscape`** (`UltraWide`, `width >= 640dp`) | `true` | `42% : 58%` | Horizontal `16dp` (`gridGutter`) | Independent dual vertical scroll |
+| **`Medium` + `Square`** (Foldable `~1:1`) | `true` | `45% : 55%` | Horizontal `16dp` (`gridGutter`) | Independent dual vertical scroll |
+| **`Expanded`** (Tablet / DeX `>= 840dp`) | `true` | `38% : 62%` | Horizontal `20dp` (`gridGutter`) | Independent dual vertical scroll |
+
+### Guardrail Rules
+
+- **`PAN-001`:** `primaryPaneFraction` must be clamped within `(0.25f .. 0.65f)` to prevent unusable micro-panes on custom overrides.
+- **`PAN-002`:** Callers may pass `forceSinglePane = true` for debug simulation or explicitly linear flows without modifying `AuraTheme.layout`.
+
+---
+
+## 8. Accessibility & Guardrails
+
+- Keyboard/TalkBack focus traversal progresses linearly from `primaryPane` (top/start) into `secondaryPane` (bottom/end), preserving predictable reading order in both Single-Pane and Two-Pane modes.
+- Preserves composable identity inside in-place configuration changes (`configChanges` / Popup Window resizing) when callers hoist screen state outside `AuraAdaptiveTwoPane`.
+
+---
+
+## 9. Platform Bindings
+
+### 9.1 Android (Jetpack Compose)
+
+- **Source:** [`AuraAdaptiveTwoPane.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraAdaptiveTwoPane.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
@@ -135,7 +158,7 @@ fun AuraAdaptiveTwoPane(
 ```
 <!-- API:ANDROID:END -->
 
-### 6.2 iOS (SwiftUI Reference)
+### 9.2 iOS (SwiftUI Reference)
 
 <!-- API:IOS:BEGIN -->
 ```swift
@@ -148,7 +171,7 @@ struct AuraAdaptiveTwoPane<Primary: View, Secondary: View>: View {
 ```
 <!-- API:IOS:END -->
 
-### 6.3 Web (React / TypeScript Reference)
+### 9.3 Web (React / TypeScript Reference)
 
 <!-- API:WEB:BEGIN -->
 ```tsx

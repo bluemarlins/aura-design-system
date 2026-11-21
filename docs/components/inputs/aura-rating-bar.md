@@ -1,24 +1,24 @@
 ---
-id: "aura-rating-bar"
+id: "aura.component.rating-bar"
 name: "AuraRatingBar"
 category: "inputs"
 status: "ready"
+version: "1.0.0"
 layer: "content"
 material_allowed: ["Solid"]
 motion_track: "Standard"
-version: "1.0.0"
 platforms:
   android: "com.example.ds.component.AuraRatingBar"
-  ios: "AuraRatingBar"
-  web: "AuraRatingBar"
+  ios: "AuraDS.AuraRatingBar (planned)"
+  web: "@aura-ds/react.AuraRatingBar (planned)"
 tokens:
-  - "color.brand.primary"
-  - "color.brand.subtle"
-  - "color.surface.sunken"
-  - "color.border.strong"
-  - "color.content.primary"
-  - "color.content.secondary"
-  - "color.content.disabled"
+  - "colors.brand.primary"
+  - "colors.brand.subtle"
+  - "colors.surface.sunken"
+  - "colors.border.strong"
+  - "colors.content.primary"
+  - "colors.content.secondary"
+  - "colors.content.disabled"
   - "typography.labelLarge"
   - "typography.monoMedium"
   - "motion.pressInSpring"
@@ -30,25 +30,31 @@ tokens:
 
 # AuraRatingBar
 
-Star and half-star rating input and display control tailored for sensory enjoyment logs (**My Drink Diary**) and summary review cards.
+> Star and half-star rating input and display control tailored for sensory enjoyment logs (**My Drink Diary**) and summary review cards.
+
+---
 
 ## 1. Intent & Usage Principles
+
+### Problem
+
+Users need to give or read a quick star score (with optional half stars) for subjective enjoyment or quality.
 
 ### When to Use
 
 - Recording tasting enjoyment scores (`0.5`..`5.0` stars) with tap or smooth horizontal scrub (**My Drink Diary**).
 - Displaying read-only historical ratings on bottle cards (`onRatingChange = null`, `size = Small`).
 
-### When NOT to Use
+### When NOT to Use & Alternatives
 
 - **Continuous technical or multi-dimensional metrics (`0..100%`, `Body`, `Tannin`, `Serving °C`):** Use `AuraSlider`.
 - **Exact numeric scores (`94 / 100` Parker Points):** Use `AuraNumberField`.
 - **Single binary favorite mark:** Use `AuraIconButton` (bookmark / heart toggle).
 
-### Usage Rules
+### Context Rules
 
 - **`RAT-RULE-001` (Half-Star Precision Default):** Enable `allowHalfRating = true` by default in tasting journals (`4.5 / 5.0`), while supporting integer-only (`1..5`) mode for quick thumbs-up style forms.
-- **`RAT-RULE-002` (Interactive vs. Read-Only Clarity):** When `onRatingChange == null`, switch into calm display mode (`Small` cards, zero drag/press feedback); when `onRatingChange != null`, enforce a minimum `48.dp` interactive height.
+- **`RAT-RULE-002` (Interactive vs. Read-Only Clarity):** When `onRatingChange == null`, switch into calm display mode (`Small` cards, zero drag/press feedback); when `onRatingChange != null`, enforce a minimum `48dp` interactive height.
 - **`RAT-RULE-003` (Tabular Readout Option):** Pair stars with `showValueText = true` (`"4.5 / 5"`) using monospace tabular alignment so fractional changes read crisply.
 
 ### Do / Don't
@@ -63,7 +69,7 @@ Star and half-star rating input and display control tailored for sensory enjoyme
 
 ---
 
-## 2. Anatomy & Variants
+## 2. Anatomy & Canonical Part IDs
 
 ```text
   Overall Enjoyment
@@ -71,15 +77,35 @@ Star and half-star rating input and display control tailored for sensory enjoyme
   └─── 48dp minimum interactive row height ───┘
 ```
 
-| Size (`AuraRatingBarSize`) | Visual Star Size | Star Spacing | Min Touch Height | Recommended Context |
-|---|---|---|---|---|
-| `Small` | `18.dp` | `4.dp` | `48.dp` (when interactive) / `20.dp` (read-only) | Bottle list rows, summary headers |
-| `Medium` (default) | `28.dp` | `6.dp` | `48.dp` | Standard tasting card & archive filters |
-| `Large` | `36.dp` | `8.dp` | `48.dp` | Dedicated tasting-note modal & detail review |
+| Part ID | Responsibility | Required | Semantics Owner |
+|---|---|---|---|
+| `root` | Star row; owns tap/drag gestures when `onRatingChange != null` | Yes | `setProgress` + `stateDescription` |
+| `label` | Optional header text above the stars | No | Merged into `root` |
+| `star` | One of `maxStars` glyphs (full, half, or empty) | Yes | Decorative |
+| `valueText` | Numeric readout (`"4.5 / 5"`) shown when `showValueText = true` | No | Merged into `root` |
 
 ---
 
-## 3. Token Bindings
+## 3. Variant, Size & Material Matrix
+
+| Size (`AuraRatingBarSize`) | Visual Star Size | Star Spacing | Min Touch Height | Recommended Context |
+|---|---|---|---|---|
+| `Small` | `18dp` | `4dp` | `48dp` (when interactive) / `20dp` (read-only) | Bottle list rows, summary headers |
+| `Medium` (default) | `28dp` | `6dp` | `48dp` | Standard tasting card & archive filters |
+| `Large` | `36dp` | `8dp` | `48dp` | Dedicated tasting-note modal & detail review |
+
+- **Modes:** Interactive (`onRatingChange != null`) or Read-only (`onRatingChange == null`); half-star precision via `allowHalfRating`.
+- **Material:** `Solid` only (`layer: content`).
+
+---
+
+## 4. State Precedence & Behavior
+
+`Disabled` (`!enabled`) > `Dragging / Scrubbing` > `ReadOnly` (`onRatingChange == null`) > `Rest`.
+
+---
+
+## 5. Semantic Token Bindings
 
 | Element | State | Light / Dark Semantic Token |
 |---|---|---|
@@ -90,20 +116,7 @@ Star and half-star rating input and display control tailored for sensory enjoyme
 
 ---
 
-## 4. State Precedence & Accessibility
-
-### State Precedence
-
-`Disabled` (`!enabled`) > `Dragging / Scrubbing` > `ReadOnly` (`onRatingChange == null`) > `Rest`.
-
-### Accessibility
-
-- Attaches `stateDescription = "${formattedRating} out of ${maxStars} stars"` and `setProgress` semantics so screen-reader users can step ratings in `0.5` or `1.0` increments without vision.
-- Interactive hit zone spans at least `48.dp` vertically across the star strip.
-
----
-
-## 5. Motion
+## 6. Interaction Motion Contract
 
 Consumes `AuraTheme.motion`:
 
@@ -113,7 +126,7 @@ Consumes `AuraTheme.motion`:
 
 ---
 
-## 6. Responsive Layout Behavior
+## 7. Responsive Layout Behavior (`Smallest Width × Display Ratio`)
 
 | Width / Display Profile | Layout Adaptation |
 |---|---|
@@ -125,7 +138,18 @@ Consumes `AuraTheme.motion`:
 
 ---
 
-## 7. Cross-Platform API Contract
+## 8. Accessibility & Guardrails
+
+- Attaches `stateDescription = "${formattedRating} out of ${maxStars} stars"` and `setProgress` semantics so screen-reader users can step ratings in `0.5` or `1.0` increments without vision.
+- Interactive hit zone spans at least `48dp` vertically across the star strip.
+
+---
+
+## 9. Platform Bindings
+
+### 9.1 Android (Jetpack Compose)
+
+- **Source:** [`AuraRatingBar.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraRatingBar.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
@@ -150,6 +174,8 @@ fun AuraRatingBar(
 ```
 <!-- API:ANDROID:END -->
 
+### 9.2 iOS (SwiftUI Reference)
+
 <!-- API:IOS:BEGIN -->
 ```swift
 public enum AuraRatingBarSize: Sendable {
@@ -172,6 +198,8 @@ public struct AuraRatingBar: View {
 }
 ```
 <!-- API:IOS:END -->
+
+### 9.3 Web (React / TypeScript Reference)
 
 <!-- API:WEB:BEGIN -->
 ```ts

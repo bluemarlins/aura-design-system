@@ -1,23 +1,23 @@
 ---
-id: "aura-progress-bar"
+id: "aura.component.progress-bar"
 name: "AuraProgressBar"
 category: "feedback"
 status: "ready"
+version: "1.1.0"
 layer: "content"
 material_allowed: ["Solid"]
 motion_track: "Standard"
-version: "1.1.0"
 platforms:
   android: "com.example.ds.component.AuraProgressBar"
-  ios: "AuraProgressBar"
-  web: "AuraProgressBar"
+  ios: "AuraDS.AuraProgressBar (planned)"
+  web: "@aura-ds/react.AuraProgressBar (planned)"
 tokens:
-  - "color.brand.primary"
-  - "color.surface.sunken"
-  - "color.status.success.solid"
-  - "color.status.warning.solid"
-  - "color.status.error.solid"
-  - "color.status.info.solid"
+  - "colors.brand.primary"
+  - "colors.surface.sunken"
+  - "colors.status.success.solid"
+  - "colors.status.warning.solid"
+  - "colors.status.error.solid"
+  - "colors.status.info.solid"
   - "shapes.extraSmall"
   - "shapes.small"
   - "motion.stateChangeDurationMillis"
@@ -25,9 +25,15 @@ tokens:
 
 # AuraProgressBar
 
-Deterministic progress indicators (`AuraLinearProgressBar` and `AuraStepProgressBar`) backed by `AuraTheme.colors`, `AuraTheme.shapes`, and `AuraTheme.motion`.
+> Deterministic progress indicators (`AuraLinearProgressBar` and `AuraStepProgressBar`) backed by `AuraTheme.colors`, `AuraTheme.shapes`, and `AuraTheme.motion`.
+
+---
 
 ## 1. Intent & Usage Principles
+
+### Problem
+
+Users need to see how far a determinate task or multi-step flow has advanced so waiting or step-by-step work feels predictable.
 
 ### When to Use
 
@@ -40,7 +46,7 @@ Deterministic progress indicators (`AuraLinearProgressBar` and `AuraStepProgress
 - **Inline status labels or unread counts:** Use `AuraBadge`.
 - **Transient operation results:** Use `AuraSnackbar`.
 
-### Usage Rules
+### Context Rules
 
 - **`PRG-RULE-001` (Bounded Progress):** Clamp continuous `progress` to `0f..1f` and discrete `currentStep` to `0..totalSteps` so layout widths never overflow.
 - **`PRG-RULE-002` (Semantic Color Alignment):** Use `Brand` for neutral goal completion and `Success` / `Warning` / `Error` / `Info` only when communicating explicit semantic status (`FBK-RULE-001`).
@@ -55,7 +61,7 @@ Deterministic progress indicators (`AuraLinearProgressBar` and `AuraStepProgress
 
 ---
 
-## 2. Anatomy & Variants
+## 2. Anatomy & Canonical Part IDs
 
 ```text
   AuraLinearProgressBar:
@@ -65,6 +71,16 @@ Deterministic progress indicators (`AuraLinearProgressBar` and `AuraStepProgress
   [████] [████] [████] [░░░░] [░░░░]   4.dp height, 4.dp gap, AuraTheme.shapes.extraSmall
 ```
 
+| Part ID | Responsibility | Required | Semantics Owner |
+|---|---|---|---|
+| `track` | Full-width background (`surface.sunken`) | Yes | `progressBarRangeInfo` + `contentDescription` |
+| `indicator` | Filled portion for `progress` (`AuraLinearProgressBar`) | Conditional | Merged into `track` |
+| `segment` | One of `totalSteps` blocks; active up to `currentStep` (`AuraStepProgressBar`) | Conditional | Merged into `track` |
+
+---
+
+## 3. Variant, Size & Material Matrix
+
 | Variant (`AuraProgressVariant`) | Active Indicator Token | Track Token |
 |---|---|---|
 | `Brand` (default) | `AuraTheme.colors.brand.primary` | `AuraTheme.colors.surface.sunken` |
@@ -73,9 +89,22 @@ Deterministic progress indicators (`AuraLinearProgressBar` and `AuraStepProgress
 | `Error` | `AuraTheme.colors.status.error.solid` | `AuraTheme.colors.surface.sunken` |
 | `Info` | `AuraTheme.colors.status.info.solid` | `AuraTheme.colors.surface.sunken` |
 
+| Component | Default Height | Shape | Gap |
+|---|---|---|---|
+| `AuraLinearProgressBar` | `6dp` | `shapes.small` | — |
+| `AuraStepProgressBar` | `4dp` | `shapes.extraSmall` | `4dp` |
+
+- **Material:** `Solid` only (`layer: content`).
+
 ---
 
-## 3. Semantic Token Bindings
+## 4. State Precedence & Behavior
+
+Passive component: no pointer, focus, or pressed states. `progress` is clamped to `0f..1f`; `currentStep` is clamped to `0..totalSteps`. Changes animate the indicator and are announced through `progressBarRangeInfo`.
+
+---
+
+## 5. Semantic Token Bindings
 
 | Element | Variant / State | Light / Dark Semantic Token |
 |---|---|---|
@@ -85,15 +114,7 @@ Deterministic progress indicators (`AuraLinearProgressBar` and `AuraStepProgress
 
 ---
 
-## 4. Accessibility
-
-- Exposes `ProgressBarRangeInfo` via `Modifier.semantics(mergeDescendants = true)` so TalkBack announces completion ratio accurately.
-- Supports optional `contentDescription` for meaningful spoken summaries (e.g., `"Step 2 of 4"`).
-- Track (`surface.sunken`) and active indicator (`brand.primary` / `status.*.solid`) maintain crisp visual separation in both Light and Dark themes.
-
----
-
-## 5. Interaction Motion Contract
+## 6. Interaction Motion Contract
 
 Consumes `AuraTheme.motion`:
 
@@ -102,11 +123,11 @@ Consumes `AuraTheme.motion`:
 
 ---
 
-## 6. Responsive Layout Behavior
+## 7. Responsive Layout Behavior (`Smallest Width × Display Ratio`)
 
 | Width / Display Profile | Progress Bar Adaptation |
 |---|---|
-| `ExtraSmall` (`< 360dp`) | Expands `fillMaxWidth()` within narrow margins while keeping `4.dp` segment gaps legible. |
+| `ExtraSmall` (`< 360dp`) | Expands `fillMaxWidth()` within narrow margins while keeping `4dp` segment gaps legible. |
 | `Compact` (`360–599dp`) | Fills container or card inner width cleanly. |
 | `Square` (`~1:1` Foldable) | Equal-weight step segments (`Modifier.weight(1f)`) distribute evenly across wider viewports. |
 | `UltraWide` (`> 21:9`) | Bounded by parent `maxContentWidth` form/card container to avoid excessively wide bars. |
@@ -114,7 +135,19 @@ Consumes `AuraTheme.motion`:
 
 ---
 
-## 7. Cross-Platform API Contract
+## 8. Accessibility & Guardrails
+
+- Exposes `ProgressBarRangeInfo` via `Modifier.semantics(mergeDescendants = true)` so TalkBack announces completion ratio accurately.
+- Supports optional `contentDescription` for meaningful spoken summaries (e.g., `"Step 2 of 4"`).
+- Track (`surface.sunken`) and active indicator (`brand.primary` / `status.*.solid`) maintain crisp visual separation in both Light and Dark themes.
+
+---
+
+## 9. Platform Bindings
+
+### 9.1 Android (Jetpack Compose)
+
+- **Source:** [`AuraProgressBar.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraProgressBar.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
@@ -154,6 +187,8 @@ fun AuraStepProgressBar(
 ```
 <!-- API:ANDROID:END -->
 
+### 9.2 iOS (SwiftUI Reference)
+
 <!-- API:IOS:BEGIN -->
 ```swift
 public enum AuraProgressVariant: Sendable {
@@ -185,6 +220,8 @@ public struct AuraStepProgressBar: View {
 }
 ```
 <!-- API:IOS:END -->
+
+### 9.3 Web (React / TypeScript Reference)
 
 <!-- API:WEB:BEGIN -->
 ```ts

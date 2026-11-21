@@ -93,5 +93,5 @@ Aligned with `AuraMaterial` in [00-principles.md](../../foundation/00-principles
 
 ## 7. Principle 5: Ergonomics & Safety
 
-- **`BTN-RULE-005` (Minimum Touch Target):** Even when visual height is `36px` (`Small`), the interactive hit boundary must remain at least **`48dp × 48dp`** on Android (`44pt × 44pt` on iOS).
+- **`BTN-RULE-005` (Minimum Touch Target):** Even when visual height is `36dp` (`Small`), the interactive hit boundary must remain at least **`48dp × 48dp`** on Android (`44pt × 44pt` on iOS).
 - **`BTN-RULE-006` (Duplicate-Click & Loading Safety):** Actions that mutate financial records (**My Finance**) or save media entries (**My Drink Diary**) must prevent accidental double taps via built-in debounce (`400ms` default) and preserve button width when `loading = true` to avoid layout jumps.

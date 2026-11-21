@@ -1,12 +1,12 @@
 ---
-component_id: "aura.component.adaptive-bar-state"
+id: "aura.component.adaptive-bar-state"
 name: "AuraAdaptiveBarState"
 category: "navigation"
 status: "ready"
+version: "0.1.0"
 layer: "chrome"
 material_allowed: ["Solid", "Glass", "LiquidGlass"]
 motion_track: "Standard"
-version: "0.1.0"
 platforms:
   android: "com.example.ds.component.AuraAdaptiveBarState"
   ios: "AuraDS.AuraAdaptiveBarState (planned, @Observable)"
@@ -60,22 +60,36 @@ When the top bar and bottom island each listen to scroll on their own, they hide
 
 ---
 
-## 2. Phase Model (`AdaptiveFloatingBarPhase`)
+## 2. Anatomy & Canonical Part IDs
+
+`AuraAdaptiveBarState` is a non-visual state holder. Its "parts" are the collaborators it coordinates:
+
+| Part ID | Responsibility | Required | Semantics Owner |
+|---|---|---|---|
+| `state` | `AuraAdaptiveBarState` created by `rememberAuraAdaptiveBarState()`; owns `phase`, `collapseProgress`, `morphFraction`, `hideFraction` | Yes | None (non-visual) |
+| `scrollSource` | `nestedScrollConnection`, or `BindAdaptiveBarToScrollState` / `LazyListState` / `LazyGridState` | Yes | None |
+| `topBar` | `AuraTopAppBar` reading the state (`AdaptiveFloating` behavior) | No | Bar semantics |
+| `bottomIsland` | `FloatingBottomIsland` sliding with `hideFraction` | No | Island semantics |
+| `provider` | `LocalAuraAdaptiveBarState` (provided by `FloatingGlassScaffold`) | No | None |
+
+---
+
+## 3. Variant, Size & Material Matrix
 
 | Phase | Entry Condition | Visual Result |
 |---|---|---|
 | `DockedExpanded` | `Y == 0` or content not scrollable (`maxScrollOffset < collapseThreshold`) | Full-width flat header with expanded title, no blur |
-| `CollapsingTransition` | `0 < Y < 160px` | Title fades out and collapses; left/right action buttons morph into individual circular pills (`morphFraction = collapseProgress`) |
-| `FloatingVisible` | `Y >= 160px` and scrolling up (`ΔY < -12px`) or settled | Title hidden, open center, individual floating glass icon pills |
-| `FloatingHidden` | `Y >= 160px` and scrolling down (`ΔY > +24px`) | Top bar and bottom island slide out (`hideFraction → 1`) |
-| `FloatingPinned` | `Y >= 160px` and (`isFocused || isMenuOpen`) | Locked visible individual floating pills |
+| `CollapsingTransition` | `0 < Y < 160dp` | Title fades out and collapses; left/right action buttons morph into individual circular pills (`morphFraction = collapseProgress`) |
+| `FloatingVisible` | `Y >= 160dp` and scrolling up (`ΔY < -12dp`) or settled | Title hidden, open center, individual floating glass icon pills |
+| `FloatingHidden` | `Y >= 160dp` and scrolling down (`ΔY > +24dp`) | Top bar and bottom island slide out (`hideFraction → 1`) |
+| `FloatingPinned` | `Y >= 160dp` and (`isFocused || isMenuOpen`) | Locked visible individual floating pills |
 | `CompactDocked` | `isImeVisible || windowHeightDp < 480` | Compact docked bar with compact title, no floating margin |
 
-The phase enum is declared with the top bar API ([aura-top-app-bar.md](aura-top-app-bar.md) §8).
+The phase enum is declared with the top bar API ([aura-top-app-bar.md](aura-top-app-bar.md) §9).
 
 ---
 
-## 3. State Precedence
+## 4. State Precedence & Behavior
 
 Phases resolve in this strict order (first match wins), implemented by `resolveAdaptiveFloatingBarPhase`:
 
@@ -86,51 +100,53 @@ $$\text{DockedExpanded (non-scrollable)} \succ \text{CompactDocked} \succ \text{
 
 ---
 
-## 4. Semantic Token Bindings
+## 5. Semantic Token Bindings
 
 | Output | Token Binding |
 |---|---|
 | Hide (disappear) animation | `AuraTheme.motion.floatingBarDisappearSpec` |
 | Reveal (appear) animation | `AuraTheme.motion.floatingBarAppearSpec` |
 | Settled dock ↔ pill morph | `AuraTheme.motion.adaptiveBarMorphSpring` |
-| Compact-height switch | `AuraTheme.window.heightDp` (< `480px`) |
+| Compact-height switch | `AuraTheme.window.heightDp` (< `480dp`) |
 
 Exposed read-only values: `phase`, `collapseProgress`, `morphFraction`, `hideFraction`, `isPinned`, `isScrollableContent`, `scrollOffsetPx`, `maxScrollOffsetPx`, `isFocused`, `isMenuOpen`, `isImeVisible`, `windowHeightDp`.
 
 ---
 
-## 5. Interaction Motion Contract
+## 6. Interaction Motion Contract
 
 - **Track (`Standard`):** Hide and reveal animate with `floatingBarDisappearSpec` / `floatingBarAppearSpec` (entrance longer than exit, `MOT-RULE-005`); settle morph uses `adaptiveBarMorphSpring`. Animations are interruptible and continue from the current value (`MOT-RULE-004`).
-- **Jitter guard:** Direction changes smaller than `jitterSlop` (`12px`) are ignored.
+- **Jitter guard:** Direction changes smaller than `jitterSlop` (`12dp`) are ignored.
 - **Reduced Motion:** The injected `AuraTheme.motion` resolves its specs to immediate transitions, so phases switch without spatial travel while the final visibility stays correct (`MOT-RULE-007`).
 
 ---
 
-## 6. Responsive Layout Behavior (`Smallest Width × Display Ratio`)
+## 7. Responsive Layout Behavior (`Smallest Width × Display Ratio`)
 
 | Profile | Behavior |
 |---|---|
 | **`ExtraSmall`** (Cover `sw < 360dp`) | Same phases; tall cover screens keep floating behavior, short ones fall to `CompactDocked` |
 | **`Compact`** (Phone Portrait) | Full phase model with default thresholds |
-| **`Medium` / `Square`** (Foldable `~1:1`) | Full phase model; floating pill width is capped by the top bar (`640px`) |
+| **`Medium` / `Square`** (Foldable `~1:1`) | Full phase model; floating pill width is capped by the top bar (`640dp`) |
 | **`UltraWide`** (Phone Landscape) | `windowHeightDp < 480` → `CompactDocked`, preserving vertical space |
 | **`Expanded`** (Tablet / DeX) | Full phase model; with two panes prefer pane-scoped chrome (`NAV-RULE-004`) |
 
 ---
 
-## 7. Accessibility
+## 8. Accessibility & Guardrails
 
 - `FloatingPinned` keeps chrome visible while search has focus or a menu is open, so focused controls never slide off-screen.
 - IME visibility forces `CompactDocked`, keeping the focused field and bar on screen together.
-- Hidden chrome is restored on any upward scroll beyond `12px`; screen-reader users navigating by focus trigger scroll-driven reveal like touch users.
+- Hidden chrome is restored on any upward scroll beyond `12dp`; screen-reader users navigating by focus trigger scroll-driven reveal like touch users.
 - The state exposes no semantics itself; the bars keep their own roles and labels.
 
 ---
 
-## 8. Platform Bindings (Layer B)
+## 9. Platform Bindings
 
-### 8.1 Android (Jetpack Compose)
+### 9.1 Android (Jetpack Compose)
+
+- **Source:** [`AuraAdaptiveBarState.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraAdaptiveBarState.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
@@ -187,7 +203,7 @@ fun BindAdaptiveBarToLazyGridState(
 ```
 <!-- API:ANDROID:END -->
 
-### 8.2 iOS (SwiftUI Reference)
+### 9.2 iOS (SwiftUI Reference)
 
 <!-- API:IOS:BEGIN -->
 ```swift
@@ -202,7 +218,7 @@ final class AuraAdaptiveBarState {
 ```
 <!-- API:IOS:END -->
 
-### 8.3 Web (React / TypeScript Reference)
+### 9.3 Web (React / TypeScript Reference)
 
 <!-- API:WEB:BEGIN -->
 ```tsx

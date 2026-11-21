@@ -1,19 +1,19 @@
 ---
-component_id: "aura.component.scaffold"
+id: "aura.component.scaffold"
 name: "AuraScaffold"
 category: "layout"
 status: "ready"
+version: "0.1.0"
 layer: "canvas"
 material_allowed: ["Solid"]
 motion_track: "none"
-version: "0.1.0"
 platforms:
   android: "com.example.ds.component.AuraScaffold"
   ios: "AuraDS.AuraScaffold (planned)"
   web: "@aura-ds/react.AuraScaffold (planned)"
 tokens:
-  - "background.primary"
-  - "content.primary"
+  - "colors.background.primary"
+  - "colors.content.primary"
   - "layout.*"
   - "typography.bodyMedium"
 ---
@@ -81,17 +81,17 @@ Every screen across **My Planner**, **My Finance**, **My Drink Diary**, and **`:
 | `topBar` | Optional top header chrome anchored at top edge | No | Measured height added to `content` top padding |
 | `content` | Screen body receiving safe `PaddingValues` | Yes | Consumes insets cleanly |
 | `bottomBar` | Optional bottom navigation/action bar anchored at bottom edge | No | Measured height added to `content` bottom padding |
-| `floatingActionButton` | Optional FAB positioned at bottom-end above `bottomBar` + `16px` margin | No | Overlay slot |
+| `floatingActionButton` | Optional FAB positioned at bottom-end above `bottomBar` + `16dp` margin | No | Overlay slot |
 
 ---
 
-## 3. Slot & Parameter Matrix
+## 3. Variant, Size & Material Matrix
 
 | Parameter | Default | Contract |
 |---|---|---|
 | `topBar` | Empty composable | Rendered at top; its height sets top inset if present (with window top inset fallback when absent) |
 | `bottomBar` | Empty composable | Rendered at bottom; its height sets bottom inset if present |
-| `floatingActionButton` | Empty composable | Placed at `Alignment.BottomEnd`, `16px` margin from `bottomBar` top or bottom window inset |
+| `floatingActionButton` | Empty composable | Placed at `Alignment.BottomEnd`, `16dp` margin from `bottomBar` top or bottom window inset |
 | `snackbarHost` | Empty composable | Centered horizontally above `bottomBar` or bottom system inset |
 | `containerColor` | `AuraTheme.colors.background.primary` | Screen canvas color (`background.secondary` allowed for grouped sheet-style screens) |
 | `contentColor` | `AuraTheme.colors.content.primary` | Provided via `LocalAuraContentColor` to descendants |
@@ -100,22 +100,34 @@ Every screen across **My Planner**, **My Finance**, **My Drink Diary**, and **`:
 ### Guardrail Rules
 
 - **`SCF-001`:** When `topBar` is present and consumes the status-bar inset (e.g., `AuraTopAppBar` or system `TopAppBar`), `innerPadding.calculateTopPadding()` reflects the measured `topBar` height (including its top inset) rather than double-counting `contentWindowInsets.top`.
-- **`SCF-002`:** When `topBar` is empty (`0px`), `innerPadding.calculateTopPadding()` preserves `contentWindowInsets`'s top padding so content clears the status bar.
+- **`SCF-002`:** When `topBar` is empty (`0dp`), `innerPadding.calculateTopPadding()` preserves `contentWindowInsets`'s top padding so content clears the status bar.
 
 ---
 
-## 4. Semantic Token Bindings
+## 4. State Precedence & Behavior
+
+Passive container: no interactive states. `innerPadding` resolves from measured `topBar` / `bottomBar` heights first, then `contentWindowInsets` when a bar is absent (`SCF-001`, `SCF-002`).
+
+---
+
+## 5. Semantic Token Bindings
 
 | Part | Token Binding |
 |---|---|
 | `root` background | `AuraTheme.colors.background.primary` |
 | `root` default content color | `AuraTheme.colors.content.primary` |
 | `root` default text style | `AuraTheme.typography.bodyMedium` |
-| FAB spacing offset | `16px` (`screenMarginHorizontal` aligned or fixed `16.dp` standard offset) |
+| FAB spacing offset | `16dp` (`screenMarginHorizontal` aligned or fixed `16dp` standard offset) |
 
 ---
 
-## 5. Responsive Layout Behavior (`Smallest Width` × `Display Ratio`)
+## 6. Interaction Motion Contract
+
+- **Interaction Motion (`motion_track: "none"`):** `AuraScaffold` is a passive layout structural chrome slot container with no direct clickable/pressed state of its own; interactive feedback is owned by child components (`topBar` actions, `floatingActionButton`, `content`).
+
+---
+
+## 7. Responsive Layout Behavior (`Smallest Width × Display Ratio`)
 
 | Window / Ratio Profile | Scaffold Chrome & Inset Behavior |
 |---|---|
@@ -127,18 +139,18 @@ Every screen across **My Planner**, **My Finance**, **My Drink Diary**, and **`:
 
 ---
 
-## 6. Interaction Motion & Accessibility Contract
+## 8. Accessibility & Guardrails
 
-- **Interaction Motion (`interaction_motion: "none"`):** `AuraScaffold` is a passive layout structural chrome slot container with no direct clickable/pressed state of its own; interactive feedback is owned by child components (`topBar` actions, `floatingActionButton`, `content`).
-- **Accessibility & Edge-to-Edge:**
-  - Always passes platform-safe `PaddingValues` derived from `WindowInsets.systemBars` (and freeform caption bars in tablet Popup Window mode) so interactive controls never overlap system gesture areas or camera cutouts.
-  - Propagates `LocalAuraContentColor = colors.content.primary` and `LocalAuraTextStyle = typography.bodyMedium` so descendants preserve WCAG AA legibility by default.
+- Always passes platform-safe `PaddingValues` derived from `WindowInsets.systemBars` (and freeform caption bars in tablet Popup Window mode) so interactive controls never overlap system gesture areas or camera cutouts.
+- Propagates `LocalAuraContentColor = colors.content.primary` and `LocalAuraTextStyle = typography.bodyMedium` so descendants preserve WCAG AA legibility by default.
 
 ---
 
-## 7. Platform Bindings (Layer B)
+## 9. Platform Bindings
 
-### 7.1 Android (Jetpack Compose)
+### 9.1 Android (Jetpack Compose)
+
+- **Source:** [`AuraScaffold.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraScaffold.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
@@ -157,7 +169,7 @@ fun AuraScaffold(
 ```
 <!-- API:ANDROID:END -->
 
-### 7.2 iOS (SwiftUI Reference)
+### 9.2 iOS (SwiftUI Reference)
 
 <!-- API:IOS:BEGIN -->
 ```swift
@@ -171,7 +183,7 @@ struct AuraScaffold<Content: View, TopBar: View, BottomBar: View, FAB: View>: Vi
 ```
 <!-- API:IOS:END -->
 
-### 7.3 Web (React / TypeScript Reference)
+### 9.3 Web (React / TypeScript Reference)
 
 <!-- API:WEB:BEGIN -->
 ```tsx

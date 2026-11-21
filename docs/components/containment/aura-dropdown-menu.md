@@ -1,5 +1,5 @@
 ---
-id: "aura-dropdown-menu"
+id: "aura.component.dropdown-menu"
 name: "AuraDropdownMenu"
 category: "containment"
 status: "ready"
@@ -9,16 +9,16 @@ material_allowed: ["Solid"]
 motion_track: "Expressive"
 platforms:
   android: "com.example.ds.component.AuraDropdownMenu"
-  ios: "AuraDropdownMenu"
-  web: "AuraDropdownMenu"
+  ios: "AuraDS.AuraDropdownMenu (planned)"
+  web: "@aura-ds/react.AuraDropdownMenu (planned)"
 tokens:
-  - "color.surface.floating"
-  - "color.border.subtle"
-  - "color.content.primary"
-  - "color.content.secondary"
-  - "color.content.disabled"
-  - "color.brand.primary"
-  - "color.interaction.selectedContainer"
+  - "colors.surface.floating"
+  - "colors.border.subtle"
+  - "colors.content.primary"
+  - "colors.content.secondary"
+  - "colors.content.disabled"
+  - "colors.brand.primary"
+  - "colors.interaction.selectedContainer"
   - "elevation.level3"
   - "typography.bodyLarge"
   - "typography.labelMedium"
@@ -28,9 +28,15 @@ tokens:
 
 # AuraDropdownMenu
 
-Anchored overflow and filter menu that opens from a trigger (usually an `AuraIconButton` in a top app bar), with optional titled sections and single-choice check marks.
+> Anchored overflow and filter menu that opens from a trigger (usually an `AuraIconButton` in a top app bar), with optional titled sections and single-choice check marks.
+
+---
 
 ## 1. Intent & Usage Principles
+
+### Problem
+
+Overflow actions and filter/sort options need to be reachable from a single trigger without taking permanent space on the screen.
 
 ### When to Use
 
@@ -38,18 +44,18 @@ Anchored overflow and filter menu that opens from a trigger (usually an `AuraIco
 - Grouping secondary screen commands that do not deserve their own button (overflow `More`).
 - Offering a short single-choice list tied to one trigger, where a full sheet or screen would be heavier than the choice.
 
-### When NOT to Use
+### When NOT to Use & Alternatives
 
 - **Form values the user commits with a Save button:** Use `AuraRadio`, `AuraSegmentedButton`, or a picker inside the form.
 - **Two to five always-visible options that change the view immediately:** Use `AuraSegmentedButton` or `AuraChipButton` (`BTN-RULE-007`).
 - **Long, searchable, or multi-step choices:** Use a dedicated screen or a future `AuraBottomSheet`.
 - **Destructive confirmation:** Use `AuraDialog(Destructive)`.
 
-### Usage Rules
+### Context Rules
 
 - **`MENU-001` (Section per decision):** Put each independent decision in its own `AuraMenuSection` with a short `title`. Items inside one section are mutually exclusive; mark exactly one `selected = true` per filter section.
 - **`MENU-002` (Show the result outside the menu):** When a filter is active, reflect it outside the menu (e.g. the top app bar `expandedSubtitle` or a `Dot` badge on the trigger) so the current state is visible without opening the menu.
-- **`MENU-003` (Short labels):** Keep labels to one line. The menu is `200–280px` wide and truncates with an ellipsis.
+- **`MENU-003` (Short labels):** Keep labels to one line. The menu is `200–280dp` wide and truncates with an ellipsis.
 
 ### Do / Don't
 
@@ -61,7 +67,7 @@ Anchored overflow and filter menu that opens from a trigger (usually an `AuraIco
 
 ---
 
-## 2. Anatomy & Variants
+## 2. Anatomy & Canonical Part IDs
 
 ```text
                                    [ ⚙ ]   <- trigger (AuraIconButton)
@@ -75,18 +81,29 @@ Anchored overflow and filter menu that opens from a trigger (usually an `AuraIco
                   ╰──────────────────────╯
 ```
 
-| Part | Description |
-|---|---|
-| `root` | Solid floating surface, `20px` corner radius, `elevation.level3`, `1px` `border.subtle`, `8px` vertical padding, scrolls when taller than the window. |
-| `sectionTitle` | Optional heading per section. |
-| `item` | `>= 48px` tall row: label + trailing check mark when selected. |
-| `divider` | `AuraDivider` between sections. |
-
-Only one material is offered: the menu renders in its own window, where the glass backdrop of the screen cannot be sampled, so it stays `Solid`.
+| Part ID | Responsibility | Required | Semantics Owner |
+|---|---|---|---|
+| `root` | Solid floating surface, `20dp` corner radius, `elevation.level3`, `1dp` `border.subtle`, `8dp` vertical padding, scrolls when taller than the window. | Yes | Focusable popup (back / outside tap dismiss) |
+| `sectionTitle` | Optional heading per section. | No | `heading()` |
+| `item` | `>= 48dp` tall row: label + trailing check mark when selected. | Yes | `Role.Button` |
+| `divider` | `AuraDivider` between sections. | Conditional | Decorative |
 
 ---
 
-## 3. Token Bindings
+## 3. Variant, Size & Material Matrix
+
+- **Variant / Size:** Single variant and size; content is shaped by `sections` (`AuraMenuSection` with optional `title`) and `items` (`AuraMenuItem` with `selected` / `enabled`).
+- **Material:** Only one material is offered: the menu renders in its own window, where the glass backdrop of the screen cannot be sampled, so it stays `Solid`.
+
+---
+
+## 4. State Precedence & Behavior
+
+`Hidden` (`!expanded`) > `Disabled` item > `Pressed` (`fluidPressScale`) > `Selected` > `Rest`.
+
+---
+
+## 5. Semantic Token Bindings
 
 | Element | State | Light / Dark Semantic Token |
 |---|---|---|
@@ -98,22 +115,7 @@ Only one material is offered: the menu renders in its own window, where the glas
 
 ---
 
-## 4. State Precedence & Accessibility
-
-### State Precedence
-
-`Hidden` (`!expanded`) > `Disabled` item > `Pressed` (`fluidPressScale`) > `Selected` > `Rest`.
-
-### Accessibility
-
-- Opens in a focusable `Popup`: Back and taps outside call `onDismissRequest`.
-- Each item is a `Role.Button` with `>= 48px` height and exposes `selected` so screen readers announce the current choice in a section.
-- Section titles are headings (`semantics { heading() }`).
-- The surface is opaque, so text keeps `>= 4.5:1` contrast regardless of the content underneath; Reduced Transparency needs no fallback.
-
----
-
-## 5. Motion
+## 6. Interaction Motion Contract
 
 Uses the `Expressive` track like other `spatial` surfaces:
 
@@ -123,11 +125,11 @@ Uses the `Expressive` track like other `spatial` surfaces:
 
 ---
 
-## 6. Responsive Layout Behavior
+## 7. Responsive Layout Behavior (`Smallest Width × Display Ratio`)
 
 | Width / Display Profile | Placement |
 |---|---|
-| `ExtraSmall` (`< 360dp`) | Same `200–280px` width; clamped `12px` inside the window edges. |
+| `ExtraSmall` (`< 360dp`) | Same `200–280dp` width; clamped `12dp` inside the window edges. |
 | `Compact` (`360–599dp`) | Opens below the trigger, end-aligned; flips above when there is no room below. |
 | `Square` (foldable) | Same anchoring; never centred across the hinge because it follows the trigger. |
 | `UltraWide` (short landscape) | Flips above or clamps to the window height and scrolls its content. |
@@ -135,7 +137,20 @@ Uses the `Expressive` track like other `spatial` surfaces:
 
 ---
 
-## 7. Cross-Platform API Contract
+## 8. Accessibility & Guardrails
+
+- Opens in a focusable `Popup`: Back and taps outside call `onDismissRequest`.
+- Each item is a `Role.Button` with `>= 48dp` height and exposes `selected` so screen readers announce the current choice in a section.
+- Section titles are headings (`semantics { heading() }`).
+- The surface is opaque, so text keeps `>= 4.5:1` contrast regardless of the content underneath; Reduced Transparency needs no fallback.
+
+---
+
+## 9. Platform Bindings
+
+### 9.1 Android (Jetpack Compose)
+
+- **Source:** [`AuraDropdownMenu.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraDropdownMenu.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
@@ -163,6 +178,8 @@ fun AuraDropdownMenu(
 ```
 <!-- API:ANDROID:END -->
 
+### 9.2 iOS (SwiftUI Reference)
+
 <!-- API:IOS:BEGIN -->
 ```swift
 public struct AuraMenuItem: Identifiable, Sendable {
@@ -187,6 +204,8 @@ public struct AuraDropdownMenu: View {
 }
 ```
 <!-- API:IOS:END -->
+
+### 9.3 Web (React / TypeScript Reference)
 
 <!-- API:WEB:BEGIN -->
 ```ts

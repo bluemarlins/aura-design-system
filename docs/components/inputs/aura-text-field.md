@@ -1,23 +1,23 @@
 ---
-component_id: "aura.component.text-field"
+id: "aura.component.text-field"
 name: "AuraTextField"
 category: "inputs"
 status: "ready"
+version: "0.1.0"
 layer: "content"
 material_allowed: ["Solid"]
 motion_track: "Standard"
-version: "0.1.0"
 platforms:
   android: "com.example.ds.component.AuraTextField"
   ios: "AuraDS.AuraTextField (planned)"
   web: "@aura-ds/react.AuraTextField (planned)"
 tokens:
-  - "surface.*"
-  - "content.*"
-  - "border.*"
-  - "brand.*"
-  - "status.error.*"
-  - "interaction.*"
+  - "colors.surface.*"
+  - "colors.content.*"
+  - "colors.border.*"
+  - "colors.brand.*"
+  - "colors.status.error.*"
+  - "colors.interaction.*"
   - "typography.*"
   - "motion.*"
   - "layout.*"
@@ -74,7 +74,7 @@ Users need a clear, accessible text input surface that scales from structured si
 |  root                                                                 |
 |  [label]                                                              |
 |  +-----------------------------------------------------------------+  |
-|  |  fieldContainer (min 48px height, border / fill / underline)    |  |
+|  |  fieldContainer (min 48dp height, border / fill / underline)    |  |
 |  |                                                                 |  |
 |  |  [leadingIcon] [prefix] [inputText / placeholder] [suffix]      |  |
 |  |                                                  [trailingIcon] |  |
@@ -87,7 +87,7 @@ Users need a clear, accessible text input surface that scales from structured si
 |---|---|---|---|
 | `root` | Outer vertical container grouping label, field, and footer | Yes | Container |
 | `label` | Persistent descriptive field title | Recommended | Label text |
-| `fieldContainer` | Visual box (`Outlined`/`Filled`) or bottom-ruled line (`Paperless`), `>= 48px` hit height | Yes | `BasicTextField` |
+| `fieldContainer` | Visual box (`Outlined`/`Filled`) or bottom-ruled line (`Paperless`), `>= 48dp` hit height | Yes | `BasicTextField` |
 | `leadingIcon` | Optional leading visual cue | No | Decorative |
 | `prefix` | Optional static unit/currency prefix (`₩`, `$`) | No | Text |
 | `inputText` | Editable text value | Yes | Input value |
@@ -101,21 +101,21 @@ Users need a clear, accessible text input surface that scales from structured si
 
 ---
 
-## 3. Variant & Line Mode Matrix
+## 3. Variant, Size & Material Matrix
 
 ### Visual Variants (`AuraTextFieldVariant`)
 
 | Variant | Visual Treatment | Recommended Usage |
 |---|---|---|
-| `Outlined` (Default) | Rounded `10px` box (`surface.default`) with full border (`border.default` -> `border.focus`) | Structured forms in **My Finance** & **My Planner** |
-| `Filled` | Rounded `10px` recessed fill (`surface.sunken`) with subtle border | Compact card metadata in **My Drink Diary** & settings |
-| `Paperless` | Transparent background with bottom horizontal rule (`1px` -> `2px` active) | Calm multi-line diary pages (**Planner**) and tasting notes (**Drink Diary**) |
+| `Outlined` (Default) | Rounded `10dp` box (`surface.default`) with full border (`border.default` -> `border.focus`) | Structured forms in **My Finance** & **My Planner** |
+| `Filled` | Rounded `10dp` recessed fill (`surface.sunken`) with subtle border | Compact card metadata in **My Drink Diary** & settings |
+| `Paperless` | Transparent background with bottom horizontal rule (`1dp` -> `2dp` active) | Calm multi-line diary pages (**Planner**) and tasting notes (**Drink Diary**) |
 
 ### Line Modes
 
 | Mode | Configuration | Behavior |
 |---|---|---|
-| **Single-Line** | `singleLine = true` | `effectiveMinLines = 1`, `effectiveMaxLines = 1`, vertical center alignment, min height `48px` |
+| **Single-Line** | `singleLine = true` | `effectiveMinLines = 1`, `effectiveMaxLines = 1`, vertical center alignment, min height `48dp` |
 | **Multi-Line** | `singleLine = false`, `minLines >= 3` | Top-aligned icons/affixes, grows vertically up to `maxLines` |
 
 ### Validation & Input Constraints
@@ -136,12 +136,12 @@ $$\text{Disabled} \succ \text{ReadOnly} \succ \text{Error} \succ \text{Focused} 
 1. **`Disabled` (`enabled == false`):** Ignores input/focus, applies `interaction.disabledContainer` (`Outlined`/`Filled`) and `content.disabled` text.
 2. **`ReadOnly` (`readOnly == true`):** Preserves `content.primary` legibility, suppresses active focus border thickening and cursor.
 3. **`Error` (`!errorText.isNullOrBlank()`):** Applies `status.error.solid` to border/underline, label, error text, and accessibility error semantics.
-4. **`Focused`:** Thickens border/underline (`2px` for `Outlined`/`Paperless`, `1.5px` for `Filled`) with `border.focus` and tints label with `brand.primary`.
+4. **`Focused`:** Thickens border/underline (`2dp` for `Outlined`/`Paperless`, `1.5dp` for `Filled`) with `border.focus` and tints label with `brand.primary`.
 5. **`Rest`:** Default neutral border and `content.secondary` label.
 
 ---
 
-## 5. Semantic Token Bindings (`AuraColors` & `AuraTypography`)
+## 5. Semantic Token Bindings
 
 | Part | Variant | State | `AuraColors` / `AuraTypography` Token Path |
 |---|---|---|---|
@@ -169,7 +169,7 @@ $$\text{Disabled} \succ \text{ReadOnly} \succ \text{Error} \succ \text{Focused} 
 
 ---
 
-## 6. Interaction & Focus Motion Contract
+## 6. Interaction Motion Contract
 
 `AuraTextField` drives focus and validation state transitions through `AuraTheme.motion` (see [03-motion-interaction.md](../../foundation/03-motion-interaction.md)):
 
@@ -182,7 +182,7 @@ $$\text{Disabled} \succ \text{ReadOnly} \succ \text{Error} \succ \text{Focused} 
 
 ---
 
-## 7. Responsive Layout Behavior (`Smallest Width` × `Display Ratio`)
+## 7. Responsive Layout Behavior (`Smallest Width × Display Ratio`)
 
 | Window / Ratio Profile | Form & Field Layout Adaptation |
 |---|---|
@@ -204,7 +204,7 @@ $$\text{Disabled} \succ \text{ReadOnly} \succ \text{Error} \succ \text{Focused} 
 
 ## 9. Platform Bindings
 
-### 9.1. Android (Jetpack Compose)
+### 9.1 Android (Jetpack Compose)
 
 - **Source:** [`AuraTextField.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraTextField.kt)
 - **Dependency Policy:** Built strictly on Compose Foundation `BasicTextField` without `material3`.
@@ -245,7 +245,7 @@ fun AuraTextField(
 ```
 <!-- API:ANDROID:END -->
 
-### 9.2. iOS (SwiftUI Reference Contract — Planned)
+### 9.2 iOS (SwiftUI Reference)
 
 <!-- API:IOS:BEGIN -->
 ```swift
@@ -274,7 +274,7 @@ public struct AuraTextField<LeadingIcon: View, TrailingIcon: View>: View {
 ```
 <!-- API:IOS:END -->
 
-### 9.3. Web (React / TypeScript Reference Contract — Planned)
+### 9.3 Web (React / TypeScript Reference)
 
 <!-- API:WEB:BEGIN -->
 ```ts

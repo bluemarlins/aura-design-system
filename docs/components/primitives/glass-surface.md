@@ -1,18 +1,18 @@
 ---
-component_id: "aura.component.glass-surface"
+id: "aura.component.glass-surface"
 name: "GlassSurface"
 category: "primitives"
 status: "ready"
+version: "0.1.0"
 layer: "chrome"
 material_allowed: ["Solid", "Glass", "LiquidGlass"]
 motion_track: "Standard"
-version: "0.1.0"
 platforms:
   android: "com.example.ds.component.GlassSurface"
   ios: "AuraDS.GlassSurface (planned, .ultraThinMaterial)"
   web: "@aura-ds/react.GlassSurface (planned, backdrop-filter)"
 tokens:
-  - "color.surface.floating"
+  - "colors.surface.floating"
   - "elevation.level2"
   - "glass.frostedTint"
   - "glass.liquidTint"
@@ -85,19 +85,19 @@ root (Box: dual shadow → clip(shape))
 
 ---
 
-## 3. Material Matrix & Fallbacks (`Solid` · `Glass Morphism` · `Liquid Glass` × `Light / Dark`)
+## 3. Variant, Size & Material Matrix
 
 | Requested (`material`, after theme cap) | Optical Signature (`Light` / `Dark` Mode Separated) | API 33+ | API 31–32 | API 26–30 | Reduced Transparency |
 |---|---|---|---|---|---|
-| **`LiquidGlass`** | **Refractive Optical Lens:** `10.dp` soft interior blur + `11.dp` convex bevel AGSL refraction (`7.5.dp`) + `1.45.dp` RGB dispersion + 5-step Fresnel rings + secondary bounce rim (`Light 54%` / `Dark 66%` tint) | AGSL bevel refraction + dispersion + Fresnel | Frosted soft blur | `Solid` (`surface.floating` 98%, no backdrop) | `Solid` (`surface.floating` 98%, no backdrop) |
-| **`Glass`** *(Glass Morphism)* | **Frosted Acrylic Sheet:** `26.dp` uniform backdrop blur + `1.20–1.35x` vibrancy saturation boost + directional `1.dp` specular hairline (`Light: White 72% tint, 55%→8% rim` / `Dark: Obsidian #1E1E22 68% tint, 34%→6% rim`) | Blur `26.dp` + saturation boost + specular rim | Blur + saturation + specular rim | `Solid` (`surface.floating` 98%, no backdrop) | `Solid` (`surface.floating` 98%, no backdrop) |
-| **`Solid`** | **Opaque Surface:** Tokenized `surface.floating` (`98%` alpha) + crisp `1.dp` `border.default` | `Solid` | `Solid` | `Solid` | `Solid` |
+| **`LiquidGlass`** | **Refractive Optical Lens:** `10dp` soft interior blur + `11dp` convex bevel AGSL refraction (`7.5dp`) + `1.45dp` RGB dispersion + 5-step Fresnel rings + secondary bounce rim (`Light 54%` / `Dark 66%` tint) | AGSL bevel refraction + dispersion + Fresnel | Frosted soft blur | `Solid` (`surface.floating` 98%, no backdrop) | `Solid` (`surface.floating` 98%, no backdrop) |
+| **`Glass`** *(Glass Morphism)* | **Frosted Acrylic Sheet:** `26dp` uniform backdrop blur + `1.20–1.35x` vibrancy saturation boost + directional `1dp` specular hairline (`Light: White 72% tint, 55%→8% rim` / `Dark: Obsidian #1E1E22 68% tint, 34%→6% rim`) | Blur `26dp` + saturation boost + specular rim | Blur + saturation + specular rim | `Solid` (`surface.floating` 98%, no backdrop) | `Solid` (`surface.floating` 98%, no backdrop) |
+| **`Solid`** | **Opaque Surface:** Tokenized `surface.floating` (`98%` alpha) + crisp `1dp` `border.default` | `Solid` | `Solid` | `Solid` | `Solid` |
 
 `GlassStyle` is `@Deprecated` in favor of `AuraMaterial`; the `glassStyle` overloads remain for compatibility and map through `GlassStyle.toMaterial()`.
 
 ---
 
-## 4. State Precedence
+## 4. State Precedence & Behavior
 
 $$\text{Reduced Transparency (Solid fallback)} \succ \text{theme ceiling (AuraTheme.material)} \succ \text{SDK capability downgrade} \succ \text{requested material} $$
 
@@ -137,14 +137,14 @@ Tint color changes animate with `motion.stateChangeDurationMillis` (snap under R
 | Profile | Behavior |
 |---|---|
 | **`ExtraSmall`** (Cover `sw < 360dp`) | Composing chrome shrinks; corner radius is clamped to half the shortest side |
-| **`Compact`** (Phone Portrait) | Default blur radius (`26px`) |
-| **`Medium` / `Square`** (Foldable `~1:1`) | Floating chrome caps width (e.g., top bar `640px`) so blur area stays bounded |
+| **`Compact`** (Phone Portrait) | Default blur radius (`26dp`) |
+| **`Medium` / `Square`** (Foldable `~1:1`) | Floating chrome caps width (e.g., top bar `640dp`) so blur area stays bounded |
 | **`UltraWide`** (Phone Landscape) | Same as `Square`; short heights favour compact docked chrome over large glass panels |
 | **`Expanded`** (Tablet / DeX) | Pane-scoped chrome (`NAV-RULE-004`); at most 3 live-blur surfaces in view (`VIS-RULE-006`) |
 
 ---
 
-## 8. Accessibility
+## 8. Accessibility & Guardrails
 
 - **Reduced Transparency:** When `AuraTheme.reduceTransparency` is active (or Battery Saver / High-Contrast Text), the surface renders `Solid` (`surface.floating` at 98%) with no backdrop sampling (`VIS-RULE-004`). The setting is observed live, so the switch happens while the app is running.
 - **Contrast:** Foreground text on `Glass` / `LiquidGlass` must keep `>= 4.5:1` contrast; icons and hairline borders `>= 3:1` (`VIS-RULE-003`). The default tints guarantee this for `content.primary` over any backdrop (`AuraGlassTest`); `content.secondary` and `tintColorOverride` are the caller's responsibility. Composing components raise `surfaceAlphaMultiplier` or rely on `FloatingGlassScaffold` edge scrims when backdrops are busy.
@@ -153,9 +153,11 @@ Tint color changes animate with `motion.stateChangeDurationMillis` (snap under R
 
 ---
 
-## 9. Platform Bindings (Layer B)
+## 9. Platform Bindings
 
 ### 9.1 Android (Jetpack Compose)
+
+- **Source:** [`GlassSurface.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/GlassSurface.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

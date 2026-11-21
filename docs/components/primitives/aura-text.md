@@ -1,18 +1,18 @@
 ---
-component_id: "aura.component.text"
+id: "aura.component.text"
 name: "AuraText"
 category: "primitives"
 status: "ready"
+version: "0.1.0"
 layer: "content"
 material_allowed: ["Solid"]
 motion_track: "none"
-version: "0.1.0"
 platforms:
   android: "com.example.ds.component.AuraText"
   ios: "AuraDS.AuraText (planned)"
   web: "@aura-ds/react.AuraText (planned)"
 tokens:
-  - "color.content.primary"
+  - "colors.content.primary"
   - "typography.*"
 ---
 
@@ -65,7 +65,7 @@ Text color and style must follow the surface it sits on (a `Primary` button labe
 
 ---
 
-## 3. Variant & Style Matrix
+## 3. Variant, Size & Material Matrix
 
 `AuraText` has no visual variants. Appearance is fully determined by the `style` argument (a typography token) merged on top of the inherited `LocalAuraTextStyle`.
 
@@ -77,7 +77,7 @@ Text color and style must follow the surface it sits on (a `Primary` button labe
 
 ---
 
-## 4. Color Resolution Precedence
+## 4. State Precedence & Behavior
 
 `AuraText` resolves its color in a strict order (first specified wins):
 
@@ -118,7 +118,7 @@ Style resolution: `LocalAuraTextStyle.current.merge(style)`, then `textAlign` (w
 
 ---
 
-## 8. Accessibility
+## 8. Accessibility & Guardrails
 
 - Text scales with the system font scale (`sp` units in typography tokens); never fix heights that clip enlarged text.
 - Contrast: content tokens are paired with their surfaces to meet WCAG AA (`>= 4.5:1` body, `>= 3:1` large text). On `Glass` hosts the composing component guarantees contrast (`VIS-RULE-003`).
@@ -126,9 +126,11 @@ Style resolution: `LocalAuraTextStyle.current.merge(style)`, then `textAlign` (w
 
 ---
 
-## 9. Platform Bindings (Layer B)
+## 9. Platform Bindings
 
 ### 9.1 Android (Jetpack Compose)
+
+- **Source:** [`AuraText.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraText.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

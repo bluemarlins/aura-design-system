@@ -1,29 +1,29 @@
 ---
-id: "aura-number-field"
+id: "aura.component.number-field"
 name: "AuraNumberField"
 category: "inputs"
 status: "ready"
+version: "1.0.0"
 layer: "content"
 material_allowed: ["Solid"]
 motion_track: "Standard"
-version: "1.0.0"
 platforms:
   android: "com.example.ds.component.AuraNumberField"
-  ios: "AuraNumberField"
-  web: "AuraNumberField"
+  ios: "AuraDS.AuraNumberField (planned)"
+  web: "@aura-ds/react.AuraNumberField (planned)"
 tokens:
-  - "color.surface.default"
-  - "color.surface.sunken"
-  - "color.brand.primary"
-  - "color.content.primary"
-  - "color.content.secondary"
-  - "color.content.tertiary"
-  - "color.content.disabled"
-  - "color.border.subtle"
-  - "color.border.default"
-  - "color.border.focus"
-  - "color.status.error.solid"
-  - "color.interaction.disabledContainer"
+  - "colors.surface.default"
+  - "colors.surface.sunken"
+  - "colors.brand.primary"
+  - "colors.content.primary"
+  - "colors.content.secondary"
+  - "colors.content.tertiary"
+  - "colors.content.disabled"
+  - "colors.border.subtle"
+  - "colors.border.default"
+  - "colors.border.focus"
+  - "colors.status.error.solid"
+  - "colors.interaction.disabledContainer"
   - "typography.bodyLarge"
   - "typography.labelMedium"
   - "typography.monoMedium"
@@ -36,9 +36,15 @@ tokens:
 
 # AuraNumberField
 
-Structured numeric, currency, and measurement input featuring tabular numerals (`tnum`), optional thousands formatting, explicit unit affixes (`prefixText` / `suffixText`), and optional `-` / `+` stepper buttons.
+> Structured numeric, currency, and measurement input featuring tabular numerals (`tnum`), optional thousands formatting, explicit unit affixes (`prefixText` / `suffixText`), and optional `-` / `+` stepper buttons.
+
+---
 
 ## 1. Intent & Usage Principles
+
+### Problem
+
+Numeric, currency, and measurement values need precise keyboard entry with units, bounds, and optional stepping that free-form text fields do not enforce.
 
 ### When to Use
 
@@ -47,14 +53,14 @@ Structured numeric, currency, and measurement input featuring tabular numerals (
 - Adjusting countdown durations or repeat counts with quick `-` / `+` steppers (**My Planner**).
 - Whenever numeric values benefit from monospace tabular digits, bounds clamping (`minValue`..`maxValue`), or formatted thousands separators (`1,250,000`).
 
-### When NOT to Use
+### When NOT to Use & Alternatives
 
 - **Free-form names, titles, descriptions, or prose:** Use `AuraTextField`.
 - **Bounded continuous or quick relative scales (`0..100%`, `Body 1..5`):** Use `AuraSlider` when visual proportionality matters more than exact digit entry.
 - **Star enjoyment scores:** Use `AuraRatingBar`.
 - **Real-time list filtering:** Use `AuraSearchBar`.
 
-### Usage Rules
+### Context Rules
 
 - **`NUM-RULE-001` (Explicit Unit Clarity — `INP-RULE-003`):** Always declare units via `prefixText` (`₩`, `$`, `€`) or `suffixText` (`%`, `% ABV`, `ml`, `원`, `shares`) rather than burying units only inside `placeholder`.
 - **`NUM-RULE-002` (Steppers for Bounded Quantities):** Enable `showSteppers = true` when small incremental adjustments (vintage year, bottle quantity, guest count, minutes) are frequent; omit steppers for high-variance financial amounts (`15,000,000`) where keyboard entry dominates.
@@ -71,7 +77,7 @@ Structured numeric, currency, and measurement input featuring tabular numerals (
 
 ---
 
-## 2. Anatomy & Variants
+## 2. Anatomy & Canonical Part IDs
 
 ```text
   Label (optional)
@@ -81,14 +87,38 @@ Structured numeric, currency, and measurement input featuring tabular numerals (
   Supporting / Error text
 ```
 
+| Part ID | Responsibility | Required | Semantics Owner |
+|---|---|---|---|
+| `label` | Optional header above the field | No | Field accessible name |
+| `root` | `48dp` minimum-height field container (`10dp` radius) | Yes | Text field (`error` when `errorMessage != null`) |
+| `decrementButton` / `incrementButton` | `−` / `+` steppers shown when `showSteppers = true` | Conditional | `Role.Button` |
+| `prefix` / `suffix` | Unit or currency text (`₩`, `원`, `%`) | No | Merged into field |
+| `input` | Numeric text with tabular numerals | Yes | Text field |
+| `supportingText` / `errorText` | Guidance or validation message below the field | No | Merged / `error` |
+
+---
+
+## 3. Variant, Size & Material Matrix
+
 Reuses `AuraTextFieldVariant`:
 - `Outlined` (default): Structured forms, financial records, cellar entries.
 - `Filled`: Recessed compact metadata rows (`surface.sunken`).
 - `Paperless`: Quiet bottom-ruled inline numeric edit inside editorial sheets.
 
+- **Size:** Single size — `48dp` minimum height.
+- **Material:** `Solid` only (`layer: content`).
+
 ---
 
-## 3. Token Bindings
+## 4. State Precedence & Behavior
+
+`Disabled` > `ReadOnly` > `Error` (`errorMessage != null`) > `Focused` > `Rest`.
+
+Steppers are individually disabled when clicking would cross `minValue` or `maxValue`, or when `!enabled || readOnly`.
+
+---
+
+## 5. Semantic Token Bindings
 
 | Element | State | Light / Dark Semantic Token |
 |---|---|---|
@@ -101,23 +131,7 @@ Reuses `AuraTextFieldVariant`:
 
 ---
 
-## 4. State Precedence & Accessibility
-
-### State Precedence
-
-`Disabled` > `ReadOnly` > `Error` (`errorMessage != null`) > `Focused` > `Rest`.
-
-Steppers are individually disabled when clicking would cross `minValue` or `maxValue`, or when `!enabled || readOnly`.
-
-### Accessibility
-
-- Stepper `-` and `+` buttons expose `Role.Button` with localized `contentDescription` (`"Decrease"` / `"Increase"`) and `>= 48.dp × 48.dp` touch targets.
-- Error states attach `semantics { error(errorMessage) }` for TalkBack announcement.
-- Uses numeric/decimal virtual keyboard (`KeyboardType.Decimal` when `allowDecimals = true`, `KeyboardType.Number` otherwise).
-
----
-
-## 5. Motion
+## 6. Interaction Motion Contract
 
 Consumes `AuraTheme.motion`:
 
@@ -127,19 +141,31 @@ Consumes `AuraTheme.motion`:
 
 ---
 
-## 6. Responsive Layout Behavior
+## 7. Responsive Layout Behavior (`Smallest Width × Display Ratio`)
 
 | Width / Display Profile | Field & Stepper Adaptation |
 |---|---|
-| `ExtraSmall` (`< 360dp`) | Full-width field (`fillMaxWidth()`); compact affix gaps (`6.dp`) keep `48.dp` steppers plus digits legible on narrow cover screens. |
-| `Compact` (`360–599dp`) | Standard single-row numeric field with balanced `12.dp` horizontal padding and comfortable right-aligned or start-aligned affixes. |
+| `ExtraSmall` (`< 360dp`) | Full-width field (`fillMaxWidth()`); compact affix gaps (`6dp`) keep `48dp` steppers plus digits legible on narrow cover screens. |
+| `Compact` (`360–599dp`) | Standard single-row numeric field with balanced `12dp` horizontal padding and comfortable right-aligned or start-aligned affixes. |
 | `Square` (`~1:1` Pop-up / Foldable) | Expands smoothly inside 2-column inspector forms (`AuraAdaptiveTwoPane`) without truncating `-` / `+` stepper hit boxes. |
-| `UltraWide` (`> 21:9`) | Preserves single-line entry and keyboard action (`ImeAction.Done`) with compact vertical footprint (`48.dp`). |
+| `UltraWide` (`> 21:9`) | Preserves single-line entry and keyboard action (`ImeAction.Done`) with compact vertical footprint (`48dp`). |
 | `Expanded` (`>= 840dp` Tablet) | Pairs cleanly side-by-side inside multi-field **My Finance** or **My Drink Diary** detail editors bounded by `AuraTheme.layout.maxContentWidth`. |
 
 ---
 
-## 7. Cross-Platform API Contract
+## 8. Accessibility & Guardrails
+
+- Stepper `-` and `+` buttons expose `Role.Button` with localized `contentDescription` (`"Decrease"` / `"Increase"`) and `>= 48dp × 48dp` touch targets.
+- Error states attach `semantics { error(errorMessage) }` for TalkBack announcement.
+- Uses numeric/decimal virtual keyboard (`KeyboardType.Decimal` when `allowDecimals = true`, `KeyboardType.Number` otherwise).
+
+---
+
+## 9. Platform Bindings
+
+### 9.1 Android (Jetpack Compose)
+
+- **Source:** [`AuraNumberField.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraNumberField.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
@@ -168,6 +194,8 @@ fun AuraNumberField(
 ```
 <!-- API:ANDROID:END -->
 
+### 9.2 iOS (SwiftUI Reference)
+
 <!-- API:IOS:BEGIN -->
 ```swift
 public struct AuraNumberField: View {
@@ -192,6 +220,8 @@ public struct AuraNumberField: View {
 }
 ```
 <!-- API:IOS:END -->
+
+### 9.3 Web (React / TypeScript Reference)
 
 <!-- API:WEB:BEGIN -->
 ```ts

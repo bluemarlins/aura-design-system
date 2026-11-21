@@ -1,12 +1,12 @@
 ---
-component_id: "aura.component.adaptive-grid"
+id: "aura.component.adaptive-grid"
 name: "AuraAdaptiveGrid"
 category: "layout"
 status: "ready"
+version: "0.1.0"
 layer: "canvas"
 material_allowed: ["Solid"]
 motion_track: "none"
-version: "0.1.0"
 platforms:
   android: "com.example.ds.component.AuraAdaptiveGrid"
   ios: "AuraDS.AuraAdaptiveGrid (planned)"
@@ -77,7 +77,41 @@ root (Column, spacedBy(verticalSpacing))
 
 ---
 
-## 3. Responsive Layout Behavior (`Adaptive Behavior Matrix`)
+## 3. Variant, Size & Material Matrix
+
+| Parameter | Default | Contract |
+|---|---|---|
+| `columns` | `AuraTheme.layout.gridColumns` | Equal-width columns per row |
+| `horizontalSpacing` | `AuraTheme.layout.gridGutter` | Gap between cells in a row |
+| `verticalSpacing` | `AuraTheme.layout.gridGutter` | Gap between rows |
+
+- **Variant:** Single variant; the last row keeps empty cells so widths stay equal.
+- **Material:** `Solid` canvas only (`layer: canvas`); cells bring their own surfaces.
+
+---
+
+## 4. State Precedence & Behavior
+
+Passive container: no interactive states. Layout depends only on `items`, `columns`, and spacing, which follow the current `AuraLayout` profile.
+
+---
+
+## 5. Semantic Token Bindings
+
+| Part | Token Binding |
+|---|---|
+| Column count | `AuraTheme.layout.gridColumns` |
+| Horizontal / vertical spacing | `AuraTheme.layout.gridGutter` |
+
+---
+
+## 6. Interaction Motion Contract
+
+- **Interaction Motion (`motion_track: "none"`):** Passive structural container with no press target or animation; cells own their motion (e.g., `AuraCard` press feedback).
+
+---
+
+## 7. Responsive Layout Behavior (`Smallest Width × Display Ratio`)
 
 | `AuraLayout` Profile | Default `gridColumns` | Gutter |
 |---|---|---|
@@ -91,28 +125,19 @@ Exact values are owned by `AuraLayoutDefaults` in [05-responsive-layout.md](../.
 
 ---
 
-## 4. Semantic Token Bindings
+## 8. Accessibility & Guardrails
 
-| Part | Token Binding |
-|---|---|
-| Column count | `AuraTheme.layout.gridColumns` |
-| Horizontal / vertical spacing | `AuraTheme.layout.gridGutter` |
-
----
-
-## 5. Interaction Motion & Accessibility Contract
-
-- **Interaction Motion (`motion_track: "none"`):** Passive structural container with no press target or animation; cells own their motion (e.g., `AuraCard` press feedback).
-- **Accessibility:**
-  - Focus and TalkBack order run row by row, start to end, matching visual reading order.
-  - The grid adds no semantics; collection semantics (`CollectionInfo`) are the caller's responsibility when needed.
-  - Cell width never drops below what the column count allows, so child hit targets keep their `>= 48dp` minimum.
+- Focus and TalkBack order run row by row, start to end, matching visual reading order.
+- The grid adds no semantics; collection semantics (`CollectionInfo`) are the caller's responsibility when needed.
+- Cell width never drops below what the column count allows, so child hit targets keep their `>= 48dp` minimum.
 
 ---
 
-## 6. Platform Bindings (Layer B)
+## 9. Platform Bindings
 
-### 6.1 Android (Jetpack Compose)
+### 9.1 Android (Jetpack Compose)
+
+- **Source:** [`AuraAdaptiveGrid.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraAdaptiveGrid.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
@@ -128,7 +153,7 @@ fun <T> AuraAdaptiveGrid(
 ```
 <!-- API:ANDROID:END -->
 
-### 6.2 iOS (SwiftUI Reference)
+### 9.2 iOS (SwiftUI Reference)
 
 <!-- API:IOS:BEGIN -->
 ```swift
@@ -140,7 +165,7 @@ struct AuraAdaptiveGrid<Item: Identifiable, Cell: View>: View {
 ```
 <!-- API:IOS:END -->
 
-### 6.3 Web (React / TypeScript Reference)
+### 9.3 Web (React / TypeScript Reference)
 
 <!-- API:WEB:BEGIN -->
 ```tsx

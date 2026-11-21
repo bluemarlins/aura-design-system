@@ -1,27 +1,27 @@
 ---
-id: "aura-radio"
+id: "aura.component.radio"
 name: "AuraRadio"
 category: "inputs"
 status: "ready"
+version: "1.0.0"
 layer: "content"
 material_allowed: ["Solid"]
 motion_track: "Standard"
-version: "1.0.0"
 platforms:
   android: "com.example.ds.component.AuraRadio"
-  ios: "AuraRadio"
-  web: "AuraRadio"
+  ios: "AuraDS.AuraRadio (planned)"
+  web: "@aura-ds/react.AuraRadio (planned)"
 tokens:
-  - "color.brand.primary"
-  - "color.surface.default"
-  - "color.content.primary"
-  - "color.content.secondary"
-  - "color.content.disabled"
-  - "color.border.strong"
-  - "color.border.subtle"
-  - "color.interaction.selectedContainer"
-  - "color.interaction.disabledContainer"
-  - "color.interaction.pressedOverlay"
+  - "colors.brand.primary"
+  - "colors.surface.default"
+  - "colors.content.primary"
+  - "colors.content.secondary"
+  - "colors.content.disabled"
+  - "colors.border.strong"
+  - "colors.border.subtle"
+  - "colors.interaction.selectedContainer"
+  - "colors.interaction.disabledContainer"
+  - "colors.interaction.pressedOverlay"
   - "typography.bodyLarge"
   - "typography.bodySmall"
   - "motion.pressInSpring"
@@ -34,33 +34,33 @@ tokens:
 
 # AuraRadio
 
-Mutually exclusive single-choice selection control for choosing exactly one option from a small list (`2–5` descriptive choices) inside forms, settings sheets, and configuration panels.
-
-## 1. Overview
-
-`AuraRadio` renders a precision `20.dp` circular ring with an animated `10.dp` center indicator dot inside a `>= 48.dp` hit target. It is tailored for descriptive single-selection flows such as **My Finance** base currency (`KRW / USD / EUR`), **Home Launcher** icon grid density (`4×5 / 4×6 / 5×5`), and **My Drink Diary** serving temperature presets.
+> Mutually exclusive single-choice selection control for choosing exactly one option from a small list (`2–5` descriptive choices) inside forms, settings sheets, and configuration panels.
 
 ---
 
-## 2. Intent & Usage Principles
+## 1. Intent & Usage Principles
+
+### Problem
+
+`AuraRadio` renders a precision `20dp` circular ring with an animated `10dp` center indicator dot inside a `>= 48dp` hit target. It is tailored for descriptive single-selection flows such as **My Finance** base currency (`KRW / USD / EUR`), **Home Launcher** icon grid density (`4×5 / 4×6 / 5×5`), and **My Drink Diary** serving temperature presets.
 
 ### When to Use
 
 - Picking **exactly 1 option** from `2–5` mutually exclusive items that benefit from descriptive labels or secondary subtext (`description != null`).
 - Inside bottom sheets, dialogs, or settings groups enclosed in a `Modifier.selectableGroup()` parent.
 
-### When NOT to Use
+### When NOT to Use & Alternatives
 
 - **Multiple simultaneous selections:** Use `AuraCheckbox`.
 - **Single binary On/Off toggle:** Never use a single radio button to turn one setting on/off (a selected radio cannot be deselected by tapping it again); use `AuraSwitch` or `AuraCheckbox`.
 - **Compact 1–2 word header mode switching (`Day | Week | Month`):** Prefer `AuraSegmentedButton`.
 - **Lists exceeding 6–8 items:** Use a searchable picker sheet or `AuraSearchBar` list instead of a tall radio column.
 
-### Usage Rules
+### Context Rules
 
 - **`RD-RULE-001` (Mutual Exclusion & Default Selection):** Radio groups should always wrap options in `Modifier.selectableGroup()` and pre-select a sensible initial default unless deliberate empty-state validation is required.
 - **`RD-RULE-002` (Non-Deselectable Tap Semantics):** Tapping an already selected `AuraRadio` must keep it selected (`Role.RadioButton` `selectable` contract), never toggling back to empty.
-- **`RD-RULE-003` (48dp Hit Box & Row Expansion):** Standalone circles guarantee `>= 48.dp` hit bounds; when `label != null`, the full row acts as the selectable container.
+- **`RD-RULE-003` (48dp Hit Box & Row Expansion):** Standalone circles guarantee `>= 48dp` hit bounds; when `label != null`, the full row acts as the selectable container.
 
 ### Do / Don't
 
@@ -73,7 +73,7 @@ Mutually exclusive single-choice selection control for choosing exactly one opti
 
 ---
 
-## 3. Anatomy & Variants
+## 2. Anatomy & Canonical Part IDs
 
 ```text
   Unselected:     Selected:       Labeled Row Mode:
@@ -84,12 +84,42 @@ Mutually exclusive single-choice selection control for choosing exactly one opti
    20dp ring     10dp inner dot   >= 48dp hit target row (Role.RadioButton)
 ```
 
-- **Outer Ring Diameter:** `20.dp`, `2.dp` stroke (`1.75.dp` when unselected).
-- **Inner Dot Diameter:** `10.dp` filled circle centered inside the ring, scaling smoothly `0f -> 1f` when selected.
+| Part ID | Responsibility | Required | Semantics Owner |
+|---|---|---|---|
+| `root` | Standalone `48dp` hit box, or the full labeled row when `label != null` | Yes | `Role.RadioButton` (`selectable`) |
+| `ring` | Outer circle stroke | Yes | Decorative |
+| `dot` | Inner filled circle shown when selected | Conditional | Decorative |
+| `label` | Primary row text | No | Merged into `root` |
+| `description` | Secondary row text below `label` | No | Merged into `root` |
 
 ---
 
-## 4. Token Bindings
+## 3. Variant, Size & Material Matrix
+
+- **Outer Ring Diameter:** `20dp`, `2dp` stroke (`1.75dp` when unselected).
+- **Inner Dot Diameter:** `10dp` filled circle centered inside the ring, scaling smoothly `0f -> 1f` when selected.
+- **Layout modes:** Standalone (no `label`) or Labeled Row (`label` / `description`).
+- **Material:** `Solid` only (`layer: content`).
+
+---
+
+## 4. State Precedence & Behavior
+
+**State Precedence:** `Disabled` > `Pressed` > `Selected` / `Unselected`.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Unselected
+    Unselected --> Pressed: Pointer Down (onClick != null)
+    Pressed --> Selected: Pointer Up / Click
+    Selected --> Pressed: Pointer Down (keeps Selected)
+    Unselected --> Disabled: enabled = false
+    Selected --> Disabled: enabled = false
+```
+
+---
+
+## 5. Semantic Token Bindings
 
 | Element | State | Light / Dark Semantic Token |
 |---|---|---|
@@ -106,48 +136,45 @@ Mutually exclusive single-choice selection control for choosing exactly one opti
 
 ---
 
-## 5. Responsive Layout Behavior
-
-`AuraRadio` adapts layout geometry cleanly across all Aura viewport width and display profiles (`AuraWindowInfo`):
-
-| Width / Display Profile | Standalone Ring Behavior | Labeled Radio Row Behavior |
-|---|---|---|
-| `ExtraSmall` (`< 360dp`) | Centered `20.dp` ring inside `48.dp × 48.dp` accessible hit bounds. | Top-aligned indicator stays anchored to the first line of `label` when narrow widths wrap labels onto 2 lines. |
-| `Compact` (`360–599dp`) | Vertical radio list fills full column width (`12.dp` horizontal gap between circle and label). | Full-row selectable target with generous `48.dp+` vertical height prevents mis-taps between adjacent rows. |
-| `Square` (`~1:1` Multi-window) | Retains full `48.dp` minimum hit bounds inside pop-up floating panels. | Vertical radio options remain scannable even when side-by-side preview panes tighten horizontally. |
-| `UltraWide` (`> 21:9`) | Maintains crisp leading alignment inside compact list containers. | Caps horizontal expansion to parent `AuraCard` / pane constraints so labels and descriptions remain cohesive. |
-| `Expanded` (`>= 840dp` Tablet) | Displays inside secondary inspector forms or multi-column preference groups. | Pairs cleanly inside `AuraCard` selection containers without drifting apart on wide tablet viewports. |
-
----
-
-## 6. State Machine & Interaction Precedence
-
-**State Precedence:** `Disabled` > `Pressed` > `Selected` / `Unselected`.
-
-```mermaid
-stateDiagram-v2
-    [*] --> Unselected
-    Unselected --> Pressed: Pointer Down (onClick != null)
-    Pressed --> Selected: Pointer Up / Click
-    Selected --> Pressed: Pointer Down (keeps Selected)
-    Unselected --> Disabled: enabled = false
-    Selected --> Disabled: enabled = false
-```
-
----
-
-## 7. Motion & Micro-interactions
+## 6. Interaction Motion Contract
 
 Consumes `AuraTheme.motion`:
 
-1. **Inner Dot Spring Scale:** When `selected` changes (`false <-> true`), the inner `10.dp` dot scales between `0f` and `1f` with `AuraTheme.motion.iconSpring()`, creating a crisp elastic pop without sluggishness.
+1. **Inner Dot Spring Scale:** When `selected` changes (`false <-> true`), the inner `10dp` dot scales between `0f` and `1f` with `AuraTheme.motion.iconSpring()`, creating a crisp elastic pop without sluggishness.
 2. **Tactile Press Feedback:** Uses `rememberAuraTactilePressed(interactionSource, motion.minPressDurationMillis)` to compress the radio visual circle to `AuraTheme.motion.pressedScaleDefault` (`0.96f`) via `pressInSpring()` / `pressOutSpring()`.
 3. **Color Transitions:** Ring stroke color and background tint transition over `AuraTheme.motion.stateChangeDurationMillis` (`150ms`).
 4. **Reduced Motion:** Uses `snap()` when system animations are disabled (`ANIMATOR_DURATION_SCALE == 0f`).
 
 ---
 
-## 8. Cross-Platform API Contract
+## 7. Responsive Layout Behavior (`Smallest Width × Display Ratio`)
+
+`AuraRadio` adapts layout geometry cleanly across all Aura viewport width and display profiles (`AuraWindowInfo`):
+
+| Width / Display Profile | Standalone Ring Behavior | Labeled Radio Row Behavior |
+|---|---|---|
+| `ExtraSmall` (`< 360dp`) | Centered `20dp` ring inside `48dp × 48dp` accessible hit bounds. | Top-aligned indicator stays anchored to the first line of `label` when narrow widths wrap labels onto 2 lines. |
+| `Compact` (`360–599dp`) | Vertical radio list fills full column width (`12dp` horizontal gap between circle and label). | Full-row selectable target with generous `48dp+` vertical height prevents mis-taps between adjacent rows. |
+| `Square` (`~1:1` Multi-window) | Retains full `48dp` minimum hit bounds inside pop-up floating panels. | Vertical radio options remain scannable even when side-by-side preview panes tighten horizontally. |
+| `UltraWide` (`> 21:9`) | Maintains crisp leading alignment inside compact list containers. | Caps horizontal expansion to parent `AuraCard` / pane constraints so labels and descriptions remain cohesive. |
+| `Expanded` (`>= 840dp` Tablet) | Displays inside secondary inspector forms or multi-column preference groups. | Pairs cleanly inside `AuraCard` selection containers without drifting apart on wide tablet viewports. |
+
+---
+
+## 8. Accessibility & Guardrails
+
+- [ ] Registers `Role.RadioButton` via `Modifier.selectable(selected = selected, ...)`.
+- [ ] Enforces `>= 48dp` minimum touch height and width on standalone and row modes.
+- [ ] Grouping helper in screens applies `Modifier.selectableGroup()` so TalkBack announces `"in list, 1 of N"`.
+- [ ] Verified reduced-motion mode sets dot scale immediately without animation lag.
+
+---
+
+## 9. Platform Bindings
+
+### 9.1 Android (Jetpack Compose)
+
+- **Source:** [`AuraRadio.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraRadio.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
@@ -163,6 +190,8 @@ fun AuraRadio(
 ```
 <!-- API:ANDROID:END -->
 
+### 9.2 iOS (SwiftUI Reference)
+
 <!-- API:IOS:BEGIN -->
 ```swift
 public struct AuraRadio: View {
@@ -177,6 +206,8 @@ public struct AuraRadio: View {
 ```
 <!-- API:IOS:END -->
 
+### 9.3 Web (React / TypeScript Reference)
+
 <!-- API:WEB:BEGIN -->
 ```ts
 export interface AuraRadioProps {
@@ -190,12 +221,3 @@ export interface AuraRadioProps {
 }
 ```
 <!-- API:WEB:END -->
-
----
-
-## 9. Accessibility & Test Checklist
-
-- [ ] Registers `Role.RadioButton` via `Modifier.selectable(selected = selected, ...)`.
-- [ ] Enforces `>= 48.dp` minimum touch height and width on standalone and row modes.
-- [ ] Grouping helper in screens applies `Modifier.selectableGroup()` so TalkBack announces `"in list, 1 of N"`.
-- [ ] Verified reduced-motion mode sets dot scale immediately without animation lag.

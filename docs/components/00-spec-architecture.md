@@ -13,24 +13,24 @@ Each component specification serves as an **OS-agnostic behavioral and semantic 
 
 ## 2. Two-Layer Specification Structure
 
-Every component spec in `docs/components/<category>/<component>.md` is divided into **Layer A (Universal Contract)** and **Layer B (Platform Bindings)**.
+Every component spec in `docs/components/<category>/<component>.md` is divided into **Layer A (Universal Contract)** and **Layer B (Platform Bindings)**. The exact headings, frontmatter keys, and part-table format are fixed by [03-spec-template.md](03-spec-template.md); start every new spec from that template.
 
 ```text
 docs/components/<category>/<component>.md
 ├── YAML Frontmatter          # Machine-readable identity, status, version, platforms, token dependencies
 ├── Layer A: Universal Contract (OS-Agnostic, ~80%)
-│   ├── 1. Intent & Usage Principles (When to Use / When NOT to Use / Do / Don't / Context Rules)
+│   ├── 1. Intent & Usage Principles (Problem / When to Use / When NOT to Use & Alternatives / Context Rules / Do / Don't)
 │   ├── 2. Anatomy & Canonical Part IDs
-│   ├── 3. Variant, Size & Material Matrix (logical px + forbidden combinations)
+│   ├── 3. Variant, Size & Material Matrix (dp/sp + forbidden combinations)
 │   ├── 4. Deterministic State Precedence & Behavior
 │   ├── 5. Semantic Token Bindings (Part × Variant × State -> AuraColors / AuraTypography / AuraLayout)
 │   ├── 6. Interaction Motion Contract (AuraMotion + Reduced Motion, or passive rationale)
 │   ├── 7. Responsive Layout Behavior (Smallest Width × Display Ratio)
 │   └── 8. Accessibility & Guardrail Rules (Rule IDs)
-└── Layer B: Platform Bindings (OS-Specific, ~20%)
-    ├── Android (Jetpack Compose)  <!-- API:ANDROID:BEGIN / END -->
-    ├── iOS (SwiftUI Reference)    <!-- API:IOS:BEGIN / END -->
-    └── Web (React/TS Reference)   <!-- API:WEB:BEGIN / END -->
+└── Layer B: 9. Platform Bindings (OS-Specific, ~20%)
+    ├── 9.1 Android (Jetpack Compose)        <!-- API:ANDROID:BEGIN / END -->
+    ├── 9.2 iOS (SwiftUI Reference)          <!-- API:IOS:BEGIN / END -->
+    └── 9.3 Web (React / TypeScript Reference) <!-- API:WEB:BEGIN / END -->
 ```
 
 ### Bidirectional Sync (`Specs ↔ Code`)
@@ -61,21 +61,21 @@ $$\text{Loading} \succ \text{Disabled} \succ \text{Pressed} \succ \text{Focused}
 
 ## 4. Cross-Platform Unit & Token Mapping
 
-Layer A specs express dimensions in **logical units (`px`)** and **semantic token paths** rather than OS-specific units. Each platform binding converts them deterministically:
+Layer A specs express dimensions in **density-independent `dp`** (written `16dp`), type sizes in **`sp`** (written `14sp`), and **semantic token paths** relative to `AuraTheme`. Each platform binding converts them deterministically:
 
 | Concept | Layer A Spec | Android (Compose) | iOS (SwiftUI) | Web (CSS / React) |
 |---|---|---|---|---|
-| Spacing & Bounds | `16px` | `16.dp` | `16pt` (`CGFloat`) | `1rem` (`16px`) |
-| Typography Size | `14px` | `14.sp` | `Font.system(size: 14)` / Dynamic Type | `0.875rem` |
-| Minimum Hit Target | `48px` (mobile) | `48.dp × 48.dp` | `44pt × 44pt` | `44px × 44px` (coarse) / `36px` (fine) |
-| Color Tokens | `brand.primary` | `AuraTheme.colors.brand.primary` | `auraTheme.colors.brand.primary` | `var(--aura-brand-primary)` |
+| Spacing & Bounds | `16dp` | `16.dp` | `16pt` (`CGFloat`) | `1rem` (`16px`) |
+| Typography Size | `14sp` | `14.sp` | `Font.system(size: 14)` / Dynamic Type | `0.875rem` |
+| Minimum Hit Target | `48dp` (mobile) | `48.dp × 48.dp` | `44pt × 44pt` | `44px × 44px` (coarse) / `36px` (fine) |
+| Color Tokens | `colors.brand.primary` | `AuraTheme.colors.brand.primary` | `auraTheme.colors.brand.primary` | `var(--aura-brand-primary)` |
 | Surface Material | `Solid \| Glass` | `AuraMaterial` | `Material` / `.ultraThinMaterial` | Solid / `backdrop-filter: blur()` |
 
 ---
 
 ## 5. Naming & File Conventions
 
-- **Component IDs:** `aura.component.<kebab-case-name>` (e.g., `aura.component.button`)
+- **Component IDs:** frontmatter `id: "aura.component.<kebab-case-name>"` (e.g., `aura.component.button`)
 - **Rule IDs:** `<CAT>-RULE-<NNN>` for category principles (e.g., `BTN-RULE-001`) and `<COMP>-<NNN>` for component validation rules (e.g., `BTN-001`)
 - **Spec File Location:** `docs/components/<category>/<kebab-case-name>.md`
 - **Category Principles:** `docs/components/<category>/00-<category>-principles.md`

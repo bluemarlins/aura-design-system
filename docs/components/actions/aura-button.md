@@ -1,22 +1,22 @@
 ---
-component_id: "aura.component.button"
+id: "aura.component.button"
 name: "AuraButton"
 category: "actions"
 status: "ready"
+version: "0.2.0"
 layer: "content"
 material_allowed: ["Solid", "Glass"]
 motion_track: "Standard"
-version: "0.2.0"
 platforms:
   android: "com.example.ds.component.AuraButton"
   ios: "AuraDS.AuraButton (planned)"
   web: "@aura-ds/react.AuraButton (planned)"
 tokens:
-  - "brand.*"
-  - "content.*"
-  - "border.*"
-  - "status.error.*"
-  - "interaction.*"
+  - "colors.brand.*"
+  - "colors.content.*"
+  - "colors.border.*"
+  - "colors.status.error.*"
+  - "colors.interaction.*"
   - "motion.*"
   - "typography.*"
   - "layout.*"
@@ -49,7 +49,7 @@ Users need an unmistakable, accessible control with an explicit verb label to tr
 | Switching view modes (`Day \| Week \| Month`) | `AuraSegmentedButton` | Immediate mutually exclusive toggle without submit |
 | Multi-select tags or inline filters | `AuraChipButton` | Lightweight attribute/filter capsule |
 
-### Context & Hierarchy Rules
+### Context Rules
 
 - **`BTN-RULE-001`:** Maximum 1 `Primary` button per screen or modal dialog.
 - **`BTN-RULE-002`:** Do not place `Primary` inside repeated cards, list rows, or home launcher widgets; use `Secondary`, `Outline`, or `Ghost`.
@@ -70,7 +70,7 @@ Users need an unmistakable, accessible control with an explicit verb label to tr
 
 ```text
 +----------------------------------------------------------------------+
-|  touchTarget (min 48x48 logical px, invisible hit-box if Small)      |
+|  touchTarget (min 48x48dp, invisible hit-box if Small)               |
 |  +----------------------------------------------------------------+  |
 |  |  root (visual container: background, border, shape)            |  |
 |  |                                                                |  |
@@ -83,7 +83,7 @@ Users need an unmistakable, accessible control with an explicit verb label to tr
 
 | Part ID | Responsibility | Required | Semantics Owner |
 |---|---|---|---|
-| `touchTarget` | Guarantees minimum interactive hit box (`48×48px` mobile) | Yes | `root` (`Role.Button`) |
+| `touchTarget` | Guarantees minimum interactive hit box (`48×48dp` mobile) | Yes | `root` (`Role.Button`) |
 | `root` | Visual container fill, border stroke, corner radius, horizontal/vertical padding | Yes | Inherited |
 | `leadingIcon` | Optional visual cue before text label | No | Decorative (merged) |
 | `label` | Single-line action verb with ellipsis overflow | Yes | Accessible name |
@@ -108,9 +108,9 @@ Users need an unmistakable, accessible control with an explicit verb label to tr
 
 | Size | Visual Height | Min Touch Target | Horizontal Padding | Vertical Padding | Corner Radius | Label Size / Line Height | Icon / Spinner Size | Icon Gap |
 |---|---|---|---|---|---|---|---|---|
-| `Small` | `36px` | `48px` (Android) / `44pt` (iOS) | `12px` | `6px` | `8px` | `13px / 18px` SemiBold | `16px` | `6px` |
-| `Medium` (Default) | `48px` | `48px` / `44pt` | `16px` | `10px` | `10px` | `14px / 20px` SemiBold | `18px` | `8px` |
-| `Large` | `56px` | `56px` | `20px` | `12px` | `12px` | `16px / 22px` SemiBold | `20px` | `8px` |
+| `Small` | `36dp` | `48dp` (Android) / `44pt` (iOS) | `12dp` | `6dp` | `8dp` | `13sp / 18sp` SemiBold | `16dp` | `6dp` |
+| `Medium` (Default) | `48dp` | `48dp` / `44pt` | `16dp` | `10dp` | `10dp` | `14sp / 20sp` SemiBold | `18dp` | `8dp` |
+| `Large` | `56dp` | `56dp` | `20dp` | `12dp` | `12dp` | `16sp / 22sp` SemiBold | `20dp` | `8dp` |
 
 ### Valid & Invalid Combinations
 
@@ -140,7 +140,7 @@ $$\text{Loading} \succ \text{Disabled} \succ \text{Pressed} \succ \text{Focused}
 
 ---
 
-## 5. Semantic Token Bindings (`AuraColors` & `AuraTypography`)
+## 5. Semantic Token Bindings
 
 | Part | Variant | State | `AuraColors` / `AuraTypography` Token Path |
 |---|---|---|---|
@@ -152,9 +152,9 @@ $$\text{Loading} \succ \text{Disabled} \succ \text{Pressed} \succ \text{Focused}
 | `label` / `progressIndicator` | `Secondary` | `Rest` / `Pressed` / `Loading` | `colors.brand.onSubtle` |
 | `root` (bg) | `Outline` | `Rest` / `Loading` | `Transparent` |
 | `root` (bg) | `Outline` | `Pressed` | `colors.interaction.pressedOverlay` |
-| `root` (border) | `Outline` | `Rest` / `Loading` | `1px` `colors.border.default` |
-| `root` (border) | `Outline` | `Pressed` | `1px` `colors.border.strong` |
-| `root` (border) | `Outline` | `Disabled` | `1px` `colors.border.subtle` |
+| `root` (border) | `Outline` | `Rest` / `Loading` | `1dp` `colors.border.default` |
+| `root` (border) | `Outline` | `Pressed` | `1dp` `colors.border.strong` |
+| `root` (border) | `Outline` | `Disabled` | `1dp` `colors.border.subtle` |
 | `label` / `progressIndicator` | `Outline` | `Rest` / `Pressed` / `Loading` | `colors.content.primary` |
 | `root` (bg) | `Ghost` | `Rest` / `Loading` | `Transparent` |
 | `root` (bg) | `Ghost` | `Pressed` | `colors.interaction.pressedOverlay` |
@@ -185,16 +185,16 @@ Aura uses **Tactile Spring Compression + Smooth State-Layer Interpolation** inst
    - **Minimum Press Latch (`motion.minPressDurationMillis = 110ms`):** Inside scrollable containers, Compose delays press emission until tap release; latching the pressed state for at least `110ms` ensures quick clicks always render full compression and tint before rebounding.
 3. **Craft Layer — Icon Micro-Nudge:**
    - `leadingIcon`: scales to `motion.leadingIconPressedScale` (`0.92f`) via `motion.iconSpring`.
-   - `trailingIcon`: translates horizontally forward by `motion.trailingIconNudge` (`2px` / `2.dp`) via `motion.iconSpring`.
+   - `trailingIcon`: translates horizontally forward by `motion.trailingIconNudge` (`2dp` / `2dp`) via `motion.iconSpring`.
 4. **In-Place State Layer — `Rest ↔ Loading` Crossfade & Breathing Spinner:**
    - Label/icon row fades (`alpha 1f ↔ 0f` over `120ms`) and contracts slightly (`scale 1f ↔ 0.92f`) while preserving measured width.
    - `progressIndicator` crossfades and pops in (`scale 0.75f ↔ 1.0f`) and combines continuous rotation (`900ms` linear) with breathing arc modulation (`45° ↔ 240°`, `650ms` reverse `FastOutSlowInEasing`).
 5. **Reduced Motion:**
-   - When system animations are disabled (`ANIMATOR_DURATION_SCALE == 0`), scale and icon translation resolve directly to rest (`1.0f`, `0px`) while color and loading state feedback remain active.
+   - When system animations are disabled (`ANIMATOR_DURATION_SCALE == 0`), scale and icon translation resolve directly to rest (`1.0f`, `0dp`) while color and loading state feedback remain active.
 
 ---
 
-## 7. Responsive Layout Behavior (`Smallest Width` × `Display Ratio`)
+## 7. Responsive Layout Behavior (`Smallest Width × Display Ratio`)
 
 | Window / Ratio Profile | Sizing & Placement Guideline |
 |---|---|
@@ -218,7 +218,7 @@ Aura uses **Tactile Spring Compression + Smooth State-Layer Interpolation** inst
 
 ## 9. Platform Bindings
 
-### 9.1. Android (Jetpack Compose)
+### 9.1 Android (Jetpack Compose)
 
 - **Source:** [`AuraButton.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraButton.kt)
 - **Dependency Policy:** Uses Compose Foundation/UI/Animation primitives only (`material3` independent).
@@ -258,7 +258,7 @@ fun AuraButton(
 ```
 <!-- API:ANDROID:END -->
 
-### 9.2. iOS (SwiftUI Reference Contract — Planned)
+### 9.2 iOS (SwiftUI Reference)
 
 <!-- API:IOS:BEGIN -->
 ```swift
@@ -287,7 +287,7 @@ public struct AuraButton<LeadingIcon: View, TrailingIcon: View>: View {
 ```
 <!-- API:IOS:END -->
 
-### 9.3. Web (React / TypeScript Reference Contract — Planned)
+### 9.3 Web (React / TypeScript Reference)
 
 <!-- API:WEB:BEGIN -->
 ```ts

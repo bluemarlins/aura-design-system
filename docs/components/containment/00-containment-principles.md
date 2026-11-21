@@ -19,17 +19,17 @@ Defines the **Containment Component Taxonomy** and the **Surface Separation Prin
 | `AuraListItem` | Structured single/multi-line row inside lists or settings sheets *(Planned)* | Transaction rows (**Finance**), Preference toggles (**Settings**) |
 | `AuraBottomSheet` | Modal or docked bottom overlay sheet *(Planned)* | Quick log entry (**Drink Diary**), Account filter sheet (**Finance**) |
 | `AuraDialog` | High-priority modal decision / alert container | Destructive delete confirmation, Quick edit form |
-| `AuraDivider` | Subtle `1.dp` hairline separator (`border.subtle`, `default`, `strong`) | Section breaks inside dense cards, detail views, or lists |
+| `AuraDivider` | Subtle `1dp` hairline separator (`border.subtle`, `default`, `strong`) | Section breaks inside dense cards, detail views, or lists |
 
 ---
 
 ## 3. Core Containment Rules
 
-- **`CNT-RULE-001` (Tonal & Border Restraint Over Drop-Shadow Soup):** Aura prioritizes clean semantic surface stepping (`surface.default`, `surface.raised`, `surface.sunken`, `surface.floating`) paired with `1.dp` semantic borders (`border.subtle`, `border.default`) over heavy blurry shadows that dirty light themes and vanish in dark themes. When elevation is applied (`Elevated`/`Glass` card, modal `AuraDialog`), read exclusively from `AuraTheme.elevation` (`VIS-RULE-005`).
-- **`CNT-RULE-002` (No Nested Interactive Card Traps):** Avoid nesting clickable `AuraCard` elements inside another clickable `AuraCard`. When an internal action (e.g., an `AuraIconButton` bookmark) lives inside a clickable card, ensure independent hit bounds (`>= 48.dp`) or use a passive card with explicit action buttons.
+- **`CNT-RULE-001` (Tonal & Border Restraint Over Drop-Shadow Soup):** Aura prioritizes clean semantic surface stepping (`surface.default`, `surface.raised`, `surface.sunken`, `surface.floating`) paired with `1dp` semantic borders (`border.subtle`, `border.default`) over heavy blurry shadows that dirty light themes and vanish in dark themes. When elevation is applied (`Elevated`/`Glass` card, modal `AuraDialog`), read exclusively from `AuraTheme.elevation` (`VIS-RULE-005`).
+- **`CNT-RULE-002` (No Nested Interactive Card Traps):** Avoid nesting clickable `AuraCard` elements inside another clickable `AuraCard`. When an internal action (e.g., an `AuraIconButton` bookmark) lives inside a clickable card, ensure independent hit bounds (`>= 48dp`) or use a passive card with explicit action buttons.
 - **`CNT-RULE-003` (Surface Contrast Pairing & `VIS-RULE-001` Exception):**
   - Place `Outlined` (`surface.default` + `border.default`) or `Elevated` (`surface.raised`, `AuraElevation.level2`) cards on `background.primary`.
   - Use `Filled` (`surface.sunken`) cards on `surface.default` sheets or secondary callout blocks where softer grouping is desired.
   - Reserve `Glass` (`surface.floating`, `AuraElevation.level1`) exclusively for **Home Launcher** wallpaper-backed widgets (the scoped `AuraCardVariant.Glass` exception to `VIS-RULE-001`)—never inside scrollable inline lists or workspace forms.
 - **`CNT-RULE-004` (Flat Canvas Protection for Writing):** Do not trap long-form `Paperless` diary writing (`My Planner`) inside small padded boxes; reserve cards for discrete summarized records and grouped controls.
-- **`CNT-RULE-005` (Planned Sheet Governance — `AuraBottomSheet`):** Future `AuraBottomSheet` belongs to the `spatial` layer (`AuraElevation.level4`, `24.dp` / `scrimAlpha = 0.56f`), supports `Solid` and `Glass` (falling back to `Solid` under Reduced Transparency while maintaining `>= 4.5:1` contrast), and defaults to `Expressive` spatial entry/exit with interruptible gesture-driven drag continuity (`MOT-RULE-004`).
+- **`CNT-RULE-005` (Planned Sheet Governance — `AuraBottomSheet`):** Future `AuraBottomSheet` belongs to the `spatial` layer (`AuraElevation.level4`, `24dp` / `scrimAlpha = 0.56f`), supports `Solid` and `Glass` (falling back to `Solid` under Reduced Transparency while maintaining `>= 4.5:1` contrast), and defaults to `Expressive` spatial entry/exit with interruptible gesture-driven drag continuity (`MOT-RULE-004`).

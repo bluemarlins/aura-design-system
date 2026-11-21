@@ -18,9 +18,9 @@ Every Aura component must satisfy all eight rules before reaching `status: "read
 
 | Dimension | Requirement |
 |---|---|
-| **Spec Check** | Must start with `## 1. Intent & Usage Principles` containing `### When to Use`, `### When NOT to Use & Alternatives`, explicit `### Do / Don't` comparison rows (`\| Do \| Don't \|`), and traceable Context Rule IDs (`*-RULE-*`). |
+| **Spec Check** | Must follow [03-spec-template.md](03-spec-template.md): nine canonical `##` sections in order, starting with `## 1. Intent & Usage Principles` containing `### Problem`, `### When to Use`, `### When NOT to Use & Alternatives`, `### Context Rules`, and `### Do / Don't` (`\| Do \| Don't \|` rows), plus traceable Context Rule IDs (`*-RULE-*`). |
 | **Review Question** | Can an engineer or AI agent choose between this component and sibling components cleanly, and see concrete Do vs. Don't examples? |
-| **Automated Gate** | Spec contains `## 1. Intent & Usage Principles`, `When to Use`, `When NOT to Use`, and `Do / Don't`. |
+| **Automated Gate** | `SpecCodeConsistencyTest` checks the frontmatter key order and `id` format, the nine section headings in order, the five §1 subsections in order, the §2 `Part ID` table, and the §9.1–9.3 subsections. |
 
 ---
 

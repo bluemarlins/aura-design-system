@@ -1,20 +1,20 @@
 ---
-component_id: "aura.component.floating-glass-scaffold"
+id: "aura.component.floating-glass-scaffold"
 name: "FloatingGlassScaffold"
 category: "layout"
 status: "ready"
+version: "0.1.0"
 layer: "canvas"
 material_allowed: ["Solid"]
 motion_track: "none"
-version: "0.1.0"
 platforms:
   android: "com.example.ds.component.FloatingGlassScaffold"
   ios: "AuraDS.FloatingGlassScaffold (planned)"
   web: "@aura-ds/react.FloatingGlassScaffold (planned)"
 tokens:
-  - "background.primary"
-  - "content.primary"
-  - "interaction.scrim"
+  - "colors.background.primary"
+  - "colors.content.primary"
+  - "colors.interaction.scrim"
   - "elevation.level1"
   - "elevation.level3"
   - "typography.bodyMedium"
@@ -60,11 +60,11 @@ Floating top pills and bottom islands only look like glass when real content pas
 |---|---|
 | `LazyColumn(contentPadding = padding)` with the `padding` passed to `content`. | Wrap content in `Modifier.padding(top = 64.dp)`, which cuts the canvas and leaves nothing behind the glass. |
 | Use `rememberFloatingScrollProgress(listState)` to drive custom chrome and keep the backdrop fresh. | Use `FloatingGlassScaffold` for a settings form where nothing scrolls under the bars. |
-| Pass `hasBottomIsland = false` on screens without an island so bottom padding falls back to nav-bar inset + `16px`. | Place a second `FloatingGlassScaffold` inside a pane or dialog. |
+| Pass `hasBottomIsland = false` on screens without an island so bottom padding falls back to nav-bar inset + `16dp`. | Place a second `FloatingGlassScaffold` inside a pane or dialog. |
 
 ---
 
-## 2. Anatomy & Canonical Part IDs (4-Layer Model)
+## 2. Anatomy & Canonical Part IDs
 
 ```text
 root (Box: containerColor, nestedScroll(adaptiveBarState))
@@ -84,17 +84,23 @@ root (Box: containerColor, nestedScroll(adaptiveBarState))
 
 ---
 
-## 3. Content Padding Contract
+## 3. Variant, Size & Material Matrix
 
 | Edge | Formula |
 |---|---|
-| Top | `statusBars + topBarClearance` (`topBarClearance` default: `64px`; with `adaptiveBarState`: `112px`, or `48px` when `window.heightClass == Compact`) |
-| Bottom (island) | `calculateBottomIslandContentPadding(navBar, bottomIslandHeight, bottomIslandMargin, 16px)` = `navBar + islandHeight + margin + 16px` |
-| Bottom (no island) | `navBar + 16px` |
+| Top | `statusBars + topBarClearance` (`topBarClearance` default: `64dp`; with `adaptiveBarState`: `112dp`, or `48dp` when `window.heightClass == Compact`) |
+| Bottom (island) | `calculateBottomIslandContentPadding(navBar, bottomIslandHeight, bottomIslandMargin, 16dp)` = `navBar + islandHeight + margin + 16dp` |
+| Bottom (no island) | `navBar + 16dp` |
 
 ---
 
-## 4. Semantic Token Bindings
+## 4. State Precedence & Behavior
+
+Passive container: no pointer states of its own. Layer visibility resolves as `overlayVisible` (dismiss scrim + `overlay` on top) > chrome driven by `adaptiveBarState` (`hideFraction` / `morphFraction`) > static chrome.
+
+---
+
+## 5. Semantic Token Bindings
 
 | Part | Token Binding |
 |---|---|
@@ -107,26 +113,26 @@ root (Box: containerColor, nestedScroll(adaptiveBarState))
 
 ---
 
-## 5. Interaction Motion Contract
+## 6. Interaction Motion Contract
 
 - **Passive container (`motion_track: "none"`):** The scaffold owns no timeline. Bottom chrome translation and scrim alpha follow `AuraAdaptiveBarState.hideFraction` / `morphFraction`, which are animated by the state with `AuraTheme.motion` tokens (see [aura-adaptive-bar-state.md](../navigation/aura-adaptive-bar-state.md)).
 - **Reduced Motion:** Inherited from `AuraAdaptiveBarState` (snaps instead of animating).
 
 ---
 
-## 6. Responsive Layout Behavior (`Smallest Width × Display Ratio`)
+## 7. Responsive Layout Behavior (`Smallest Width × Display Ratio`)
 
 | Profile | Behavior |
 |---|---|
 | **`ExtraSmall`** (Cover `sw < 360dp`) | Same 4-layer model; chrome components shrink, scrims keep contrast |
-| **`Compact`** (Phone Portrait) | Default clearances (`64px` / `112px` top, island bottom padding) |
+| **`Compact`** (Phone Portrait) | Default clearances (`64dp` / `112dp` top, island bottom padding) |
 | **`Medium` / `Square`** (Foldable `~1:1`) | Canvas stays full-bleed; floating chrome caps its own width so content remains visible at the sides |
-| **`UltraWide`** (Phone Landscape, short height) | `heightClass == Compact` → `48px` top clearance; adaptive bars prefer `CompactDocked` |
+| **`UltraWide`** (Phone Landscape, short height) | `heightClass == Compact` → `48dp` top clearance; adaptive bars prefer `CompactDocked` |
 | **`Expanded`** (Tablet / DeX) | Prefer pane-scoped chrome (`NAV-RULE-004`); use `AuraScaffold` + `AuraAdaptiveTwoPane` when panes need separate bars |
 
 ---
 
-## 7. Accessibility
+## 8. Accessibility & Guardrails
 
 - Focus and TalkBack order follow draw order: content, then top chrome, bottom chrome, snackbar, overlay.
 - Edge scrims protect `>= 4.5:1` text contrast on glass chrome over busy content (`VIS-RULE-003`).
@@ -135,9 +141,11 @@ root (Box: containerColor, nestedScroll(adaptiveBarState))
 
 ---
 
-## 8. Platform Bindings (Layer B)
+## 9. Platform Bindings
 
-### 8.1 Android (Jetpack Compose)
+### 9.1 Android (Jetpack Compose)
+
+- **Source:** [`FloatingGlassScaffold.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/FloatingGlassScaffold.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
@@ -185,7 +193,7 @@ fun rememberFloatingScrollProgress(
 ```
 <!-- API:ANDROID:END -->
 
-### 8.2 iOS (SwiftUI Reference)
+### 9.2 iOS (SwiftUI Reference)
 
 <!-- API:IOS:BEGIN -->
 ```swift
@@ -199,7 +207,7 @@ struct FloatingGlassScaffold<Content: View, Top: View, Bottom: View>: View {
 ```
 <!-- API:IOS:END -->
 
-### 8.3 Web (React / TypeScript Reference)
+### 9.3 Web (React / TypeScript Reference)
 
 <!-- API:WEB:BEGIN -->
 ```tsx

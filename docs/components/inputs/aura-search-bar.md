@@ -1,5 +1,5 @@
 ---
-id: "aura-search-bar"
+id: "aura.component.search-bar"
 name: "AuraSearchBar"
 category: "inputs"
 status: "ready"
@@ -9,21 +9,21 @@ material_allowed: ["Solid", "Glass"]
 motion_track: "Standard"
 platforms:
   android: "com.example.ds.component.AuraSearchBar"
-  ios: "AuraSearchBar"
-  web: "AuraSearchBar"
+  ios: "AuraDS.AuraSearchBar (planned)"
+  web: "@aura-ds/react.AuraSearchBar (planned)"
 tokens:
-  - "color.surface.sunken"
-  - "color.surface.default"
-  - "color.surface.floating"
-  - "color.brand.primary"
-  - "color.brand.onPrimary"
-  - "color.content.primary"
-  - "color.content.secondary"
-  - "color.content.tertiary"
-  - "color.content.disabled"
-  - "color.border.subtle"
-  - "color.border.focus"
-  - "color.interaction.disabledContainer"
+  - "colors.surface.sunken"
+  - "colors.surface.default"
+  - "colors.surface.floating"
+  - "colors.brand.primary"
+  - "colors.brand.onPrimary"
+  - "colors.content.primary"
+  - "colors.content.secondary"
+  - "colors.content.tertiary"
+  - "colors.content.disabled"
+  - "colors.border.subtle"
+  - "colors.border.focus"
+  - "colors.interaction.disabledContainer"
   - "typography.bodyLarge"
   - "typography.labelSmall"
   - "motion.pressInSpring"
@@ -35,9 +35,15 @@ tokens:
 
 # AuraSearchBar
 
-Instant query bar engineered for real-time filtering, universal search, and quick cellar/archive lookup, supporting both crisp `Solid` surfaces and dual-materiality `Glass` floating surfaces (`FROSTED` / `LIQUID`).
+> Instant query bar engineered for real-time filtering, universal search, and quick cellar/archive lookup, supporting both crisp `Solid` surfaces and dual-materiality `Glass` floating surfaces (`FROSTED` / `LIQUID`).
+
+---
 
 ## 1. Intent & Usage Principles
+
+### Problem
+
+Users need to filter or search a collection instantly as they type, with quick clear and filter access in one control.
 
 ### When to Use
 
@@ -45,13 +51,13 @@ Instant query bar engineered for real-time filtering, universal search, and quic
 - Universal app/widget launcher search over colorful wallpaper Layer 0 canvases (**Home Launcher**) using `AuraSearchBarSurface.Glass`.
 - Pairing search with quick-clear (`×`) and optional active-filter count indicator (`onFilterClick`).
 
-### When NOT to Use
+### When NOT to Use & Alternatives
 
 - **Persistent form fields requiring a field label, error validation, and submit saving:** Use `AuraTextField`.
 - **Entering purely numeric amounts or currencies:** Use `AuraNumberField`.
 - **Mutually exclusive 2–5 filter pills with no typing needed:** Use `AuraChipButton` or `AuraSegmentedButton`.
 
-### Usage Rules
+### Context Rules
 
 - **`SRCH-RULE-001` (Instant Feedback):** Query changes update filtered results as the user types via `onQueryChange`; also wire `ImeAction.Search` (`onSearch`) for explicit keyboard confirmation.
 - **`SRCH-RULE-002` (Glass Over Rich Media Only):** Use `AuraSearchBarSurface.Glass` (`GlassStyle.FROSTED` or `GlassStyle.LIQUID`) only when floating above colorful imagery or scrollable Layer 0 cards; default to `AuraSearchBarSurface.Solid` (`surface.sunken`) on standard white/dark content pages.
@@ -68,7 +74,7 @@ Instant query bar engineered for real-time filtering, universal search, and quic
 
 ---
 
-## 2. Anatomy & Variants
+## 2. Anatomy & Canonical Part IDs
 
 ```text
   ┌─────────────────────────────────────────────────────────┐
@@ -77,40 +83,45 @@ Instant query bar engineered for real-time filtering, universal search, and quic
    Leading      Single-line query input     Clear  Filter + badge
 ```
 
-- `AuraSearchBarSurface.Solid`: Pill (`50%` corner radius) backed by `surface.sunken`, elevating stroke to `border.focus` (`2.dp`) while focused.
-- `AuraSearchBarSurface.Glass`: Full-capsule `GlassSurface` supporting `GlassStyle.FROSTED` and `GlassStyle.LIQUID` with live Layer 0 backdrop sampling (`LocalGlassBackdropState`).
+| Part ID | Responsibility | Required | Semantics Owner |
+|---|---|---|---|
+| `root` | `52dp` full-capsule container (`Solid` or `Glass`) | Yes | Inherited |
+| `leadingIcon` | Search glyph | Yes | Decorative |
+| `input` | Single-line query text with `placeholder` | Yes | Text field (IME action `Search`) |
+| `clearButton` | Clears `query`; visible only when `query` is not empty | Conditional | `Role.Button` (`clearContentDescription`) |
+| `filterButton` | Opens filters; shown when `onFilterClick != null` | No | `Role.Button` (`"Filter (N active)"`) |
+| `filterBadge` | Count of `activeFilterCount` on `filterButton` | Conditional | Merged into `filterButton` |
 
 ---
 
-## 3. Token Bindings
+## 3. Variant, Size & Material Matrix
+
+- `AuraSearchBarSurface.Solid`: Pill (`50%` corner radius) backed by `surface.sunken`, elevating stroke to `border.focus` (`2dp`) while focused.
+- `AuraSearchBarSurface.Glass`: Full-capsule `GlassSurface` supporting `GlassStyle.FROSTED` and `GlassStyle.LIQUID` with live Layer 0 backdrop sampling (`LocalGlassBackdropState`).
+- **Size:** Single size — `52dp` minimum height, `48dp` touch targets for `clearButton` and `filterButton`.
+
+---
+
+## 4. State Precedence & Behavior
+
+`Disabled` (`!enabled`) > `Focused` > `HasQuery` (`query.isNotEmpty()`) > `Rest`.
+
+---
+
+## 5. Semantic Token Bindings
 
 | Element | State | Light / Dark Semantic Token |
 |---|---|---|
 | Container (`Solid`) | `Rest` / `Disabled` | `surface.sunken` / `interaction.disabledContainer` |
 | Container (`Glass`) | `FROSTED` / `LIQUID` | `GlassSurface(glassStyle)` with adaptive tint & specular rim |
-| Stroke (`Solid`) | `Focused` / `Rest` | `border.focus` (`2.dp`) / `border.subtle` (`1.dp`) |
+| Stroke (`Solid`) | `Focused` / `Rest` | `border.focus` (`2dp`) / `border.subtle` (`1dp`) |
 | Leading Magnifier Icon | `Focused` / `Rest` / `Disabled` | `brand.primary` / `content.secondary` / `content.disabled` |
 | Query & Placeholder Text | `Rest` / `Placeholder` / `Disabled` | `content.primary` / `content.tertiary` / `content.disabled` (`typography.bodyLarge`) |
 | Filter Badge Pill | `activeFilterCount > 0` | `brand.primary` background + `brand.onPrimary` (`typography.labelSmall`) |
 
 ---
 
-## 4. State Precedence & Accessibility
-
-### State Precedence
-
-`Disabled` (`!enabled`) > `Focused` > `HasQuery` (`query.isNotEmpty()`) > `Rest`.
-
-### Accessibility
-
-- Uses `ImeAction.Search` (`KeyboardOptions(imeAction = ImeAction.Search)`).
-- Clear (`×`) and Filter (`onFilterClick`) buttons provide `Role.Button` with descriptive `contentDescription` (`"Clear search"` and `"Filter (${activeFilterCount} active)"`) and minimum `48.dp` tap area.
-- The clear button's description is `clearContentDescription` (Android, since `1.1.2`), so apps whose UI language is not English can pass their own label (for example `"검색어 지우기"`).
-- **Reduced Transparency & Contrast (`VIS-RULE-003`–`004`):** `AuraSearchBarSurface.Glass` maintains `>= 4.5:1` query/placeholder contrast (`>= 3:1` borders/icons) over dynamic backdrops and falls back cleanly to opaque `AuraMaterial.Solid` (`colors.surface.floating`) via `AuraTheme.effectiveMaterial(...)` when Reduced Transparency, Battery Saver, or High-Contrast Text is enabled.
-
----
-
-## 5. Motion
+## 6. Interaction Motion Contract
 
 Consumes `AuraTheme.motion`:
 
@@ -120,19 +131,32 @@ Consumes `AuraTheme.motion`:
 
 ---
 
-## 6. Responsive Layout Behavior
+## 7. Responsive Layout Behavior (`Smallest Width × Display Ratio`)
 
 | Width / Display Profile | Layout & Chrome Adaptation |
 |---|---|
-| `ExtraSmall` (`< 360dp`) | Expands to `fillMaxWidth()`, prioritizing query text area (`weight(1f)`) with compact `12.dp` inner horizontal padding. |
-| `Compact` (`360–599dp`) | Full-width `52.dp` pill bar ideal beneath `AuraTopAppBar` or docked inside `FloatingGlassScaffold`. |
+| `ExtraSmall` (`< 360dp`) | Expands to `fillMaxWidth()`, prioritizing query text area (`weight(1f)`) with compact `12dp` inner horizontal padding. |
+| `Compact` (`360–599dp`) | Full-width `52dp` pill bar ideal beneath `AuraTopAppBar` or docked inside `FloatingGlassScaffold`. |
 | `Square` (`~1:1` Pop-up / Foldable) | Fits comfortably within single-pane search headers or master pane of `AuraAdaptiveTwoPane` without clipping trailing filter pill. |
-| `UltraWide` (`> 21:9`) | Maintains compact `50.dp` height so vertical list viewport stays generous in landscape split windows. |
+| `UltraWide` (`> 21:9`) | Maintains compact `50dp` height so vertical list viewport stays generous in landscape split windows. |
 | `Expanded` (`>= 840dp` Tablet) | Bounded smoothly inside `AuraTheme.layout.maxContentWidth` or master pane column (typically `360–560dp`), never stretching awkwardly edge-to-edge. |
 
 ---
 
-## 7. Cross-Platform API Contract
+## 8. Accessibility & Guardrails
+
+- Uses `ImeAction.Search` (`KeyboardOptions(imeAction = ImeAction.Search)`).
+- Clear (`×`) and Filter (`onFilterClick`) buttons provide `Role.Button` with descriptive `contentDescription` (`"Clear search"` and `"Filter (${activeFilterCount} active)"`) and minimum `48dp` tap area.
+- The clear button's description is `clearContentDescription` (Android, since `1.1.2`), so apps whose UI language is not English can pass their own label (for example `"검색어 지우기"`).
+- **Reduced Transparency & Contrast (`VIS-RULE-003`–`004`):** `AuraSearchBarSurface.Glass` maintains `>= 4.5:1` query/placeholder contrast (`>= 3:1` borders/icons) over dynamic backdrops and falls back cleanly to opaque `AuraMaterial.Solid` (`colors.surface.floating`) via `AuraTheme.effectiveMaterial(...)` when Reduced Transparency, Battery Saver, or High-Contrast Text is enabled.
+
+---
+
+## 9. Platform Bindings
+
+### 9.1 Android (Jetpack Compose)
+
+- **Source:** [`AuraSearchBar.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraSearchBar.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
@@ -159,6 +183,8 @@ fun AuraSearchBar(
 ```
 <!-- API:ANDROID:END -->
 
+### 9.2 iOS (SwiftUI Reference)
+
 <!-- API:IOS:BEGIN -->
 ```swift
 public enum AuraSearchBarSurface: Sendable {
@@ -180,6 +206,8 @@ public struct AuraSearchBar: View {
 }
 ```
 <!-- API:IOS:END -->
+
+### 9.3 Web (React / TypeScript Reference)
 
 <!-- API:WEB:BEGIN -->
 ```ts

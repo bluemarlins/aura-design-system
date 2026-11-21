@@ -1,18 +1,18 @@
 ---
-component_id: "aura.component.icon"
+id: "aura.component.icon"
 name: "AuraIcon"
 category: "primitives"
 status: "ready"
+version: "0.1.0"
 layer: "content"
 material_allowed: ["Solid"]
 motion_track: "none"
-version: "0.1.0"
 platforms:
   android: "com.example.ds.component.AuraIcon"
   ios: "AuraDS.AuraIcon (planned)"
   web: "@aura-ds/react.AuraIcon (planned)"
 tokens:
-  - "color.content.primary"
+  - "colors.content.primary"
 ---
 
 # AuraIcon
@@ -44,7 +44,7 @@ Icon slots across buttons, bars, and list rows must pick up the same foreground 
 
 - **`ICN-RULE-001` (Inherited Tint):** Omit `tint` so `LocalAuraContentColor` applies; pass `Color.Unspecified` only for multi-color assets.
 - **`ICN-RULE-002` (Meaningful Description):** Provide `contentDescription` for informative icons; pass `null` for decorative icons or when an adjacent label already describes the action.
-- **`ICN-RULE-003` (Default 24px Box):** Vector/painter assets without intrinsic size render at `24px`. Size with `Modifier.size(...)` only to match the composing component's icon token.
+- **`ICN-RULE-003` (Default 24dp Box):** Vector/painter assets without intrinsic size render at `24dp`. Size with `Modifier.size(...)` only to match the composing component's icon token.
 
 ### Do / Don't
 
@@ -63,16 +63,16 @@ Icon slots across buttons, bars, and list rows must pick up the same foreground 
 
 ---
 
-## 3. Variant & Size Matrix
+## 3. Variant, Size & Material Matrix
 
 | Overload | Source | Default Size |
 |---|---|---|
 | `AuraIcon(imageVector, …)` | `ImageVector` (converted with `rememberVectorPainter`) | Intrinsic vector size |
-| `AuraIcon(painter, …)` | Any `Painter` | Intrinsic size, or `24px` when the painter has no finite intrinsic size |
+| `AuraIcon(painter, …)` | Any `Painter` | Intrinsic size, or `24dp` when the painter has no finite intrinsic size |
 
 ---
 
-## 4. Tint Resolution Precedence
+## 4. State Precedence & Behavior
 
 $$\text{explicit } tint \succ \text{LocalAuraContentColor} \succ \text{AuraTheme.colors.content.primary}$$
 
@@ -108,7 +108,7 @@ $$\text{explicit } tint \succ \text{LocalAuraContentColor} \succ \text{AuraTheme
 
 ---
 
-## 8. Accessibility
+## 8. Accessibility & Guardrails
 
 - Informative icons carry `contentDescription`; decorative icons pass `null` (`ICN-RULE-002`).
 - Icon tint must meet `>= 3:1` non-text contrast against its surface (WCAG 1.4.11).
@@ -116,9 +116,11 @@ $$\text{explicit } tint \succ \text{LocalAuraContentColor} \succ \text{AuraTheme
 
 ---
 
-## 9. Platform Bindings (Layer B)
+## 9. Platform Bindings
 
 ### 9.1 Android (Jetpack Compose)
+
+- **Source:** [`AuraIcon.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraIcon.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin

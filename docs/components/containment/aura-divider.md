@@ -1,28 +1,34 @@
 ---
-id: "aura-divider"
+id: "aura.component.divider"
 name: "AuraDivider"
 category: "containment"
 status: "ready"
+version: "1.1.0"
 layer: "content"
 material_allowed: ["Solid"]
 motion_track: "Standard"
-version: "1.1.0"
 platforms:
   android: "com.example.ds.component.AuraDivider"
-  ios: "AuraDivider"
-  web: "AuraDivider"
+  ios: "AuraDS.AuraDivider (planned)"
+  web: "@aura-ds/react.AuraDivider (planned)"
 tokens:
-  - "color.border.subtle"
-  - "color.border.default"
-  - "color.border.strong"
+  - "colors.border.subtle"
+  - "colors.border.default"
+  - "colors.border.strong"
   - "motion.stateChangeDurationMillis"
 ---
 
 # AuraDivider
 
-Subtle hairline separator (`Horizontal` and `Vertical`) built on `AuraTheme.colors.border` tones with zero Material 3 dependency.
+> Subtle hairline separator (`Horizontal` and `Vertical`) built on `AuraTheme.colors.border` tones with zero Material 3 dependency.
+
+---
 
 ## 1. Intent & Usage Principles
+
+### Problem
+
+Dense lists and grouped sections need a quiet visual boundary between items when spacing alone does not separate them clearly.
 
 ### When to Use
 
@@ -35,10 +41,10 @@ Subtle hairline separator (`Horizontal` and `Vertical`) built on `AuraTheme.colo
 - **Top-level card grouping:** Wrap grouped items in `AuraCard` (`Outlined` or `Filled`) instead of stacking dividers between unrelated blocks.
 - **Generous section rhythm:** Prefer `AuraTheme.layout.sectionSpacing` whitespace over heavy horizontal rules between independent sections.
 
-### Usage Rules
+### Context Rules
 
 - **`DIV-RULE-001` (Border Restraint):** Default to `AuraDividerTone.Subtle` inside cards and lists; reserve `Strong` for high-contrast summary totals or structural boundaries.
-- **`DIV-RULE-002` (1.dp Hairline Default):** Keep `thickness = 1.dp` for standard separation; never inflate dividers into thick decorative bars.
+- **`DIV-RULE-002` (1dp Hairline Default):** Keep `thickness = 1.dp` for standard separation; never inflate dividers into thick decorative bars.
 
 ### Do / Don't
 
@@ -50,7 +56,7 @@ Subtle hairline separator (`Horizontal` and `Vertical`) built on `AuraTheme.colo
 
 ---
 
-## 2. Anatomy & Variants
+## 2. Anatomy & Canonical Part IDs
 
 ```text
   Horizontal (Subtle / Default / Strong):
@@ -63,15 +69,36 @@ Subtle hairline separator (`Horizontal` and `Vertical`) built on `AuraTheme.colo
   Item A  │  Item B
 ```
 
+| Part ID | Responsibility | Required | Semantics Owner |
+|---|---|---|---|
+| `root` | Single hairline (`thickness`, default `1dp`) with optional `startIndent` / `endIndent` | Yes | Decorative (no semantics node) |
+
+---
+
+## 3. Variant, Size & Material Matrix
+
 | Variant (`AuraDividerTone`) | Semantic Token | Intended Usage |
 |---|---|---|
 | `Subtle` (default) | `AuraTheme.colors.border.subtle` | Quiet list and card row dividers |
 | `Default` | `AuraTheme.colors.border.default` | Standard section breaks on `surface.default` |
 | `Strong` | `AuraTheme.colors.border.strong` | Summary totals and primary structural dividers |
 
+| Orientation (`AuraDividerOrientation`) | Layout |
+|---|---|
+| `Horizontal` (default) | Fills available width minus indents |
+| `Vertical` | Fills available height inside a bounded `Row` |
+
+- **Material:** `Solid` only (`layer: content`).
+
 ---
 
-## 3. Semantic Token Bindings
+## 4. State Precedence & Behavior
+
+Passive component: no pointer, focus, or pressed states. Appearance depends only on `tone`, `orientation`, `thickness`, and indents.
+
+---
+
+## 5. Semantic Token Bindings
 
 | Element | Tone / State | Light / Dark Semantic Token |
 |---|---|---|
@@ -81,14 +108,7 @@ Subtle hairline separator (`Horizontal` and `Vertical`) built on `AuraTheme.colo
 
 ---
 
-## 4. Accessibility
-
-- Purely decorative visual separator (`focusable = false`, no interactive click semantics) so screen readers focus on adjacent content rather than announcing hairline rules.
-- Color tokens automatically adapt across Light and Dark `AuraColorMode` without obscuring adjacent text.
-
----
-
-## 5. Interaction Motion Contract
+## 6. Interaction Motion Contract
 
 Consumes `AuraTheme.motion`:
 
@@ -97,19 +117,30 @@ Consumes `AuraTheme.motion`:
 
 ---
 
-## 6. Responsive Layout Behavior
+## 7. Responsive Layout Behavior (`Smallest Width × Display Ratio`)
 
 | Width / Display Profile | Divider Adaptation |
 |---|---|
-| `ExtraSmall` (`< 360dp`) | Full-width `fillMaxWidth()` hairline or compact `8.dp` indents to preserve narrow text columns. |
-| `Compact` (`360–599dp`) | Standard `fillMaxWidth()` with optional `16.dp` content-aligned indents. |
+| `ExtraSmall` (`< 360dp`) | Full-width `fillMaxWidth()` hairline or compact `8dp` indents to preserve narrow text columns. |
+| `Compact` (`360–599dp`) | Standard `fillMaxWidth()` with optional `16dp` content-aligned indents. |
 | `Square` (`~1:1` Foldable) | Scales cleanly inside split-pane cards and form sections without fixed pixel widths. |
 | `UltraWide` (`> 21:9`) | Adapts to parent container width (`maxContentWidth` rails) cleanly. |
 | `Expanded` (`>= 840dp`) | Respects parent pane boundaries inside `AuraAdaptiveTwoPane` (`primaryPane` / `secondaryPane`). |
 
 ---
 
-## 7. Cross-Platform API Contract
+## 8. Accessibility & Guardrails
+
+- Purely decorative visual separator (`focusable = false`, no interactive click semantics) so screen readers focus on adjacent content rather than announcing hairline rules.
+- Color tokens automatically adapt across Light and Dark `AuraColorMode` without obscuring adjacent text.
+
+---
+
+## 9. Platform Bindings
+
+### 9.1 Android (Jetpack Compose)
+
+- **Source:** [`AuraDivider.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraDivider.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
@@ -136,6 +167,8 @@ fun AuraDivider(
 ```
 <!-- API:ANDROID:END -->
 
+### 9.2 iOS (SwiftUI Reference)
+
 <!-- API:IOS:BEGIN -->
 ```swift
 public enum AuraDividerOrientation: Sendable {
@@ -160,6 +193,8 @@ public struct AuraDivider: View {
 }
 ```
 <!-- API:IOS:END -->
+
+### 9.3 Web (React / TypeScript Reference)
 
 <!-- API:WEB:BEGIN -->
 ```ts

@@ -1,28 +1,28 @@
 ---
-id: "aura-snackbar"
+id: "aura.component.snackbar"
 name: "AuraSnackbar"
 category: "feedback"
 status: "ready"
+version: "1.1.0"
 layer: "chrome"
 material_allowed: ["Solid", "Glass"]
 motion_track: "Standard"
-version: "1.1.0"
 platforms:
   android: "com.example.ds.component.AuraSnackbar"
-  ios: "AuraSnackbar"
-  web: "AuraSnackbar"
+  ios: "AuraDS.AuraSnackbar (planned)"
+  web: "@aura-ds/react.AuraSnackbar (planned)"
 tokens:
-  - "color.surface.inverse"
-  - "color.content.inverse"
-  - "color.content.primary"
-  - "color.brand.primary"
-  - "color.border.subtle"
-  - "color.status.success.solid"
-  - "color.status.success.onSolid"
-  - "color.status.warning.solid"
-  - "color.status.warning.onSolid"
-  - "color.status.error.solid"
-  - "color.status.error.onSolid"
+  - "colors.surface.inverse"
+  - "colors.content.inverse"
+  - "colors.content.primary"
+  - "colors.brand.primary"
+  - "colors.border.subtle"
+  - "colors.status.success.solid"
+  - "colors.status.success.onSolid"
+  - "colors.status.warning.solid"
+  - "colors.status.warning.onSolid"
+  - "colors.status.error.solid"
+  - "colors.status.error.onSolid"
   - "typography.bodyMedium"
   - "typography.labelMedium"
   - "shapes.medium"
@@ -37,9 +37,15 @@ tokens:
 
 # AuraSnackbar
 
-Transient, non-blocking feedback banner (`AuraSnackbar`) with serialized queue management (`AuraSnackbarHostState`, `AuraSnackbarHost`) integrated into `AuraScaffold` and `FloatingGlassScaffold`.
+> Transient, non-blocking feedback banner (`AuraSnackbar`) with serialized queue management (`AuraSnackbarHostState`, `AuraSnackbarHost`) integrated into `AuraScaffold` and `FloatingGlassScaffold`.
+
+---
 
 ## 1. Intent & Usage Principles
+
+### Problem
+
+After an action, users need brief, non-blocking confirmation (optionally with Undo) that does not interrupt what they are doing.
 
 ### When to Use
 
@@ -52,7 +58,7 @@ Transient, non-blocking feedback banner (`AuraSnackbar`) with serialized queue m
 - **Persistent inline status tags or counts:** Use `AuraBadge`.
 - **Multi-step operation completion percentages:** Use `AuraLinearProgressBar`.
 
-### Usage Rules
+### Context Rules
 
 - **`SNK-RULE-001` (Single Concise Message + At Most One Action):** Keep `message` scannable (1–3 lines max) and attach at most one short action verb (`"Undo"`, `"Retry"`).
 - **`SNK-RULE-002` (Serialized Queueing):** Present snackbars strictly one at a time via `AuraSnackbarHostState` so concurrent notifications never stack over each other.
@@ -62,19 +68,30 @@ Transient, non-blocking feedback banner (`AuraSnackbar`) with serialized queue m
 
 | Do | Don't |
 |---|---|
-| Pass `AuraSnackbarHost(hostState)` to `AuraScaffold` or `FloatingGlassScaffold` `snackbarHost`. | Hardcode bottom dp offsets (`92.dp`) to guess bottom island height. |
+| Pass `AuraSnackbarHost(hostState)` to `AuraScaffold` or `FloatingGlassScaffold` `snackbarHost`. | Hardcode bottom dp offsets (`92dp`) to guess bottom island height. |
 | Use `AuraSnackbarVariant.Error` for recoverable failure notices and `Neutral` for standard confirmations. | Trigger blocking `AuraDialog` alerts for trivial `"Saved"` feedback. |
-| Keep `actionLabel` short (`"Undo"`, `"View"`) with a `>= 48.dp` touch target. | Place multiple competing buttons inside a transient snackbar. |
+| Keep `actionLabel` short (`"Undo"`, `"View"`) with a `>= 48dp` touch target. | Place multiple competing buttons inside a transient snackbar. |
 
 ---
 
-## 2. Anatomy & Variants
+## 2. Anatomy & Canonical Part IDs
 
 ```text
   ╭──────────────────────────────────────────────────────╮
   │  Tasting note saved to your cellar.          [ Undo ] │
   ╰──────────────────────────────────────────────────────╯
 ```
+
+| Part ID | Responsibility | Required | Semantics Owner |
+|---|---|---|---|
+| `host` | `AuraSnackbarHost` slot that shows one snackbar at a time from `AuraSnackbarHostState` | Yes | Inherited |
+| `root` | Capsule surface (`shapes.medium`, `Solid` or `Glass`) | Yes | `liveRegion = Polite` |
+| `message` | One- or two-line feedback text | Yes | Announced by live region |
+| `action` | Optional text action (`actionLabel`) | No | `Role.Button` |
+
+---
+
+## 3. Variant, Size & Material Matrix
 
 | Variant (`AuraSnackbarVariant`) | Solid Container Token | Content / Action Token |
 |---|---|---|
@@ -83,9 +100,23 @@ Transient, non-blocking feedback banner (`AuraSnackbar`) with serialized queue m
 | `Warning` | `AuraTheme.colors.status.warning.solid` | `AuraTheme.colors.status.warning.onSolid` |
 | `Error` | `AuraTheme.colors.status.error.solid` | `AuraTheme.colors.status.error.onSolid` |
 
+| Duration (`AuraSnackbarDuration`) | Auto-dismiss |
+|---|---|
+| `Short` (default) | `3000ms` |
+| `Long` | `5000ms` |
+| `Indefinite` | Never; dismissed by action or `dismissCurrent()` |
+
+- **Material:** `AuraMaterial.Solid` (default) or `Glass` via `material` (`layer: chrome`).
+
 ---
 
-## 3. Semantic Token Bindings
+## 4. State Precedence & Behavior
+
+`Hidden` > `Showing` (one at a time) > `Queued`. `showSnackbar` calls are serialized by a `Mutex`, so a new request waits until the current one is dismissed. Results resolve as `ActionPerformed` (action tapped) or `Dismissed` (timeout or `dismissCurrent()`).
+
+---
+
+## 5. Semantic Token Bindings
 
 | Element | Variant / Material | Light / Dark Semantic Token |
 |---|---|---|
@@ -93,19 +124,11 @@ Transient, non-blocking feedback banner (`AuraSnackbar`) with serialized queue m
 | Surface Container | `Glass` | `GlassSurface(FROSTED)` + `elevation.level3` |
 | Message Text | `Solid` / `Glass` | `content.inverse` (`onSolid`) / `content.primary` + `typography.bodyMedium` |
 | Action Button | `Solid` / `Glass` | `content.inverse` (`onSolid`) / `brand.primary` + `typography.labelMedium` |
-| Corner Shape | `All` | `AuraTheme.shapes.medium` (`12.dp`) |
+| Corner Shape | `All` | `AuraTheme.shapes.medium` (`12dp`) |
 
 ---
 
-## 4. Accessibility
-
-- Marks the snackbar container with `Modifier.semantics { liveRegion = LiveRegionMode.Polite }` so TalkBack announces transient messages automatically without stealing input focus.
-- Optional action trigger enforces a `>= 48.dp × 48.dp` touch target (`EVAL-005`).
-- **Reduced Transparency & Contrast (`VIS-RULE-003`–`004`):** Maintains `>= 4.5:1` contrast across all `Neutral` and semantic variants (`Solid` and `Glass`) and falls back automatically to opaque `Solid` via `AuraTheme.effectiveMaterial(...)` when Reduced Transparency, Battery Saver, or High-Contrast Text is enabled.
-
----
-
-## 5. Interaction Motion Contract
+## 6. Interaction Motion Contract
 
 Consumes `AuraTheme.motion`:
 
@@ -115,19 +138,31 @@ Consumes `AuraTheme.motion`:
 
 ---
 
-## 6. Responsive Layout Behavior
+## 7. Responsive Layout Behavior (`Smallest Width × Display Ratio`)
 
 | Width / Display Profile | Snackbar Placement & Width |
 |---|---|
-| `ExtraSmall` (`< 360dp`) | Full-width within `screenMarginHorizontal` (`12.dp`), wrapping message cleanly up to 3 lines. |
-| `Compact` (`360–599dp`) | Full-width within `16.dp` horizontal margins, anchored cleanly above `bottomBar` / `FloatingBottomIsland`. |
+| `ExtraSmall` (`< 360dp`) | Full-width within `screenMarginHorizontal` (`12dp`), wrapping message cleanly up to 3 lines. |
+| `Compact` (`360–599dp`) | Full-width within `16dp` horizontal margins, anchored cleanly above `bottomBar` / `FloatingBottomIsland`. |
 | `Square` (`~1:1` Foldable) | Centered bottom banner capped at `widthIn(max = 560.dp)` so lines remain comfortable to scan. |
-| `UltraWide` (`> 21:9`) | Capped at `560.dp` width and clears bottom navigation insets. |
+| `UltraWide` (`> 21:9`) | Capped at `560dp` width and clears bottom navigation insets. |
 | `Expanded` (`>= 840dp`) | Centered floating banner (`max = 560.dp`) without stretching across full tablet width. |
 
 ---
 
-## 7. Cross-Platform API Contract
+## 8. Accessibility & Guardrails
+
+- Marks the snackbar container with `Modifier.semantics { liveRegion = LiveRegionMode.Polite }` so TalkBack announces transient messages automatically without stealing input focus.
+- Optional action trigger enforces a `>= 48dp × 48dp` touch target (`EVAL-005`).
+- **Reduced Transparency & Contrast (`VIS-RULE-003`–`004`):** Maintains `>= 4.5:1` contrast across all `Neutral` and semantic variants (`Solid` and `Glass`) and falls back automatically to opaque `Solid` via `AuraTheme.effectiveMaterial(...)` when Reduced Transparency, Battery Saver, or High-Contrast Text is enabled.
+
+---
+
+## 9. Platform Bindings
+
+### 9.1 Android (Jetpack Compose)
+
+- **Source:** [`AuraSnackbar.kt`](../../../design-system/src/main/kotlin/com/example/ds/component/AuraSnackbar.kt)
 
 <!-- API:ANDROID:BEGIN -->
 ```kotlin
@@ -188,6 +223,8 @@ fun AuraSnackbar(
 ```
 <!-- API:ANDROID:END -->
 
+### 9.2 iOS (SwiftUI Reference)
+
 <!-- API:IOS:BEGIN -->
 ```swift
 public enum AuraSnackbarVariant: Sendable {
@@ -213,6 +250,8 @@ public struct AuraSnackbar: View {
 }
 ```
 <!-- API:IOS:END -->
+
+### 9.3 Web (React / TypeScript Reference)
 
 <!-- API:WEB:BEGIN -->
 ```ts
