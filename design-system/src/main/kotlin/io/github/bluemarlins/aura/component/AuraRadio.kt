@@ -32,7 +32,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.github.bluemarlins.aura.foundation.auraPart
 import io.github.bluemarlins.aura.foundation.theme.AuraTheme
+
+private const val PartSpecId = "aura.component.radio"
 
 private val MinRadioTouchTarget = 48.dp
 private val RadioRingSize = 20.dp
@@ -147,6 +150,7 @@ fun AuraRadio(
     val radioVisual: @Composable () -> Unit = {
         Box(
             modifier = Modifier
+                .auraPart(PartSpecId, "ring")
                 .size(RadioRingSize)
                 .graphicsLayer {
                     scaleX = ringScale
@@ -176,6 +180,7 @@ fun AuraRadio(
     if (label == null) {
         Box(
             modifier = modifier
+                .auraPart(PartSpecId, "root")
                 .defaultMinSize(minWidth = MinRadioTouchTarget, minHeight = MinRadioTouchTarget)
                 .then(selectModifier),
             contentAlignment = Alignment.Center,

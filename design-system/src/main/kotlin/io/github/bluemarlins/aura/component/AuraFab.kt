@@ -58,12 +58,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.github.bluemarlins.aura.foundation.auraPart
 import io.github.bluemarlins.aura.foundation.motion.AuraMotionProfile
 import io.github.bluemarlins.aura.foundation.color.AuraColors
 import io.github.bluemarlins.aura.foundation.elevation.AuraElevation
 import io.github.bluemarlins.aura.foundation.motion.AuraMotionProgressKey
 import io.github.bluemarlins.aura.foundation.motion.AuraMotionScaleKey
 import io.github.bluemarlins.aura.foundation.theme.AuraTheme
+
+private const val PartSpecId = "aura.component.fab"
 
 enum class AuraFabVariant {
     Primary,
@@ -215,6 +218,7 @@ fun AuraFab(
 
     Box(
         modifier = modifier
+            .auraPart(PartSpecId, "touchTarget")
             .defaultMinSize(minWidth = MinFabTouchTargetSize, minHeight = MinFabTouchTargetSize)
             .semantics {
                 this[AuraMotionScaleKey] = containerScale
@@ -237,6 +241,7 @@ fun AuraFab(
     ) {
         Row(
             modifier = Modifier
+                .auraPart(PartSpecId, "root")
                 .defaultMinSize(minWidth = dims.containerHeight)
                 .height(dims.containerHeight)
                 .graphicsLayer {
@@ -295,6 +300,7 @@ fun AuraFab(
                     } else {
                         Box(
                             modifier = Modifier
+                                .auraPart(PartSpecId, "icon")
                                 .size(dims.iconSize)
                                 .graphicsLayer {
                                     scaleX = iconScale

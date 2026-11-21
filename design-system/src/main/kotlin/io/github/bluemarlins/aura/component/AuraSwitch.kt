@@ -39,10 +39,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.semantics.semantics
+import io.github.bluemarlins.aura.foundation.auraPart
 import io.github.bluemarlins.aura.foundation.motion.AuraMotionProgressKey
 import io.github.bluemarlins.aura.foundation.motion.AuraMotionScaleKey
 import io.github.bluemarlins.aura.foundation.theme.AuraTheme
 import kotlin.math.roundToInt
+
+private const val PartSpecId = "aura.component.switch"
 
 enum class AuraSwitchSize {
     Medium,
@@ -200,6 +203,7 @@ fun AuraSwitch(
     val trackVisual: @Composable () -> Unit = {
         Box(
             modifier = Modifier
+                .auraPart(PartSpecId, "track")
                 .size(width = dims.trackWidth, height = dims.trackHeight)
                 .graphicsLayer {
                     scaleX = trackScale
@@ -213,6 +217,7 @@ fun AuraSwitch(
         ) {
             Box(
                 modifier = Modifier
+                    .auraPart(PartSpecId, "thumb")
                     .offset {
                         val trackWidthPx = dims.trackWidth.toPx()
                         val paddingPx = dims.innerPadding.toPx()
@@ -238,6 +243,7 @@ fun AuraSwitch(
     if (label == null) {
         Box(
             modifier = modifier
+                .auraPart(PartSpecId, "root")
                 .defaultMinSize(minWidth = MinSwitchTouchTarget, minHeight = MinSwitchTouchTarget)
                 .then(motionSemantics)
                 .then(toggleModifier),

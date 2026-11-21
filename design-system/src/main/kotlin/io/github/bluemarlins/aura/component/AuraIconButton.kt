@@ -61,12 +61,15 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.github.bluemarlins.aura.foundation.auraPart
 import io.github.bluemarlins.aura.foundation.elevation.AuraElevation
 import io.github.bluemarlins.aura.foundation.motion.rememberAuraReducedMotion as rememberSystemReducedMotion
 import io.github.bluemarlins.aura.foundation.theme.AuraTheme
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
+private const val PartSpecId = "aura.component.icon-button"
 
 enum class AuraIconButtonVariant {
     Filled,
@@ -218,6 +221,7 @@ fun AuraIconButton(
 
     Box(
         modifier = modifier
+            .auraPart(PartSpecId, "touchTarget")
             .defaultMinSize(minWidth = MinIconTouchTargetSize, minHeight = MinIconTouchTargetSize)
             .semantics {
                 if (contentDescription != null) {
@@ -251,6 +255,7 @@ fun AuraIconButton(
             }
             Box(
                 modifier = Modifier
+                    .auraPart(PartSpecId, "root")
                     .size(visualSize)
                     .then(
                         if (adaptivePodStyle == null) {
@@ -301,6 +306,7 @@ fun AuraIconButton(
                         CompositionLocalProvider(LocalAuraContentColor provides animatedContentColor) {
                             Box(
                                 modifier = Modifier
+                                    .auraPart(PartSpecId, "icon")
                                     .size(iconSize)
                                     .graphicsLayer {
                                         scaleX = iconScale

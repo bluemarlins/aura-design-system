@@ -41,7 +41,10 @@ import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.github.bluemarlins.aura.foundation.auraPart
 import io.github.bluemarlins.aura.foundation.theme.AuraTheme
+
+private const val PartSpecId = "aura.component.checkbox"
 
 enum class AuraCheckboxState {
     Unchecked,
@@ -187,6 +190,7 @@ fun AuraCheckbox(
     val checkboxVisual: @Composable () -> Unit = {
         Box(
             modifier = Modifier
+                .auraPart(PartSpecId, "box")
                 .size(CheckboxVisualSize)
                 .graphicsLayer {
                     scaleX = boxScale
@@ -241,6 +245,7 @@ fun AuraCheckbox(
     if (label == null) {
         Box(
             modifier = modifier
+                .auraPart(PartSpecId, "root")
                 .defaultMinSize(minWidth = MinCheckboxTouchTarget, minHeight = MinCheckboxTouchTarget)
                 .then(toggleModifier),
             contentAlignment = Alignment.Center,

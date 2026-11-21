@@ -53,6 +53,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.github.bluemarlins.aura.foundation.auraPart
 import io.github.bluemarlins.aura.foundation.color.AuraColors
 import io.github.bluemarlins.aura.foundation.theme.AuraColorMode
 import androidx.compose.animation.core.snap
@@ -61,6 +62,7 @@ import io.github.bluemarlins.aura.foundation.motion.AuraMotionScaleKey
 import io.github.bluemarlins.aura.foundation.theme.AuraTheme
 import io.github.bluemarlins.aura.foundation.typography.AuraTypography
 
+private const val ButtonSpecId = "aura.component.button"
 private val MinTouchTargetWidth = 48.dp
 
 /**
@@ -368,6 +370,7 @@ fun AuraButton(
 
     Box(
         modifier = modifier
+            .auraPart(ButtonSpecId, "touchTarget")
             .then(widthModifier)
             .defaultMinSize(minWidth = MinTouchTargetWidth, minHeight = sizeSpec.minTouchHeight)
             .clickable(
@@ -395,6 +398,7 @@ fun AuraButton(
 
         Box(
             modifier = Modifier
+                .auraPart(ButtonSpecId, "root")
                 .then(widthModifier)
                 .heightIn(min = sizeSpec.visualHeight)
                 .graphicsLayer {
@@ -424,6 +428,7 @@ fun AuraButton(
                     if (leadingIcon != null) {
                         Box(
                             modifier = Modifier
+                                .auraPart(ButtonSpecId, "leadingIcon")
                                 .size(sizeSpec.iconSize)
                                 .graphicsLayer {
                                     scaleX = leadingIconScale
@@ -436,6 +441,7 @@ fun AuraButton(
                     }
                     AuraText(
                         text = text,
+                        modifier = Modifier.auraPart(ButtonSpecId, "label"),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         color = contentColor,

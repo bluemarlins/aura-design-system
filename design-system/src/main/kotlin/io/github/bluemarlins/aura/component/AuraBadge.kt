@@ -30,9 +30,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.github.bluemarlins.aura.foundation.auraPart
 import io.github.bluemarlins.aura.foundation.color.AuraColors
 import io.github.bluemarlins.aura.foundation.theme.AuraColorMode
 import io.github.bluemarlins.aura.foundation.theme.AuraTheme
+
+private const val PartSpecId = "aura.component.badge"
 
 /**
  * Semantic tone variants for [AuraBadge].
@@ -150,6 +153,7 @@ fun AuraBadge(
     if (size == AuraBadgeSize.Dot || displayText == null) {
         Box(
             modifier = modifier
+                .auraPart(PartSpecId, "root")
                 .size(10.dp)
                 .graphicsLayer {
                     scaleX = presenceScale
@@ -197,6 +201,7 @@ fun AuraBadge(
 
     Box(
         modifier = modifier
+            .auraPart(PartSpecId, "root")
             .defaultMinSize(minWidth = minWidth, minHeight = minHeight)
             .graphicsLayer {
                 scaleX = presenceScale
@@ -216,6 +221,7 @@ fun AuraBadge(
     ) {
         AuraText(
             text = displayText,
+            modifier = Modifier.auraPart(PartSpecId, "label"),
             style = textStyle,
             color = contentColor,
             maxLines = 1,

@@ -39,7 +39,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.github.bluemarlins.aura.foundation.auraPart
 import io.github.bluemarlins.aura.foundation.theme.AuraTheme
+
+private const val PartSpecId = "aura.component.chip-button"
 
 enum class AuraChipVariant {
     Filter,
@@ -176,6 +179,7 @@ fun AuraChipButton(
 
     Box(
         modifier = modifier
+            .auraPart(PartSpecId, "touchTarget")
             .defaultMinSize(minHeight = MinChipTouchTargetHeight)
             .semantics {
                 when (variant) {
@@ -203,6 +207,7 @@ fun AuraChipButton(
     ) {
         Row(
             modifier = Modifier
+                .auraPart(PartSpecId, "root")
                 .height(visualHeight)
                 .graphicsLayer {
                     scaleX = containerScale
@@ -241,6 +246,7 @@ fun AuraChipButton(
                 if (leadingIcon != null) {
                     Box(
                         modifier = Modifier
+                            .auraPart(PartSpecId, "leadingIcon")
                             .size(iconSize)
                             .graphicsLayer {
                                 scaleX = iconScale
@@ -255,6 +261,7 @@ fun AuraChipButton(
 
                 AuraText(
                     text = label,
+                    modifier = Modifier.auraPart(PartSpecId, "label"),
                     color = animatedContentColor,
                     style = labelStyle,
                     maxLines = 1,
