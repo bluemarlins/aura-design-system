@@ -94,6 +94,7 @@ Browse and collection screens need one persistent, thumb-reachable entry point f
 
 | Part ID | Responsibility | Required | Semantics Owner |
 |---|---|---|---|
+| `touchTarget` | Minimum hit box (`48dp` for `Small`, otherwise the container size) | Yes | `root` |
 | `root` | Circular (icon-only) or capsule (extended) container with shadow | Yes | `Role.Button` |
 | `icon` | Required glyph slot | Yes | `contentDescription` when icon-only |
 | `label` | `text` revealed when `expanded = true` | No | Accessible name when shown |
@@ -102,6 +103,28 @@ Browse and collection screens need one persistent, thumb-reachable entry point f
 ---
 
 ## 3. Variant, Size & Material Matrix
+
+### Quick Spec
+
+Measured against the rendered component by `SpecMeasurementTest`. Keys are `<Part ID>.<metric>`; dimensions in `dp`, type in `sp`.
+
+<!-- QUICK-SPEC:BEGIN -->
+```yaml
+sizes:
+  Small:
+    touchTarget.size: 48
+    root.size: 44
+    icon.size: 20
+  Regular:
+    touchTarget.size: 56
+    root.size: 56
+    icon.size: 24
+  Large:
+    touchTarget.size: 64
+    root.size: 64
+    icon.size: 28
+```
+<!-- QUICK-SPEC:END -->
 
 ### Variants (`AuraFabVariant`)
 

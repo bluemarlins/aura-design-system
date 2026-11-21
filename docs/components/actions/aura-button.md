@@ -94,6 +94,43 @@ Users need an unmistakable, accessible control with an explicit verb label to tr
 
 ## 3. Variant, Size & Material Matrix
 
+### Quick Spec
+
+Measured against the rendered component by `SpecMeasurementTest`. Keys are `<Part ID>.<metric>`; dimensions in `dp`, type in `sp`.
+
+<!-- QUICK-SPEC:BEGIN -->
+```yaml
+sizes:
+  Small:
+    touchTarget.height: 48
+    touchTarget.minWidth: 48
+    root.height: 36
+    root.paddingHorizontal: 12
+    root.cornerRadius: 8
+    label.fontSize: 13
+    label.lineHeight: 18
+    leadingIcon.size: 16
+  Medium:
+    touchTarget.height: 48
+    touchTarget.minWidth: 48
+    root.height: 48
+    root.paddingHorizontal: 16
+    root.cornerRadius: 10
+    label.fontSize: 14
+    label.lineHeight: 20
+    leadingIcon.size: 18
+  Large:
+    touchTarget.height: 56
+    touchTarget.minWidth: 48
+    root.height: 56
+    root.paddingHorizontal: 20
+    root.cornerRadius: 12
+    label.fontSize: 16
+    label.lineHeight: 22
+    leadingIcon.size: 20
+```
+<!-- QUICK-SPEC:END -->
+
 ### Variants (`AuraButtonVariant`)
 
 | Variant | Visual Weight | Intended Usage |

@@ -118,6 +118,31 @@ App bars, toolbars, list rows, and field adornments need icon-only actions that 
 
 ## 3. Variant, Size & Material Matrix
 
+### Quick Spec
+
+Measured against the rendered component by `SpecMeasurementTest`. Keys are `<Part ID>.<metric>`; dimensions in `dp`, type in `sp`.
+
+<!-- QUICK-SPEC:BEGIN -->
+```yaml
+sizes:
+  Small:
+    touchTarget.height: 48
+    touchTarget.width: 48
+    root.size: 32
+    icon.size: 18
+  Medium:
+    touchTarget.height: 48
+    touchTarget.width: 48
+    root.size: 40
+    icon.size: 20
+  Large:
+    touchTarget.height: 48
+    touchTarget.width: 48
+    root.size: 48
+    icon.size: 24
+```
+<!-- QUICK-SPEC:END -->
+
 ### Variants (`AuraIconButtonVariant`)
 
 1. **`Filled`** — Solid brand fill (`brand.primary`) for high-emphasis single icon actions.

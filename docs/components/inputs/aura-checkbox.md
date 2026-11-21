@@ -97,6 +97,19 @@ tokens:
 
 ## 3. Variant, Size & Material Matrix
 
+### Quick Spec
+
+Measured against the rendered component by `SpecMeasurementTest`. Keys are `<Part ID>.<metric>`; dimensions in `dp`, type in `sp`.
+
+<!-- QUICK-SPEC:BEGIN -->
+```yaml
+sizes:
+  Default:
+    root.size: 48
+    box.size: 20
+```
+<!-- QUICK-SPEC:END -->
+
 - **State Enum (`AuraCheckboxState`):** `Unchecked`, `Checked`, `Indeterminate`.
 - **Visual Box Size:** `20dp × 20dp`, shape `RoundedCornerShape(6.dp)`, border width `1.75dp` (`2dp` on `isError`).
 - **Optional Checklist Completion Mode:** Setting `strikethroughWhenChecked = true` renders `label` with `TextDecoration.LineThrough` and muted `content.secondary` once checked (while `indeterminate` keeps normal text decoration).

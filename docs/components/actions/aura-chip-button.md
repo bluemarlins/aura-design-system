@@ -113,6 +113,30 @@ Users need a compact, scannable way to filter a dataset, pick a category, or tag
 
 ## 3. Variant, Size & Material Matrix
 
+### Quick Spec
+
+Measured against the rendered component by `SpecMeasurementTest`. Keys are `<Part ID>.<metric>`; dimensions in `dp`, type in `sp`.
+
+<!-- QUICK-SPEC:BEGIN -->
+```yaml
+sizes:
+  Small:
+    touchTarget.height: 48
+    root.height: 28
+    root.paddingHorizontal: 10
+    leadingIcon.size: 14
+    label.fontSize: 11
+    label.lineHeight: 16
+  Medium:
+    touchTarget.height: 48
+    root.height: 34
+    root.paddingHorizontal: 14
+    leadingIcon.size: 16
+    label.fontSize: 13
+    label.lineHeight: 18
+```
+<!-- QUICK-SPEC:END -->
+
 ### Variants (`AuraChipVariant`)
 
 1. **`Filter`** — Interactive segmentation capsule with crisp selected container inversion and checkbox/toggle accessibility semantics.

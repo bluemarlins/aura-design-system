@@ -95,6 +95,26 @@ Users need to notice status, counts, or unread items at a glance, attached to th
 
 ## 3. Variant, Size & Material Matrix
 
+### Quick Spec
+
+Measured against the rendered component by `SpecMeasurementTest`. Keys are `<Part ID>.<metric>`; dimensions in `dp`, type in `sp`.
+
+<!-- QUICK-SPEC:BEGIN -->
+```yaml
+sizes:
+  Dot:
+    root.size: 10
+  Small:
+    root.height: 18
+    root.minWidth: 18
+    label.fontSize: 11
+  Medium:
+    root.height: 24
+    root.minWidth: 24
+    label.fontSize: 11
+```
+<!-- QUICK-SPEC:END -->
+
 | Variant (`AuraBadgeVariant`) | `Dot` / Unlabeled Numeric Tone | Labeled / `Medium` Pill Tone | Intended Semantics |
 |---|---|---|---|
 | `Brand` | `brand.primary` / `brand.onPrimary` | `brand.subtle` / `brand.onSubtle` | Featured tags, catalog brand badges |

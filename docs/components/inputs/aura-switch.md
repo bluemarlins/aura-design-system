@@ -99,6 +99,28 @@ tokens:
 
 ## 3. Variant, Size & Material Matrix
 
+### Quick Spec
+
+Measured against the rendered component by `SpecMeasurementTest`. Keys are `<Part ID>.<metric>`; dimensions in `dp`, type in `sp`.
+
+<!-- QUICK-SPEC:BEGIN -->
+```yaml
+sizes:
+  Medium:
+    root.height: 48
+    root.minWidth: 48
+    track.width: 50
+    track.height: 30
+    thumb.size: 24
+  Small:
+    root.height: 48
+    root.minWidth: 48
+    track.width: 42
+    track.height: 24
+    thumb.size: 18
+```
+<!-- QUICK-SPEC:END -->
+
 | Size (`AuraSwitchSize`) | Track Width | Track Height | Thumb Diameter | Min Touch Height | Recommended Usage |
 |---|---|---|---|---|---|
 | `Medium` (default) | `50dp` | `30dp` | `24dp` | `48dp` | Settings screens, labelled option rows, modals |

@@ -96,6 +96,19 @@ tokens:
 
 ## 3. Variant, Size & Material Matrix
 
+### Quick Spec
+
+Measured against the rendered component by `SpecMeasurementTest`. Keys are `<Part ID>.<metric>`; dimensions in `dp`, type in `sp`.
+
+<!-- QUICK-SPEC:BEGIN -->
+```yaml
+sizes:
+  Default:
+    root.size: 48
+    ring.size: 20
+```
+<!-- QUICK-SPEC:END -->
+
 - **Outer Ring Diameter:** `20dp`, `2dp` stroke (`1.75dp` when unselected).
 - **Inner Dot Diameter:** `10dp` filled circle centered inside the ring, scaling smoothly `0f -> 1f` when selected.
 - **Layout modes:** Standalone (no `label`) or Labeled Row (`label` / `description`).

@@ -14,6 +14,7 @@ Every component spec in `docs/components/<category>/<component>.md` uses this ex
 | §1 subsections | `### Problem`, `### When to Use`, `### When NOT to Use & Alternatives`, `### Context Rules`, `### Do / Don't` — in this order. |
 | §2 part table | A table whose header starts with `\| Part ID \| Responsibility \| Required \|` (add `\| Semantics Owner \|` for interactive parts). |
 | §9 subsections | `### 9.1 Android (Jetpack Compose)`, `### 9.2 iOS (SwiftUI Reference)`, `### 9.3 Web (React / TypeScript Reference)`, each holding its `<!-- API:<PLATFORM>:BEGIN/END -->` block. |
+| §3 Quick Spec | Components with fixed dimensions start §3 with `### Quick Spec`: a `yaml` block between `<!-- QUICK-SPEC:BEGIN -->` and `<!-- QUICK-SPEC:END -->` listing `sizes:` → `<Size>:` → `<Part ID>.<metric>: <number>`. Metrics: `height`, `width`, `size`, `minHeight`, `minWidth`, `paddingHorizontal` (dp), `fontSize`, `lineHeight` (sp); other metrics such as `cornerRadius` are reported as unmeasured. Every Part ID used must appear in the §2 table and be tagged in code with `Modifier.auraPart("<id>", "<Part ID>")`. [`SpecMeasurementTest`](../../design-system/src/test/kotlin/io/github/bluemarlins/aura/contract/SpecMeasurementTest.kt) renders each size and fails on any mismatch. |
 | Units (Layer A, §1–§8) | Dimensions in `dp` written as `16dp` (Android `dp`, iOS `pt`, Web CSS `px`); type sizes in `sp` (`14sp`). Kotlin expressions keep Kotlin syntax (`Modifier.height(48.dp)`). |
 | Not applicable | Never delete a section. A passive component states it in one line (e.g. "Passive component: no pointer, focus, or pressed states."). |
 
@@ -86,6 +87,19 @@ ASCII diagram of the parts
 ---
 
 ## 3. Variant, Size & Material Matrix
+
+### Quick Spec
+
+<!-- QUICK-SPEC:BEGIN -->
+```yaml
+sizes:
+  Medium:
+    touchTarget.height: 48
+    root.height: 48
+    root.paddingHorizontal: 16
+    label.fontSize: 14
+```
+<!-- QUICK-SPEC:END -->
 
 | Size | Visual Height | Min Touch Target | Horizontal Padding | Corner Radius | Label Type |
 |---|---|---|---|---|---|
