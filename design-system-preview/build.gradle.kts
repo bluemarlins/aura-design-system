@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.ds.preview"
+    namespace = "io.github.bluemarlins.aura.preview"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.ds.preview"
+        applicationId = "io.github.bluemarlins.aura.preview"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
