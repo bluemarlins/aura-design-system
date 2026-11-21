@@ -119,7 +119,7 @@ Users need to choose a value whose relative position on a range matters more tha
 |---|---|---|
 | Inactive Track | `Enabled` / `Disabled` | `surface.sunken` / `interaction.disabledContainer` |
 | Active Track Fill | `Enabled` / `Disabled` | `brand.primary` / `content.disabled` |
-| Step Tick Markers | `Active` / `Inactive` | `brand.onPrimary` (`75%`) / `content.tertiary` (`65%`) |
+| Step Tick Markers | `Active` / `Inactive` | `brand.onPrimary` (`78%`) / `content.tertiary` (`65%`) |
 | Thumb Core | `Enabled` / `Disabled` | `surface.default` fill + `brand.primary` (`2.5dp`) ring / `content.disabled` |
 | Thumb Glow Halo | `Dragging / Pressed` | `brand.primary` (`18%` alpha) |
 | `label` & `valueLabel` | `Enabled` / `Disabled` | `content.primary` (`typography.labelLarge`) & `brand.primary` (`typography.monoMedium`) |

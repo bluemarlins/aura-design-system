@@ -106,6 +106,7 @@ Every Aura component must satisfy all eight rules before reaching `status: "read
 | `AuraFab` | [aura-fab.md](actions/aura-fab.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Pass (`chrome`, `Solid\|Glass`) | Pass (`Expressive` · `mainClock`) | Ready |
 | `AuraSegmentedButton` | [aura-segmented-button.md](actions/aura-segmented-button.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Pass (`content`, `Solid\|Glass`) | Pass (`Standard` · Unit) | Ready |
 | `AuraChipButton` | [aura-chip-button.md](actions/aura-chip-button.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Pass (`content`, `Solid\|Glass`) | Pass (`Standard` · Unit) | Ready |
+| `AuraFloatingActionBar` | [aura-floating-action-bar.md](actions/aura-floating-action-bar.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Pass (`chrome`, `Solid\|Glass\|LiquidGlass`) | Pass (`Standard` · Unit) | Ready |
 | `AuraTextField` | [aura-text-field.md](inputs/aura-text-field.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Pass (`content`, `Solid`) | Pass (`Standard` · Unit) | Ready |
 | `AuraNumberField` | [aura-number-field.md](inputs/aura-number-field.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Pass (`content`, `Solid`) | Pass (`Standard` · Unit) | Ready |
 | `AuraSearchBar` | [aura-search-bar.md](inputs/aura-search-bar.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Pass (`chrome`, `Solid\|Glass`) | Pass (`Standard` · Unit) | Ready |
@@ -118,9 +119,11 @@ Every Aura component must satisfy all eight rules before reaching `status: "read
 | `AuraCard` | [aura-card.md](containment/aura-card.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Pass (`content`, `Solid\|Glass*`) | Pass (`Standard` · Unit) | Ready |
 | `AuraDialog` | [aura-dialog.md](containment/aura-dialog.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Pass (`spatial`, `Solid\|Glass`) | Pass (`Expressive` · `mainClock`) | Ready |
 | `AuraDivider` | [aura-divider.md](containment/aura-divider.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Pass (`content`, `Solid`) | Pass (`Standard` · Unit) | Ready |
+| `AuraDropdownMenu` | [aura-dropdown-menu.md](containment/aura-dropdown-menu.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Pass (`spatial`, `Solid`) | Pass (`Expressive` · Unit) | Ready |
 | `AuraBadge` | [aura-badge.md](feedback/aura-badge.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Pass (`content`, `Solid`) | Pass (`Standard` · Unit) | Ready |
 | `AuraProgressBar` | [aura-progress-bar.md](feedback/aura-progress-bar.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Pass (`content`, `Solid`) | Pass (`Standard` · Unit) | Ready |
 | `AuraSnackbar` | [aura-snackbar.md](feedback/aura-snackbar.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Pass (`chrome`, `Solid\|Glass`) | Pass (`Standard` · Unit) | Ready |
+| `AuraSkeleton` | [aura-skeleton.md](feedback/aura-skeleton.md) | Pass | Pass | Pass | Pass (`AuraTheme.motion`) | Pass | Pass | Pass (`content`, `Solid`) | Pass (`Standard` · Unit) | Ready |
 | `AuraScaffold` | [aura-scaffold.md](layout/aura-scaffold.md) | Pass | Pass | Pass | Pass (Passive container) | Pass | Pass | Pass (`canvas`, `Solid`) | Pass (`none` · Spec) | Ready |
 | `AuraAdaptiveTwoPane` | [aura-adaptive-two-pane.md](layout/aura-adaptive-two-pane.md) | Pass | Pass | Pass (`AuraTheme.layout`) | Pass (Passive container) | Pass | Pass | Pass (`canvas`, `Solid`) | Pass (`none` · Spec) | Ready |
 | `AuraAdaptiveGrid` | [aura-adaptive-grid.md](layout/aura-adaptive-grid.md) | Pass | Pass | Pass (`AuraTheme.layout`) | Pass (Passive container) | Pass | Pass | Pass (`canvas`, `Solid`) | Pass (`none` · Spec) | Ready |
