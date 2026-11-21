@@ -1,2 +1,2 @@
 # Consumer ProGuard rules for design-system library.
--keepclassmembers enum com.example.ds.** { *; }
+-keepclassmembers enum io.github.bluemarlins.aura.** { *; }

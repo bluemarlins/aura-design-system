@@ -9,7 +9,7 @@ group = "com.github.bluemarlins"
 version = "1.3.0"
 
 android {
-    namespace = "com.example.ds"
+    namespace = "io.github.bluemarlins.aura"
     compileSdk = 35
 
     defaultConfig {
