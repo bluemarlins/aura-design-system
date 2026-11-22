@@ -103,6 +103,21 @@ Users need a clear, accessible text input surface that scales from structured si
 
 ## 3. Variant, Size & Material Matrix
 
+### Quick Spec
+
+Measured against the rendered component by `SpecMeasurementTest`. Keys are `<Part ID>.<metric>`; dimensions in `dp`, type in `sp`.
+
+<!-- QUICK-SPEC:BEGIN -->
+```yaml
+sizes:
+  Outlined:
+    fieldContainer.minHeight: 48
+    fieldContainer.cornerRadius: 10
+  Paperless:
+    fieldContainer.minHeight: 48
+```
+<!-- QUICK-SPEC:END -->
+
 ### Visual Variants (`AuraTextFieldVariant`)
 
 | Variant | Visual Treatment | Recommended Usage |

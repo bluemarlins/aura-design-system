@@ -94,6 +94,20 @@ Apps with 3–5 top-level destinations need persistent, thumb-reachable navigati
 
 ## 3. Variant, Size & Material Matrix
 
+### Quick Spec
+
+Measured against the rendered component by `SpecMeasurementTest`. Keys are `<Part ID>.<metric>`; dimensions in `dp`, type in `sp`.
+
+<!-- QUICK-SPEC:BEGIN -->
+```yaml
+sizes:
+  Default:
+    root.height: 60
+    tab.minHeight: 48
+    splitAction.size: 60
+```
+<!-- QUICK-SPEC:END -->
+
 - **Outer Margins:** `20dp` horizontal, `16dp` above `WindowInsets.navigationBars`.
 - **Main Navigation Capsule:** `60dp` height, `RoundedCornerShape(50)`, `>= 48 × 48dp` per-tab hit area.
 - **Split Action Island:** `60 × 60dp` circle separated by `10dp` when `isActionSplit = true`, fused/linked by `LiquidMetaballBridge` when transitioning with `isActionSplit = false`.

@@ -97,6 +97,18 @@ Users need to choose a value whose relative position on a range matters more tha
 
 ## 3. Variant, Size & Material Matrix
 
+### Quick Spec
+
+Measured against the rendered component by `SpecMeasurementTest`. Keys are `<Part ID>.<metric>`; dimensions in `dp`, type in `sp`.
+
+<!-- QUICK-SPEC:BEGIN -->
+```yaml
+sizes:
+  Default:
+    root.height: 48
+```
+<!-- QUICK-SPEC:END -->
+
 | Variant | Condition | Behavior |
 |---|---|---|
 | **Continuous** | `steps == 0` | Smooth floating-point scrub from `valueRange.start` to `valueRange.endInclusive`. |

@@ -98,6 +98,7 @@ Users need to switch immediately between 2–5 mutually exclusive views or modes
 | Part ID | Responsibility | Required | Semantics Owner |
 |---|---|---|---|
 | `root` | Track container (`fullWidth` by default) | Yes | `selectableGroup()` |
+| `track` | Capsule backdrop drawn at the size's visual track height | Yes | Decorative |
 | `thumb` | Sliding indicator under the selected segment | Yes | Decorative |
 | `segment` | One option (`options[i]`) with optional icon | Yes | `Role.Tab` (`selected`) |
 | `segmentIcon` | Optional icon from `optionIcons[i]` | No | Decorative (merged) |
@@ -105,6 +106,37 @@ Users need to switch immediately between 2–5 mutually exclusive views or modes
 ---
 
 ## 3. Variant, Size & Material Matrix
+
+### Quick Spec
+
+Measured against the rendered component by `SpecMeasurementTest`. Keys are `<Part ID>.<metric>`; dimensions in `dp`, type in `sp`.
+
+<!-- QUICK-SPEC:BEGIN -->
+```yaml
+sizes:
+  Small:
+    root.height: 48
+    track.height: 32
+    track.cornerRadius: 16
+    thumb.height: 26
+    segment.height: 48
+    segmentIcon.size: 14
+  Medium:
+    root.height: 48
+    track.height: 40
+    track.cornerRadius: 20
+    thumb.height: 34
+    segment.height: 48
+    segmentIcon.size: 16
+  Large:
+    root.height: 48
+    track.height: 48
+    track.cornerRadius: 24
+    thumb.height: 40
+    segment.height: 48
+    segmentIcon.size: 18
+```
+<!-- QUICK-SPEC:END -->
 
 ### Variants (`AuraSegmentedVariant`)
 

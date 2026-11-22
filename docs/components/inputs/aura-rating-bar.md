@@ -88,12 +88,34 @@ Users need to give or read a quick star score (with optional half stars) for sub
 
 ## 3. Variant, Size & Material Matrix
 
-| Size (`AuraRatingBarSize`) | Visual Star Size | Star Spacing | Min Touch Height | Recommended Context |
-|---|---|---|---|---|
-| `Small` | `18dp` | `4dp` | `48dp` (when interactive) / `20dp` (read-only) | Bottle list rows, summary headers |
-| `Medium` (default) | `28dp` | `6dp` | `48dp` | Standard tasting card & archive filters |
-| `Large` | `36dp` | `8dp` | `48dp` | Dedicated tasting-note modal & detail review |
+### Quick Spec
 
+Measured against the rendered component by `SpecMeasurementTest`. Keys are `<Part ID>.<metric>`; dimensions in `dp`, type in `sp`.
+
+<!-- QUICK-SPEC:BEGIN -->
+```yaml
+sizes:
+  Small:
+    root.height: 22
+    root.width: 106
+  Medium:
+    root.height: 32
+    root.width: 164
+  Large:
+    root.height: 40
+    root.width: 212
+  Interactive:
+    root.height: 48
+```
+<!-- QUICK-SPEC:END -->
+
+| Size (`AuraRatingBarSize`) | Visual Star Size | Star Spacing | Row Height (interactive / read-only) | Recommended Context |
+|---|---|---|---|---|
+| `Small` | `18dp` | `4dp` | `48dp` / `22dp` | Bottle list rows, summary headers |
+| `Medium` (default) | `28dp` | `6dp` | `48dp` / `32dp` | Standard tasting card & archive filters |
+| `Large` | `36dp` | `8dp` | `48dp` / `40dp` | Dedicated tasting-note modal & detail review |
+
+- **Row height:** Interactive rows keep a `48dp` touch height; read-only rows shrink to `max(22dp, starSize + 4dp)`.
 - **Modes:** Interactive (`onRatingChange != null`) or Read-only (`onRatingChange == null`); half-star precision via `allowHalfRating`.
 - **Material:** `Solid` only (`layer: content`).
 

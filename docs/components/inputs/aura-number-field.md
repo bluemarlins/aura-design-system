@@ -100,6 +100,19 @@ Numeric, currency, and measurement values need precise keyboard entry with units
 
 ## 3. Variant, Size & Material Matrix
 
+### Quick Spec
+
+Measured against the rendered component by `SpecMeasurementTest`. Keys are `<Part ID>.<metric>`; dimensions in `dp`, type in `sp`.
+
+<!-- QUICK-SPEC:BEGIN -->
+```yaml
+sizes:
+  Default:
+    root.minHeight: 48
+    root.cornerRadius: 10
+```
+<!-- QUICK-SPEC:END -->
+
 Reuses `AuraTextFieldVariant`:
 - `Outlined` (default): Structured forms, financial records, cellar entries.
 - `Filled`: Recessed compact metadata rows (`surface.sunken`).

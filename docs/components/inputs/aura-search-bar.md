@@ -96,6 +96,22 @@ Users need to filter or search a collection instantly as they type, with quick c
 
 ## 3. Variant, Size & Material Matrix
 
+### Quick Spec
+
+Measured against the rendered component by `SpecMeasurementTest`. Keys are `<Part ID>.<metric>`; dimensions in `dp`, type in `sp`.
+
+<!-- QUICK-SPEC:BEGIN -->
+```yaml
+sizes:
+  Default:
+    root.height: 52
+    leadingIcon.size: 20
+    input.fontSize: 16
+    filterButton.minWidth: 48
+    filterButton.minHeight: 48
+```
+<!-- QUICK-SPEC:END -->
+
 - `AuraSearchBarSurface.Solid`: Pill (`50%` corner radius) backed by `surface.sunken`, elevating stroke to `border.focus` (`2dp`) while focused.
 - `AuraSearchBarSurface.Glass`: Full-capsule `GlassSurface` supporting `GlassStyle.FROSTED` and `GlassStyle.LIQUID` with live Layer 0 backdrop sampling (`LocalGlassBackdropState`).
 - **Size:** Single size — `52dp` minimum height, `48dp` touch targets for `clearButton` and `filterButton`.
@@ -138,7 +154,7 @@ Consumes `AuraTheme.motion`:
 | `ExtraSmall` (`< 360dp`) | Expands to `fillMaxWidth()`, prioritizing query text area (`weight(1f)`) with compact `12dp` inner horizontal padding. |
 | `Compact` (`360–599dp`) | Full-width `52dp` pill bar ideal beneath `AuraTopAppBar` or docked inside `FloatingGlassScaffold`. |
 | `Square` (`~1:1` Pop-up / Foldable) | Fits comfortably within single-pane search headers or master pane of `AuraAdaptiveTwoPane` without clipping trailing filter pill. |
-| `UltraWide` (`> 21:9`) | Maintains compact `50dp` height so vertical list viewport stays generous in landscape split windows. |
+| `UltraWide` (`> 21:9`) | Keeps the single `52dp` height; the bar never grows taller in landscape split windows, so the list viewport stays generous. |
 | `Expanded` (`>= 840dp` Tablet) | Bounded smoothly inside `AuraTheme.layout.maxContentWidth` or master pane column (typically `360–560dp`), never stretching awkwardly edge-to-edge. |
 
 ---

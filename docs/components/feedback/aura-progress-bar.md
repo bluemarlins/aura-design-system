@@ -81,6 +81,21 @@ Users need to see how far a determinate task or multi-step flow has advanced so 
 
 ## 3. Variant, Size & Material Matrix
 
+### Quick Spec
+
+Measured against the rendered component by `SpecMeasurementTest`. Keys are `<Part ID>.<metric>`; dimensions in `dp`, type in `sp`.
+
+<!-- QUICK-SPEC:BEGIN -->
+```yaml
+sizes:
+  Linear:
+    track.height: 6
+  Step:
+    track.height: 4
+    segment.height: 4
+```
+<!-- QUICK-SPEC:END -->
+
 | Variant (`AuraProgressVariant`) | Active Indicator Token | Track Token |
 |---|---|---|
 | `Brand` (default) | `AuraTheme.colors.brand.primary` | `AuraTheme.colors.surface.sunken` |
