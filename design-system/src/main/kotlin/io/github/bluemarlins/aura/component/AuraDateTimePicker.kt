@@ -133,9 +133,9 @@ fun AuraDateTimePicker(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
+                .clip(AuraTheme.shapes.large)
                 .background(if (enabled) colors.surface.default else colors.interaction.disabledContainer)
-                .border(1.dp, colors.border.subtle, RoundedCornerShape(16.dp))
+                .border(1.dp, colors.border.subtle, AuraTheme.shapes.large)
                 .padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {

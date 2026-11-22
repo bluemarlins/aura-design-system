@@ -230,7 +230,7 @@ private fun MenuItemRow(
             .fillMaxWidth()
             .heightIn(min = 48.dp)
             .padding(horizontal = 8.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(AuraTheme.shapes.medium)
             .background(if (item.selected) colors.interaction.selectedContainer else Color.Transparent)
             .fluidPressScale(interaction)
             .clickable(

@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -192,7 +191,7 @@ fun AuraBadge(
     val shape = when (size) {
         AuraBadgeSize.Dot -> CircleShape
         AuraBadgeSize.Small -> CircleShape
-        AuraBadgeSize.Medium -> RoundedCornerShape(8.dp)
+        AuraBadgeSize.Medium -> AuraTheme.shapes.small
     }
     val textStyle = when (size) {
         AuraBadgeSize.Dot, AuraBadgeSize.Small -> typography.labelSmall.copy(fontWeight = FontWeight.SemiBold)

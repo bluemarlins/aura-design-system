@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -320,7 +319,7 @@ fun AuraRatingBar(
             if (showValueText) {
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(AuraTheme.shapes.small)
                         .background(if (enabled) colors.brand.subtle else colors.interaction.disabledContainer)
                         .padding(horizontal = 8.dp, vertical = 4.dp),
                 ) {

@@ -441,9 +441,9 @@ private fun NumberStepperButton(
                 scaleX = scale
                 scaleY = scale
             }
-            .clip(RoundedCornerShape(8.dp))
+            .clip(AuraTheme.shapes.small)
             .background(if (enabled) colors.surface.sunken else colors.interaction.disabledContainer)
-            .border(1.dp, colors.border.subtle, RoundedCornerShape(8.dp))
+            .border(1.dp, colors.border.subtle, AuraTheme.shapes.small)
             .semantics { this.contentDescription = contentDescription }
             .clickable(
                 interactionSource = interactionSource,
