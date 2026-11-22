@@ -87,7 +87,7 @@ Users need to filter or search a collection instantly as they type, with quick c
 |---|---|---|---|
 | `root` | `52dp` full-capsule container (`Solid` or `Glass`) | Yes | Inherited |
 | `leadingIcon` | Search glyph | Yes | Decorative |
-| `input` | Single-line query text with `placeholder` | Yes | Text field (IME action `Search`) |
+| `input` | Single-line query text with `placeholder`. The text field covers the whole capsule (its decoration box holds `leadingIcon`, `clearButton`, and `filterButton`), so a tap anywhere on the bar focuses it | Yes | Text field (IME action `Search`) |
 | `clearButton` | Clears `query`; visible only when `query` is not empty | Conditional | `Role.Button` (`clearContentDescription`) |
 | `filterButton` | Opens filters; shown when `onFilterClick != null` | No | `Role.Button` (`"Filter (N active)"`) |
 | `filterBadge` | Count of `activeFilterCount` on `filterButton` | Conditional | Merged into `filterButton` |
@@ -105,6 +105,7 @@ Measured against the rendered component by `SpecMeasurementTest`. Keys are `<Par
 sizes:
   Default:
     root.height: 52
+    input.height: 52
     leadingIcon.size: 20
     input.fontSize: 16
     filterButton.minWidth: 48

@@ -69,7 +69,7 @@ Users need to switch immediately between 2–5 mutually exclusive views or modes
 
 ### Context Rules
 
-- **`SEG-RULE-001` (2 to 5 Mutually Exclusive Options)**: Always use `AuraSegmentedButton` for **2 to 5 fixed, peer, mutually exclusive choices**. If selections are non-exclusive (multi-select) or exceed 5 items, use `AuraChipButton` strips instead.
+- **`SEG-RULE-001` (2 to 5 Mutually Exclusive Options)**: Always use `AuraSegmentedButton` for **2 to 5 fixed, peer, mutually exclusive choices**. If selections are non-exclusive (multi-select) or exceed 5 items, use `AuraChipButton` strips instead. When "not chosen yet" is a valid state (an unanswered question, an optional field), pass a `selectedIndex` outside `options.indices` (e.g. `-1`): no segment is selected and the thumb is hidden until the user picks one.
 - **`SEG-RULE-002` (Concise Equal-Width Labels)**: Keep each option label short (`1` word or `<= 8` characters, e.g., `"1M"`, `"Wine"`, `"Week"`) so equal-width segments never truncate awkwardly across narrow devices.
 - **`SEG-RULE-003` (Immediate Screen Effect, Never Form Submit or Top-Level Tabs)**: Selecting a segment updates the active viewport immediately; do not use `AuraSegmentedButton` as primary app-wide destination navigation (`AuraNavigationBar`) or destructive/save form commands (`AuraButton`).
 - **`SEG-RULE-004` (Accessible Touch Height)**: Regardless of slim visual track heights (`Small` `32dp`, `Medium` `40dp`), each segment enforces a `>= 48dp` interactive touch height centered cleanly around the capsule track.
@@ -159,8 +159,9 @@ sizes:
 1. **Disabled (`!enabled`)**: All segments non-interactive, muted thumb, `content.disabled` typography, zero press scale or slide reaction.
 2. **Pressed (Segment)**: Individual pressed segment content scales cleanly using `pressedScaleDefault` (`0.96f`) while latched for `minPressDurationMillis`, plus subtle `interaction.pressedOverlay` tint.
 3. **Selected (`index == selectedIndex`)**: Sliding thumb indicator aligns under the active option; active text/icon transitions smoothly to active token colors.
-4. **Focused / Hovered**: Keyboard focus draws `2dp` `border.focus` ring inside the segment bounds; pointer hover lightly tints inactive segments.
-5. **Default**: Resting unselected segment colors over track.
+4. **No selection (`selectedIndex !in options.indices`)**: The thumb fades out where it last rested and every segment uses inactive colors. The first pick fades the thumb in under that segment instead of sliding it.
+5. **Focused / Hovered**: Keyboard focus draws `2dp` `border.focus` ring inside the segment bounds; pointer hover lightly tints inactive segments.
+6. **Default**: Resting unselected segment colors over track.
 
 ---
 
