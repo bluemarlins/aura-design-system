@@ -1,6 +1,6 @@
 # Aura Design System
 
-**Version `2.0.0`** · One UI-inspired, zero-Material 3 Jetpack Compose design system featuring Glassmorphism, tactile spring physics, and two-axis adaptive layouts.
+**Version `2.1.0`** · One UI-inspired, zero-Material 3 Jetpack Compose design system featuring Glassmorphism, tactile spring physics, and two-axis adaptive layouts.
 
 ---
 
@@ -54,21 +54,21 @@ Add the library dependency to your module's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.github.bluemarlins:aura-design-system:2.0.0")
+    implementation("com.github.bluemarlins:aura-design-system:2.1.0")
 }
 ```
 
 Compose `ui`, `ui-graphics`, and `foundation` come in transitively. Aura does not export an icon set, so if your app uses `Icons.*` glyphs (as the samples below do), also add `implementation("androidx.compose.material:material-icons-core")`.
 
-#### Option 2 — Direct AAR from GitHub Releases (`2.0.0`)
+#### Option 2 — Direct AAR from GitHub Releases (`2.1.0`)
 
-1. Download `aura-design-system-2.0.0.aar` (and optionally `aura-design-system-2.0.0-sources.jar`) from the [GitHub Releases (`2.0.0`)](https://github.com/bluemarlins/aura-design-system/releases/tag/2.0.0) page.
-2. Place the `.aar` file inside your app module's `libs/` directory (e.g., `app/libs/aura-design-system-2.0.0.aar`).
+1. Download `aura-design-system-2.1.0.aar` (and optionally `aura-design-system-2.1.0-sources.jar`) from the [GitHub Releases (`2.1.0`)](https://github.com/bluemarlins/aura-design-system/releases/tag/2.1.0) page.
+2. Place the `.aar` file inside your app module's `libs/` directory (e.g., `app/libs/aura-design-system-2.1.0.aar`).
 3. Declare the AAR alongside Compose Foundation/UI dependencies in `app/build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation(files("libs/aura-design-system-2.0.0.aar"))
+    implementation(files("libs/aura-design-system-2.1.0.aar"))
 
     implementation(platform("androidx.compose:compose-bom:2025.02.00"))
     implementation("androidx.compose.ui:ui")
@@ -81,7 +81,7 @@ dependencies {
 
 #### Option 3 — Local Maven (`mavenLocal()`)
 
-Publish the `2.0.0` artifact locally from a clone of this repository:
+Publish the `2.1.0` artifact locally from a clone of this repository:
 
 ```powershell
 .\gradlew.bat :design-system:publishToMavenLocal
@@ -90,14 +90,14 @@ Publish the `2.0.0` artifact locally from a clone of this repository:
 Then enable `mavenLocal()` in `settings.gradle.kts` and add:
 
 ```kotlin
-implementation("com.github.bluemarlins:aura-design-system:2.0.0")
+implementation("com.github.bluemarlins:aura-design-system:2.1.0")
 ```
 
 ### Migrating from 1.x to 2.0.0
 
 `2.0.0` renames the Kotlin package from `com.example.ds` to `io.github.bluemarlins.aura`. The Maven coordinates (`com.github.bluemarlins:aura-design-system`) and every public API name are unchanged, so the upgrade is a find-and-replace on imports:
 
-1. Bump the dependency (or the local AAR file name) to `2.0.0`.
+1. Bump the dependency (or the local AAR file name) to `2.0.0` or later.
 2. Replace `com.example.ds.` with `io.github.bluemarlins.aura.` in your Kotlin sources, for example:
 
 ```powershell
