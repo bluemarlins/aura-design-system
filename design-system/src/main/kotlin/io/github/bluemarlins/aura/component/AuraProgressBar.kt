@@ -28,9 +28,12 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.github.bluemarlins.aura.foundation.auraPart
 import io.github.bluemarlins.aura.foundation.color.AuraColors
 import io.github.bluemarlins.aura.foundation.theme.AuraColorMode
 import io.github.bluemarlins.aura.foundation.theme.AuraTheme
+
+private const val PartSpecId = "aura.component.progress-bar"
 
 /**
  * Semantic tone variants for [AuraLinearProgressBar] and [AuraStepProgressBar].
@@ -84,6 +87,7 @@ fun AuraLinearProgressBar(
         modifier = modifier
             .fillMaxWidth()
             .height(height)
+            .auraPart(PartSpecId, "track")
             .clip(shape)
             .background(trackColor)
             .semantics(mergeDescendants = true) {
@@ -135,6 +139,7 @@ fun AuraStepProgressBar(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .auraPart(PartSpecId, "track")
             .semantics(mergeDescendants = true) {
                 progressBarRangeInfo = ProgressBarRangeInfo(
                     current = safeCurrent.toFloat(),
@@ -158,6 +163,7 @@ fun AuraStepProgressBar(
                 modifier = Modifier
                     .weight(1f)
                     .height(height)
+                    .auraPart(PartSpecId, "segment")
                     .clip(shape)
                     .background(segmentColor),
             )

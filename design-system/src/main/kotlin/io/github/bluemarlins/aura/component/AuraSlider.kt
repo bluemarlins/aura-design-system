@@ -41,10 +41,12 @@ import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.github.bluemarlins.aura.foundation.auraPart
 import io.github.bluemarlins.aura.foundation.theme.AuraColorMode
 import io.github.bluemarlins.aura.foundation.theme.AuraTheme
 import kotlin.math.roundToInt
 
+private const val PartSpecId = "aura.component.slider"
 private val SliderMinTouchHeight = 48.dp
 private val SliderTrackHeight = 6.dp
 private val SliderThumbRadius = 11.dp
@@ -204,6 +206,7 @@ fun AuraSlider(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(SliderMinTouchHeight)
+                .auraPart(PartSpecId, "root")
                 .onSizeChanged { trackWidthPx = it.width.toFloat() }
                 .pointerInput(enabled) {
                     if (!enabled) return@pointerInput

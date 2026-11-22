@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
+import io.github.bluemarlins.aura.foundation.auraPart
 import io.github.bluemarlins.aura.foundation.motion.AuraMotionProfile
 import io.github.bluemarlins.aura.foundation.theme.AuraColorMode
 import io.github.bluemarlins.aura.foundation.motion.AuraMotionProgressKey
@@ -77,6 +78,7 @@ data class AuraBottomIslandItem(
     val selectedIcon: ImageVector = icon,
 )
 
+private const val PartSpecId = "aura.component.bottom-island"
 private val IslandHeight = 60.dp
 private val MinimizedIslandHeight = 48.dp
 
@@ -255,6 +257,7 @@ fun AuraBottomIsland(
                 modifier = Modifier
                     .weight(1f)
                     .height(currentIslandHeight)
+                    .auraPart(PartSpecId, "root")
                     .graphicsLayer {
                         scaleX = 1f + islandElasticStretch
                         scaleY = 1f - (islandElasticStretch * 0.55f)
@@ -316,6 +319,7 @@ fun AuraBottomIsland(
                                     .weight(1f)
                                     .fillMaxHeight()
                                     .defaultMinSize(minWidth = 48.dp, minHeight = 48.dp)
+                                    .auraPart(PartSpecId, "tab")
                                     .fluidPressScale(tabInteraction)
                                     .clip(RoundedCornerShape(50))
                                     .selectable(
@@ -430,7 +434,7 @@ fun AuraBottomIsland(
                     contentAlignment = Alignment.Center,
                 ) {
                     GlassSurface(
-                        modifier = Modifier.size(currentIslandHeight),
+                        modifier = Modifier.size(currentIslandHeight).auraPart(PartSpecId, "splitAction"),
                         glassStyle = glassStyle,
                         shape = CircleShape,
                         cornerRadiusHint = currentIslandHeight / 2f,

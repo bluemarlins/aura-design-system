@@ -48,12 +48,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.github.bluemarlins.aura.foundation.auraPart
 import io.github.bluemarlins.aura.foundation.theme.AuraColorMode
 import io.github.bluemarlins.aura.foundation.theme.AuraTheme
 import kotlin.math.roundToLong
 
 private val NumberFieldCornerRadius = 10.dp
 private val NumberFieldMinHeight = 48.dp
+private const val PartSpecId = "aura.component.number-field"
 
 internal fun sanitizeNumericText(
     raw: String,
@@ -254,6 +256,7 @@ fun AuraNumberField(
             Modifier
                 .fillMaxWidth()
                 .heightIn(min = NumberFieldMinHeight)
+                .auraPart(PartSpecId, "root")
                 .clip(shape)
                 .background(containerColor)
                 .border(animatedBorderWidth, animatedBorderColor, shape)
@@ -262,6 +265,7 @@ fun AuraNumberField(
             Modifier
                 .fillMaxWidth()
                 .heightIn(min = NumberFieldMinHeight)
+                .auraPart(PartSpecId, "root")
                 .drawBehind {
                     val strokePx = animatedBorderWidth.toPx()
                     val y = size.height - strokePx / 2f

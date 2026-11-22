@@ -38,6 +38,7 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.github.bluemarlins.aura.foundation.auraPart
 import io.github.bluemarlins.aura.foundation.theme.AuraColorMode
 import io.github.bluemarlins.aura.foundation.theme.AuraTheme
 import kotlin.math.PI
@@ -45,6 +46,8 @@ import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.roundToInt
 import kotlin.math.sin
+
+private const val PartSpecId = "aura.component.rating-bar"
 
 /**
  * Star icon size scale for [AuraRatingBar].
@@ -232,6 +235,7 @@ fun AuraRatingBar(
                 modifier = Modifier
                     .width(totalRowWidth)
                     .height(touchHeight)
+                    .auraPart(PartSpecId, "root")
                     .then(
                         if (isInteractive) {
                             Modifier

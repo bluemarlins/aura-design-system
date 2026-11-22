@@ -42,12 +42,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.github.bluemarlins.aura.foundation.auraPart
 import io.github.bluemarlins.aura.foundation.color.AuraColors
 import io.github.bluemarlins.aura.foundation.theme.AuraColorMode
 import io.github.bluemarlins.aura.foundation.theme.AuraTheme
 
 private val FieldCornerRadius = 10.dp
 private val FieldMinHeight = 48.dp
+private const val PartSpecId = "aura.component.text-field"
 
 /**
  * Container presentation variants for [AuraTextField].
@@ -388,6 +390,7 @@ private fun AuraTextFieldContainer(
         -> Modifier
             .fillMaxWidth()
             .heightIn(min = FieldMinHeight)
+            .auraPart(PartSpecId, "fieldContainer")
             .clip(shape)
             .background(color = resolvedColors.container, shape = shape)
             .border(width = resolvedColors.borderWidth, color = resolvedColors.border, shape = shape)
@@ -396,6 +399,7 @@ private fun AuraTextFieldContainer(
         AuraTextFieldVariant.Paperless -> Modifier
             .fillMaxWidth()
             .heightIn(min = FieldMinHeight)
+            .auraPart(PartSpecId, "fieldContainer")
             .drawBehind {
                 val strokePx = resolvedColors.borderWidth.toPx()
                 val y = size.height - strokePx / 2f

@@ -43,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.github.bluemarlins.aura.foundation.auraPart
 import io.github.bluemarlins.aura.foundation.color.AuraColors
 import io.github.bluemarlins.aura.foundation.theme.AuraTheme
 import kotlin.math.max
@@ -60,6 +61,7 @@ enum class AuraSegmentedSize {
     Large,
 }
 
+private const val PartSpecId = "aura.component.segmented-button"
 private val MinSegmentedTouchHeight = 48.dp
 
 private data class AuraSegmentedPalette(
@@ -146,12 +148,14 @@ fun AuraSegmentedButton(
     Layout(
         modifier = modifier
             .then(widthModifier)
-            .selectableGroup(),
+            .selectableGroup()
+            .auraPart(PartSpecId, "root"),
         content = {
             // Child 0: Capsule track backdrop
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .auraPart(PartSpecId, "track")
                     .clip(CircleShape)
                     .background(animatedTrackBg, CircleShape)
                     .border(width = 1.dp, color = animatedTrackBorder, shape = CircleShape),
@@ -161,6 +165,7 @@ fun AuraSegmentedButton(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .auraPart(PartSpecId, "thumb")
                     .then(
                         if (palette.thumbElevation > 0.dp) {
                             Modifier.shadow(
@@ -224,6 +229,7 @@ fun AuraSegmentedButton(
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
+                        .auraPart(PartSpecId, "segment")
                         .semantics { this.selected = isSelected }
                         .clickable(
                             enabled = enabled,
@@ -266,6 +272,7 @@ fun AuraSegmentedButton(
                                     Box(
                                         modifier = Modifier
                                             .size(metrics.iconSize)
+                                            .auraPart(PartSpecId, "segmentIcon")
                                             .graphicsLayer {
                                                 scaleX = iconScale
                                                 scaleY = iconScale

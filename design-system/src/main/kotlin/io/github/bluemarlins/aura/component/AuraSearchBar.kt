@@ -48,6 +48,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.github.bluemarlins.aura.foundation.auraPart
 import io.github.bluemarlins.aura.foundation.theme.AuraColorMode
 import io.github.bluemarlins.aura.foundation.theme.AuraTheme
 
@@ -62,6 +63,7 @@ enum class AuraSearchBarSurface {
     Glass,
 }
 
+private const val PartSpecId = "aura.component.search-bar"
 private val SearchBarMinHeight = 52.dp
 private val SearchBarShape = RoundedCornerShape(50)
 
@@ -132,7 +134,7 @@ fun AuraSearchBar(
         ) {
             SearchMagnifierGlyph(
                 color = leadingIconColor,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(20.dp).auraPart(PartSpecId, "leadingIcon"),
             )
 
             Box(
@@ -151,7 +153,7 @@ fun AuraSearchBar(
                 BasicTextField(
                     value = query,
                     onValueChange = onQueryChange,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().auraPart(PartSpecId, "input"),
                     enabled = enabled,
                     singleLine = true,
                     textStyle = typography.bodyLarge.copy(
@@ -194,6 +196,7 @@ fun AuraSearchBar(
                 modifier = modifier
                     .fillMaxWidth()
                     .heightIn(min = SearchBarMinHeight)
+                    .auraPart(PartSpecId, "root")
                     .clip(SearchBarShape)
                     .background(if (enabled) colors.surface.sunken else colors.interaction.disabledContainer)
                     .border(borderWidth, borderColor, SearchBarShape),
@@ -208,6 +211,7 @@ fun AuraSearchBar(
                 modifier = modifier
                     .fillMaxWidth()
                     .heightIn(min = SearchBarMinHeight)
+                    .auraPart(PartSpecId, "root")
                     .then(
                         if (activeFocus) {
                             Modifier.border(borderWidth, borderColor, SearchBarShape)
@@ -319,6 +323,7 @@ private fun SearchFilterButton(
     Box(
         modifier = Modifier
             .defaultMinSize(minWidth = 48.dp, minHeight = 48.dp)
+            .auraPart(PartSpecId, "filterButton")
             .graphicsLayer {
                 scaleX = scale
                 scaleY = scale
