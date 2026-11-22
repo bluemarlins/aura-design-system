@@ -84,6 +84,9 @@ private data class AuraSegmentedMetrics(
 /**
  * Immediate mutually exclusive view-mode or unit switcher (`2–5` options) with a
  * spring-animated sliding thumb indicator, `>= 48.dp` vertical hit bounds, and Reduced Motion support.
+ *
+ * Pass a [selectedIndex] outside `options.indices` (for example `-1`) when no option is chosen
+ * yet, such as an unanswered question: the thumb fades out and no segment reports `selected`.
  */
 @Composable
 fun AuraSegmentedButton(
@@ -99,7 +102,12 @@ fun AuraSegmentedButton(
 ) {
     if (options.isEmpty()) return
 
-    val safeSelectedIndex = selectedIndex.coerceIn(0, options.lastIndex)
+    val hasSelection = selectedIndex in options.indices
+    val safeSelectedIndex = if (hasSelection) selectedIndex else -1
+    // Where the thumb rests while nothing is selected, so it fades out in place instead of sliding away.
+    val thumbAnchor = remember { IntArray(1) }
+    if (hasSelection) thumbAnchor[0] = selectedIndex
+    thumbAnchor[0] = thumbAnchor[0].coerceIn(0, options.lastIndex)
     val colors = AuraTheme.colors
     val typography = AuraTheme.typography
     val motion = AuraTheme.motion
@@ -136,9 +144,15 @@ fun AuraSegmentedButton(
         label = "AuraSegmentedThumbBg",
     )
 
+    val thumbAlpha by animateFloatAsState(
+        targetValue = if (hasSelection) 1f else 0f,
+        animationSpec = if (reducedMotion) snap() else tween(durationMillis = motion.stateChangeDurationMillis),
+        label = "AuraSegmentedThumbAlpha",
+    )
     val animatedThumbIndex by animateFloatAsState(
-        targetValue = safeSelectedIndex.toFloat(),
-        animationSpec = if (reducedMotion) snap() else motion.selectionSpring(),
+        targetValue = thumbAnchor[0].toFloat(),
+        // A thumb appearing from "no selection" jumps to its segment and fades in; it only slides when visible.
+        animationSpec = if (reducedMotion || thumbAlpha < 0.01f) snap() else motion.selectionSpring(),
         label = "AuraSegmentedThumbIndex",
     )
 
@@ -166,6 +180,7 @@ fun AuraSegmentedButton(
                 modifier = Modifier
                     .fillMaxSize()
                     .auraPart(PartSpecId, "thumb")
+                    .graphicsLayer { alpha = thumbAlpha }
                     .then(
                         if (palette.thumbElevation > 0.dp) {
                             Modifier.shadow(
