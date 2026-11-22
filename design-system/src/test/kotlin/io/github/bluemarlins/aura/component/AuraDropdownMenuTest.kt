@@ -23,6 +23,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
 
 @RunWith(RobolectricTestRunner::class)
 // Phone-sized window: under 480dp of height the adaptive top bar switches to its compact docked form.
@@ -113,6 +114,7 @@ class AuraDropdownMenuTest {
     }
 
     @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE) // real text metrics; legacy mode inflates text heights and could fake the overlap
     fun `inline expanded title shares the row with actions instead of adding a second row`() {
         composeTestRule.setContent {
             AuraTheme {
