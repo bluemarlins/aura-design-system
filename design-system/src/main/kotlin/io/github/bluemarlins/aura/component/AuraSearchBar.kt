@@ -123,71 +123,79 @@ fun AuraSearchBar(
         label = "AuraSearchBarIconColor",
     )
 
+    // The text field is the whole bar: its decoration box holds the glyph, placeholder, and
+    // buttons, so a tap anywhere on the 52dp capsule focuses the query, not just its text line.
     val rowContent: @Composable () -> Unit = {
-        Row(
+        BasicTextField(
+            value = query,
+            onValueChange = onQueryChange,
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = SearchBarMinHeight)
-                .padding(start = 16.dp, end = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            SearchMagnifierGlyph(
-                color = leadingIconColor,
-                modifier = Modifier.size(20.dp).auraPart(PartSpecId, "leadingIcon"),
-            )
-
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.CenterStart,
-            ) {
-                if (query.isEmpty()) {
-                    AuraText(
-                        text = placeholder,
-                        style = typography.bodyLarge,
-                        color = if (enabled) colors.content.tertiary else colors.content.disabled,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+                .auraPart(PartSpecId, "input"),
+            enabled = enabled,
+            singleLine = true,
+            textStyle = typography.bodyLarge.copy(
+                color = if (enabled) colors.content.primary else colors.content.disabled,
+            ),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(
+                onSearch = { onSearch?.invoke(query) },
+            ),
+            cursorBrush = SolidColor(if (enabled) colors.brand.primary else Color.Transparent),
+            interactionSource = resolvedInteractionSource,
+            decorationBox = { innerTextField ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = SearchBarMinHeight)
+                        .padding(start = 16.dp, end = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    SearchMagnifierGlyph(
+                        color = leadingIconColor,
+                        modifier = Modifier.size(20.dp).auraPart(PartSpecId, "leadingIcon"),
                     )
+
+                    Box(
+                        modifier = Modifier.weight(1f),
+                        contentAlignment = Alignment.CenterStart,
+                    ) {
+                        if (query.isEmpty()) {
+                            AuraText(
+                                text = placeholder,
+                                style = typography.bodyLarge,
+                                color = if (enabled) colors.content.tertiary else colors.content.disabled,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                        innerTextField()
+                    }
+
+                    AnimatedVisibility(
+                        visible = query.isNotEmpty() && enabled,
+                        enter = if (reducedMotion) fadeIn(snap()) else fadeIn(tween(motion.stateChangeDurationMillis)) + scaleIn(motion.iconSpring()),
+                        exit = if (reducedMotion) fadeOut(snap()) else fadeOut(tween(motion.pressInDurationMillis)) + scaleOut(tween(motion.pressInDurationMillis)),
+                    ) {
+                        SearchClearButton(
+                            color = colors.content.secondary,
+                            contentDescription = clearContentDescription,
+                            onClick = { onQueryChange("") },
+                        )
+                    }
+
+                    if (onFilterClick != null) {
+                        SearchFilterButton(
+                            enabled = enabled,
+                            activeFilterCount = activeFilterCount,
+                            onClick = onFilterClick,
+                        )
+                    }
                 }
-                BasicTextField(
-                    value = query,
-                    onValueChange = onQueryChange,
-                    modifier = Modifier.fillMaxWidth().auraPart(PartSpecId, "input"),
-                    enabled = enabled,
-                    singleLine = true,
-                    textStyle = typography.bodyLarge.copy(
-                        color = if (enabled) colors.content.primary else colors.content.disabled,
-                    ),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                    keyboardActions = KeyboardActions(
-                        onSearch = { onSearch?.invoke(query) },
-                    ),
-                    cursorBrush = SolidColor(if (enabled) colors.brand.primary else Color.Transparent),
-                    interactionSource = resolvedInteractionSource,
-                )
-            }
-
-            AnimatedVisibility(
-                visible = query.isNotEmpty() && enabled,
-                enter = if (reducedMotion) fadeIn(snap()) else fadeIn(tween(motion.stateChangeDurationMillis)) + scaleIn(motion.iconSpring()),
-                exit = if (reducedMotion) fadeOut(snap()) else fadeOut(tween(motion.pressInDurationMillis)) + scaleOut(tween(motion.pressInDurationMillis)),
-            ) {
-                SearchClearButton(
-                    color = colors.content.secondary,
-                    contentDescription = clearContentDescription,
-                    onClick = { onQueryChange("") },
-                )
-            }
-
-            if (onFilterClick != null) {
-                SearchFilterButton(
-                    enabled = enabled,
-                    activeFilterCount = activeFilterCount,
-                    onClick = onFilterClick,
-                )
-            }
-        }
+            },
+        )
     }
 
     when (surface) {
